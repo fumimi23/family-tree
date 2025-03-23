@@ -1,0 +1,48 @@
+{
+  "name": "family-tree",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "packageManager": "yarn@4.7.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "format": "eslint --fix --quiet .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@chakra-ui/cli": "^3.13.0",
+    "@chakra-ui/react": "^3.13.0",
+    "@emotion/react": "^11.14.0",
+    "next-themes": "^0.4.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-icons": "^5.5.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@stylistic/eslint-plugin": "^4.2.0",
+    "@stylistic/eslint-plugin-ts": "^4.2.0",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.21.0",
+    "eslint-plugin-no-relative-import-paths": "^1.6.1",
+    "eslint-plugin-perfectionist": "^4.10.1",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "globals": "^15.15.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.24.1",
+    "vite": "^6.2.0",
+    "vite-tsconfig-paths": "^5.1.4"
+  },
+  "engines": {
+    "npm": "use yarn instead",
+    "yarn": "4.7.0",
+    "pnpm": "use yarn instead"
+  }
+}

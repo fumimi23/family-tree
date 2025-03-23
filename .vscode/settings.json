@@ -1,0 +1,27 @@
+{
+    // Linter
+    "eslint.useFlatConfig": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+    },
+    // Formatter
+    "typescript.format.enable": false,
+    "eslint.format.enable": true,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": true,
+    // 以降は各言語ごとの設定
+    "[typescript]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+}
