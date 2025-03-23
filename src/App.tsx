@@ -1,60 +1,32 @@
-import reactLogo from '@/assets/react.svg';
-import { useState } from 'react';
-
-import viteLogo from '/vite.svg';
-
 import '@/App.css';
+import { PeopleTable } from '@/components/person/PeopleTable';
+import { Grid, GridItem, Heading } from '@chakra-ui/react';
 
 function App(): React.ReactNode {
-  const [count, setCount] = useState(0);
-
   return (
     <>
-      <div>
-        <a
-          href="https://vite.dev"
-          target="_blank"
-        >
-          <img
-            alt="Vite logo"
-            className="logo"
-            src={viteLogo}
-          />
-        </a>
+      <Grid
+        gap={4}
+        templateColumns="repeat(2, 1fr)"
+      >
+        <GridItem colSpan={2}>
+          <Heading
+            as="h1"
+            size="2xl"
+          >
+            家系図作成ツール
+          </Heading>
+        </GridItem>
 
-        <a
-          href="https://react.dev"
-          target="_blank"
-        >
-          <img
-            alt="React logo"
-            className="logo react"
-            src={reactLogo}
-          />
-        </a>
-      </div>
+        <GridItem colSpan={1}>
+          <PeopleTable />
+        </GridItem>
 
-      <h1>Vite + React</h1>
+        <GridItem colSpan={1}>
+          <PeopleTable />
+        </GridItem>
 
-      <div className="card">
-        <button onClick={() => { setCount((prev) => prev + 1); }}>
-          count is
-          {' '}
-          {count}
-        </button>
-
-        <p>
-          Edit
-          {' '}
-          <code>src/App.tsx</code>
-          {' '}
-          and save to test HMR
-        </p>
-      </div>
-
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      </Grid>
     </>
   );
 }

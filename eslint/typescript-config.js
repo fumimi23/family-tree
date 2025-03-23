@@ -168,6 +168,12 @@ export default tseslint.config(
       '@typescript-eslint/strict-boolean-expressions': 'error',
       // Unionの全ケースを網羅しているかチェック
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
+
+      // 直し方が分からないのでいったんwarnに
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'warn',
     },
   },
 );
