@@ -3501,6 +3501,7 @@ __metadata:
     typescript-eslint: "npm:^8.24.1"
     vite: "npm:^6.2.0"
     vite-tsconfig-paths: "npm:^5.1.4"
+    zod: "npm:^3.24.2"
   languageName: unknown
   linkType: soft
 
@@ -6192,7 +6193,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.23.8":
+"zod@npm:^3.23.8, zod@npm:^3.24.2":
   version: 3.24.2
   resolution: "zod@npm:3.24.2"
   checksum: 10c0/c638c7220150847f13ad90635b3e7d0321b36cce36f3fc6050ed960689594c949c326dfe2c6fa87c14b126ee5d370ccdebd6efb304f41ef5557a4aaca2824565
