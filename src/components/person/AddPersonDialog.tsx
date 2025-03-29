@@ -1,3 +1,4 @@
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { type Person, personSchema } from '@/schemas/personSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { Button, CloseButton, Dialog, Field, Flex, Input, Portal } from '@chakra-ui/react';
@@ -137,7 +138,7 @@ export function AddPersonDialog({ isOpen, onOpenChange }: AddPersonDialogProps):
                   <Button variant="outline">キャンセル</Button>
                 </Dialog.ActionTrigger>
 
-                <Button type="submit">保存</Button>
+                <PrimaryButton type="submit">保存</PrimaryButton>
               </Dialog.Footer>
             </form>
 
