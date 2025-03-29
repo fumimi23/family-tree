@@ -1,6 +1,8 @@
 import '@/App.css';
 import { PeopleTable } from '@/components/person/PeopleTable';
-import { Grid, GridItem, Heading } from '@chakra-ui/react';
+import { RelationTable } from '@/components/relation/RelationTable';
+import { H1 } from '@/components/ui/H1';
+import { Grid, GridItem } from '@chakra-ui/react';
 
 function App(): React.ReactNode {
   return (
@@ -10,12 +12,9 @@ function App(): React.ReactNode {
         templateColumns="repeat(2, 1fr)"
       >
         <GridItem colSpan={2}>
-          <Heading
-            as="h1"
-            size="2xl"
-          >
+          <H1>
             家系図作成ツール
-          </Heading>
+          </H1>
         </GridItem>
 
         <GridItem colSpan={1}>
@@ -23,7 +22,7 @@ function App(): React.ReactNode {
         </GridItem>
 
         <GridItem colSpan={1}>
-          <PeopleTable />
+          <RelationTable />
         </GridItem>
 
       </Grid>

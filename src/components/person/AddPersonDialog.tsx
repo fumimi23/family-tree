@@ -3,6 +3,7 @@ import { type Person, personSchema } from '@/schemas/personSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { Button, CloseButton, Dialog, Field, Flex, Input, Portal } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
