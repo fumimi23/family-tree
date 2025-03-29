@@ -1,5 +1,6 @@
 import '@/App.css';
 import { PeopleTable } from '@/components/person/PeopleTable';
+import { RelationTable } from '@/components/relation/RelationTable';
 import { Grid, GridItem, Heading } from '@chakra-ui/react';
 
 function App(): React.ReactNode {
@@ -23,7 +24,7 @@ function App(): React.ReactNode {
         </GridItem>
 
         <GridItem colSpan={1}>
-          <PeopleTable />
+          <RelationTable />
         </GridItem>
 
       </Grid>

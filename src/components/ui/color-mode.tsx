@@ -1,6 +1,6 @@
 import { ClientOnly, IconButton, type IconButtonProps, Skeleton, Span, type SpanProps } from '@chakra-ui/react';
 import { ThemeProvider, type ThemeProviderProps, useTheme } from 'next-themes';
-import * as React from 'react';
+import React from 'react';
 import { LuMoon, LuSun } from 'react-icons/lu';
 
 export type ColorModeProviderProps = ThemeProviderProps;
