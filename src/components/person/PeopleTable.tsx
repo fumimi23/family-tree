@@ -1,8 +1,9 @@
 import { AddPersonDialog } from '@/components/person/AddPersonDialog';
+import { H2 } from '@/components/ui/H2';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { type Person } from '@/schemas/personSchema';
 import { usePeopleStore } from '@/store/personStore';
-import { Flex, Heading, Table } from '@chakra-ui/react';
+import { Flex, Table } from '@chakra-ui/react';
 import React from 'react';
 
 export function PeopleTable(): React.ReactNode {
@@ -12,12 +13,9 @@ export function PeopleTable(): React.ReactNode {
   return (
     <Flex direction="column">
       <Flex justifyContent="space-between">
-        <Heading
-          as="h2"
-          size="xl"
-        >
+        <H2>
           人物一覧
-        </Heading>
+        </H2>
 
         <PrimaryButton
           onClick={() => { setIsOpen(true); }}

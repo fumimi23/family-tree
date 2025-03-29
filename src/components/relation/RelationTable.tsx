@@ -1,9 +1,10 @@
+import { H2 } from '@/components/ui/H2';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { type Person } from '@/schemas/personSchema';
 import { type Relation } from '@/schemas/relationSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
-import { Flex, Heading, Table } from '@chakra-ui/react';
+import { Flex, Table } from '@chakra-ui/react';
 import React from 'react';
 
 export function RelationTable(): React.ReactNode {
@@ -14,12 +15,9 @@ export function RelationTable(): React.ReactNode {
   return (
     <Flex direction="column">
       <Flex justifyContent="space-between">
-        <Heading
-          as="h2"
-          size="xl"
-        >
+        <H2>
           関係一覧
-        </Heading>
+        </H2>
 
         <PrimaryButton
           onClick={() => { setIsOpen(true); }}
