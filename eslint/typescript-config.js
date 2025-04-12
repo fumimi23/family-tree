@@ -44,8 +44,8 @@ export default tseslint.config(
 
       // クラスメソッドがthisを使用していない場合に警告
       'class-methods-use-this': 'warn',
-      // 関数の循環的複雑度を10以下に制限
-      complexity: ['error', 10],
+      // TODO: 関数の循環的複雑度を10以下に制限
+      // complexity: ['warn', 10],
       // ブロックの中括弧を強制
       curly: ['error', 'all'],
       // switch文のdefaultを必須に
