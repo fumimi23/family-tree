@@ -4,6 +4,7 @@ import { RelationTable } from '@/components/relation/RelationTable';
 import { H1 } from '@/components/ui/H1';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { PrimaryLink } from '@/components/ui/PrimaryLink';
+import { importJsonSchema } from '@/schemas/importJsonSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
 import { Flex, Grid, GridItem, Input } from '@chakra-ui/react';
@@ -29,8 +30,16 @@ function App(): React.ReactNode {
     const reader = new FileReader();
     reader.onload = (event): void => {
       try {
-        const jsonString = event.target?.result as string;
-        const jsonData = JSON.parse(jsonString);
+        if (!event.target) {
+          console.error('ファイルの読み込みに失敗しました。');
+          return;
+        }
+        if (event.target.result === null || event.target.result === '') {
+          console.error('ファイルの内容が空です。');
+          return;
+        }
+        const jsonString = event.target.result as string;
+        const jsonData = importJsonSchema.parse(JSON.parse(jsonString));
         const { people: newPeople, relations: newRelations } = jsonData;
         usePeopleStore.setState({ people: newPeople });
         useRelationStore.setState({ relations: newRelations });
