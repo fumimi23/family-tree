@@ -13,7 +13,7 @@ function App(): React.ReactNode {
   const url = React.useMemo(() => {
     const json = JSON.stringify({ people,
       relations });
-    const blob = new Blob([json], { type: 'text/json' });
+    const blob = new Blob([json], { type: 'application/json' });
     return URL.createObjectURL(blob);
   },
   [people, relations]);
