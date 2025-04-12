@@ -1,7 +1,8 @@
+import { AddRelationDialog } from '@/components/relation/AddRelationDialog';
 import { H2 } from '@/components/ui/H2';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { type Person } from '@/schemas/personSchema';
-import { type Relation } from '@/schemas/relationSchema';
+import { type Relation, type RelationType, relationTypes } from '@/schemas/relationSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
 import { Flex, Table } from '@chakra-ui/react';
@@ -11,6 +12,7 @@ export function RelationTable(): React.ReactNode {
   const people: Person[] = usePeopleStore((state) => state.people);
   const relations: Relation[] = useRelationStore((state) => state.relations);
   const [isOpen, setIsOpen] = React.useState(false);
+  const relationTypeLabelMap = new Map(relationTypes.map((relationType) => [relationType.value, relationType.label]));
 
   return (
     <Flex direction="column">
@@ -37,8 +39,8 @@ export function RelationTable(): React.ReactNode {
 
         <Table.Body>
           {relations.map((relation) => {
-            const person1 = people.find((person) => person.id === relation.person1Id);
-            const person2 = people.find((person) => person.id === relation.person2Id);
+            const person1 = people.find((person) => person.id === relation.persons.personId1[0]);
+            const person2 = people.find((person) => person.id === relation.persons.personId2[0]);
 
             return (
               <Table.Row key={relation.id}>
@@ -54,12 +56,18 @@ export function RelationTable(): React.ReactNode {
                   {person2?.givenName}
                 </Table.Cell>
 
-                <Table.Cell>{relation.relation}</Table.Cell>
+                <Table.Cell>{relationTypeLabelMap.get(relation.relationType[0] as RelationType)}</Table.Cell>
               </Table.Row>
             );
           })}
         </Table.Body>
       </Table.Root>
+
+      <AddRelationDialog
+        isOpen={isOpen}
+        key={isOpen.toString()}
+        onOpenChange={(e) => { setIsOpen(e.open); }}
+      />
     </Flex>
   );
 }
