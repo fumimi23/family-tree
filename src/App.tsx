@@ -2,9 +2,22 @@ import '@/App.css';
 import { PeopleTable } from '@/components/person/PeopleTable';
 import { RelationTable } from '@/components/relation/RelationTable';
 import { H1 } from '@/components/ui/H1';
-import { Grid, GridItem } from '@chakra-ui/react';
+import { usePeopleStore } from '@/store/personStore';
+import { useRelationStore } from '@/store/relationStore';
+import { Flex, Grid, GridItem, Link } from '@chakra-ui/react';
+import React from 'react';
 
 function App(): React.ReactNode {
+  const people = usePeopleStore((state) => state.people);
+  const relations = useRelationStore((state) => state.relations);
+  const url = React.useMemo(() => {
+    const json = JSON.stringify({ people,
+      relations });
+    const blob = new Blob([json], { type: 'text/json' });
+    return URL.createObjectURL(blob);
+  },
+  [people, relations]);
+
   return (
     <>
       <Grid
@@ -12,9 +25,20 @@ function App(): React.ReactNode {
         templateColumns="repeat(2, 1fr)"
       >
         <GridItem colSpan={2}>
-          <H1>
-            家系図作成ツール
-          </H1>
+          <Flex justifyContent="space-between">
+            <H1>
+              家系図作成ツール
+            </H1>
+
+            <Flex gap={2}>
+              <Link
+                download="family-tree.json"
+                href={url}
+              >
+                エクスポート
+              </Link>
+            </Flex>
+          </Flex>
         </GridItem>
 
         <GridItem colSpan={1}>
