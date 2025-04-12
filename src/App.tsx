@@ -3,9 +3,10 @@ import { PeopleTable } from '@/components/person/PeopleTable';
 import { RelationTable } from '@/components/relation/RelationTable';
 import { H1 } from '@/components/ui/H1';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { PrimaryLink } from '@/components/ui/PrimaryLink';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
-import { Flex, Grid, GridItem, Input, Link } from '@chakra-ui/react';
+import { Flex, Grid, GridItem, Input } from '@chakra-ui/react';
 import React from 'react';
 
 function App(): React.ReactNode {
@@ -61,12 +62,12 @@ function App(): React.ReactNode {
             </H1>
 
             <Flex gap={2}>
-              <Link
+              <PrimaryLink
                 download="family-tree.json"
                 href={url}
               >
                 エクスポート
-              </Link>
+              </PrimaryLink>
 
               <PrimaryButton onClick={handleImportClick}>
                 インポート
