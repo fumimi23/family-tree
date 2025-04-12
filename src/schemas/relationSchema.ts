@@ -1,21 +1,56 @@
 import { z } from 'zod';
 
-const relationTypeSchema = z.union([
-  z.literal('parent-child').describe('親子'),
-  z.literal('married-couple').describe('夫婦'),
-  z.literal('couple').describe('事実婚'),
-]).describe('関係性タイプ');
+export const RelationType = {
+  PARENT_CHILD: 'parent-child',
+  MARRIED_COUPLE: 'married-couple',
+  COUPLE: 'couple',
+} as const;
 
-export type RelationType = z.infer<typeof relationTypeSchema>;
+export type RelationType = typeof RelationType[keyof typeof RelationType];
+
+export const relationTypes = [
+  {
+    label: '親子',
+    value: RelationType.PARENT_CHILD,
+    person1Label: '親',
+    person2Label: '子',
+  },
+  {
+    label: '夫婦',
+    value: RelationType.MARRIED_COUPLE,
+    person1Label: '夫',
+    person2Label: '妻',
+  },
+  {
+    label: '事実婚',
+    value: RelationType.COUPLE,
+    person1Label: '夫',
+    person2Label: '妻',
+  },
+];
 
 export const relationSchema = z.object({
   id: z.string().uuid()
     .describe('ID'),
-  relationType: relationTypeSchema,
-  personId1: z.string().uuid()
-    .describe('人物1'),
-  personId2: z.string().uuid()
-    .describe('人物2'),
+  relationType: z.array(
+    z.enum(Object.values(RelationType) as [string, ...string[]]),
+  ).max(1)
+    .describe('関係性タイプ'),
+  persons: z.object({
+    personId1: z.array(
+      z.string().uuid(),
+    ).max(1)
+      .describe('人物1'),
+    personId2: z.array(
+      z.string().uuid(),
+    ).max(1)
+      .describe('人物2'),
+  }).refine((val) => {
+    const { personId1, personId2 } = val;
+    return personId1.length !== personId2.length || personId1.length === 0 || personId1[0] !== personId2[0];
+  }, {
+    message: '同じ人物を指定することはできません。',
+  }),
 });
 
 export type Relation = z.infer<typeof relationSchema>;
