@@ -1,10 +1,10 @@
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
-import { type Person, personSchema } from '@/schemas/personSchema';
+import { type Person, personSchema, sex, Sex } from '@/schemas/personSchema';
 import { usePeopleStore } from '@/store/personStore';
-import { Button, CloseButton, Dialog, Field, Flex, Input, Portal } from '@chakra-ui/react';
+import { Button, CloseButton, Dialog, Field, Flex, Input, Portal, RadioGroup } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
 interface AddPersonDialogProps {
@@ -26,11 +26,12 @@ export function AddPersonDialog({ isOpen, onOpenChange }: AddPersonDialogProps):
     givenName: '',
     familyNameKana: '',
     givenNameKana: '',
+    sex: Sex.UNKNOWN,
     birth: '',
     death: '',
     posthumousName: '',
   };
-  const { register, handleSubmit, formState: { errors } } = useForm<Person>({
+  const { control, register, handleSubmit, formState: { errors } } = useForm<Person>({
     defaultValues,
     resolver: zodResolver(personSchema),
   });
@@ -52,7 +53,10 @@ export function AddPersonDialog({ isOpen, onOpenChange }: AddPersonDialogProps):
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <Dialog.Body>
-                <Flex direction="column">
+                <Flex
+                  direction="column"
+                  gap={4}
+                >
                   <Field.Root invalid={Boolean(errors.familyName)}>
                     <Field.Label>姓</Field.Label>
 
@@ -95,6 +99,41 @@ export function AddPersonDialog({ isOpen, onOpenChange }: AddPersonDialogProps):
                     />
 
                     <Field.ErrorText>{errors.givenNameKana?.message}</Field.ErrorText>
+                  </Field.Root>
+
+                  <Field.Root invalid={Boolean(errors.sex)}>
+
+                    <Field.Label>性別</Field.Label>
+
+                    <Controller
+                      control={control}
+                      name="sex"
+                      render={({ field }) => (
+                        <RadioGroup.Root
+                          name={field.name}
+                          onValueChange={({ value }) => { field.onChange(value); }}
+                          value={field.value}
+                        >
+                          <Flex gap={2}>
+                            {sex.map((s) => (
+                              <RadioGroup.Item
+                                key={s.value}
+                                value={s.value}
+                              >
+                                <RadioGroup.ItemHiddenInput onBlur={field.onBlur} />
+                                <RadioGroup.ItemIndicator />
+
+                                <RadioGroup.ItemText>
+                                  {s.label}
+                                </RadioGroup.ItemText>
+                              </RadioGroup.Item>
+                            ))}
+                          </Flex>
+                        </RadioGroup.Root>
+                      )}
+                    />
+
+                    <Field.ErrorText>{errors.sex?.message}</Field.ErrorText>
                   </Field.Root>
 
                   <Field.Root invalid={Boolean(errors.birth)}>

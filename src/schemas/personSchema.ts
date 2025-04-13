@@ -1,5 +1,33 @@
 import { z } from 'zod';
 
+export const Sex = {
+  MALE: 'male',
+  FEMALE: 'female',
+  OTHER: 'other',
+  UNKNOWN: 'unknown',
+} as const;
+
+export type Sex = typeof Sex[keyof typeof Sex];
+
+export const sex = [
+  {
+    label: '男性',
+    value: Sex.MALE,
+  },
+  {
+    label: '女性',
+    value: Sex.FEMALE,
+  },
+  {
+    label: 'その他',
+    value: Sex.OTHER,
+  },
+  {
+    label: '不明',
+    value: Sex.UNKNOWN,
+  },
+];
+
 export const personSchema = z.object({
   id: z.string().uuid()
     .describe('ID'),
@@ -11,6 +39,8 @@ export const personSchema = z.object({
     .describe('姓（カナ）'),
   givenNameKana: z.string().min(1)
     .describe('名（カナ）'),
+  sex: z.enum(Object.values(Sex) as [string, ...string[]])
+    .describe('性別'),
   birth: z.union([
     z.string().date(),
     z.literal(''),
