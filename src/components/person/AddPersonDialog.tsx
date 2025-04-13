@@ -1,6 +1,6 @@
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { toaster } from '@/components/ui/toaster';
-import { type Person, personSchema, sex, Sex } from '@/schemas/personSchema';
+import { type Person, personSchema, Sex, sexList } from '@/schemas/personSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { Button, CloseButton, Dialog, Field, Flex, Input, Portal, RadioGroup } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -121,16 +121,16 @@ export function AddPersonDialog({ isOpen, onOpenChange }: AddPersonDialogProps):
                           value={field.value}
                         >
                           <Flex gap={2}>
-                            {sex.map((s) => (
+                            {sexList.map((sex) => (
                               <RadioGroup.Item
-                                key={s.value}
-                                value={s.value}
+                                key={sex.value}
+                                value={sex.value}
                               >
                                 <RadioGroup.ItemHiddenInput onBlur={field.onBlur} />
                                 <RadioGroup.ItemIndicator />
 
                                 <RadioGroup.ItemText>
-                                  {s.label}
+                                  {sex.label}
                                 </RadioGroup.ItemText>
                               </RadioGroup.Item>
                             ))}

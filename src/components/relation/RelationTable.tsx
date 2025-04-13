@@ -2,7 +2,7 @@ import { AddRelationDialog } from '@/components/relation/AddRelationDialog';
 import { H2 } from '@/components/ui/H2';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { type Person } from '@/schemas/personSchema';
-import { type Relation, type RelationType, relationTypes } from '@/schemas/relationSchema';
+import { type Relation, type RelationType, relationTypeList } from '@/schemas/relationSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
 import { Flex, Table } from '@chakra-ui/react';
@@ -12,7 +12,7 @@ export function RelationTable(): React.ReactNode {
   const people: Person[] = usePeopleStore((state) => state.people);
   const relations: Relation[] = useRelationStore((state) => state.relations);
   const [isOpen, setIsOpen] = React.useState(false);
-  const relationTypeLabelMap = new Map(relationTypes.map((relationType) => [relationType.value, relationType.label]));
+  const relationTypeLabelMap = new Map(relationTypeList.map((relationType) => [relationType.value, relationType.label]));
 
   return (
     <Flex direction="column">

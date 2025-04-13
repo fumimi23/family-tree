@@ -9,7 +9,7 @@ export const Sex = {
 
 export type Sex = typeof Sex[keyof typeof Sex];
 
-export const sex = [
+export const sexList = [
   {
     label: '男性',
     value: Sex.MALE,

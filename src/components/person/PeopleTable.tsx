@@ -1,7 +1,7 @@
 import { AddPersonDialog } from '@/components/person/AddPersonDialog';
 import { H2 } from '@/components/ui/H2';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
-import { type Person } from '@/schemas/personSchema';
+import { type Person, sexList } from '@/schemas/personSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { Flex, Table } from '@chakra-ui/react';
 import React from 'react';
@@ -45,7 +45,7 @@ export function PeopleTable(): React.ReactNode {
               <Table.Cell>{person.givenName}</Table.Cell>
               <Table.Cell>{person.familyNameKana}</Table.Cell>
               <Table.Cell>{person.givenNameKana}</Table.Cell>
-              <Table.Cell>{person.sex}</Table.Cell>
+              <Table.Cell>{sexList.find((sex) => sex.value === person.sex)?.label ?? '不明'}</Table.Cell>
               <Table.Cell>{person.birth}</Table.Cell>
               <Table.Cell>{person.death}</Table.Cell>
               <Table.Cell>{person.posthumousName}</Table.Cell>

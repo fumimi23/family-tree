@@ -1,7 +1,7 @@
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { toaster } from '@/components/ui/toaster';
 import { type Person } from '@/schemas/personSchema';
-import { type Relation, relationSchema, relationTypes } from '@/schemas/relationSchema';
+import { type Relation, relationSchema, relationTypeList } from '@/schemas/relationSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
 import { Button, CloseButton, createListCollection, Dialog, Field, Flex, Portal, Select } from '@chakra-ui/react';
@@ -32,7 +32,7 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
     resolver: zodResolver(relationSchema),
   });
 
-  const relationTypeCollection = createListCollection({ items: relationTypes });
+  const relationTypeCollection = createListCollection({ items: relationTypeList });
 
   const personCollection = createListCollection({
     items: people.map((person) => ({
@@ -41,7 +41,7 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
     })),
   });
 
-  const selectedRelationType = relationTypes.find((relationType) => Boolean(watch('relationType').find((value) => value === relationType.value)));
+  const selectedRelationType = relationTypeList.find((relationType) => Boolean(watch('relationType').find((value) => value === relationType.value)));
 
   const onSubmit = (relation: Relation): void => {
     console.log(relation);
