@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const RelationType = {
   PARENT_CHILD: 'parent-child',
+  PARENT_ADOPTED_CHILD: 'parent-adopted-child',
   MARRIED_COUPLE: 'married-couple',
   COUPLE: 'couple',
 } as const;
@@ -10,10 +11,16 @@ export type RelationType = typeof RelationType[keyof typeof RelationType];
 
 export const relationTypeList = [
   {
-    label: '親子',
+    label: '親子(実子)',
     value: RelationType.PARENT_CHILD,
     person1Label: '親',
-    person2Label: '子',
+    person2Label: '実子',
+  },
+  {
+    label: '親子(養子)',
+    value: RelationType.PARENT_ADOPTED_CHILD,
+    person1Label: '親',
+    person2Label: '養子',
   },
   {
     label: '夫婦',

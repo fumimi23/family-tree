@@ -22,7 +22,8 @@
 - ID
   - uuidv4
 - 関係タイプ
-  - parent‐child: 親子
+  - parent‐child: 親子(実子)
+  - parent-adopted‐child: 親子(養子)
   - married-couple: 夫婦
   - couple: 事実婚
 - 人ID1
