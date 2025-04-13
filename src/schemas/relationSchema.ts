@@ -8,7 +8,7 @@ export const RelationType = {
 
 export type RelationType = typeof RelationType[keyof typeof RelationType];
 
-export const relationTypes = [
+export const relationTypeList = [
   {
     label: '親子',
     value: RelationType.PARENT_CHILD,
