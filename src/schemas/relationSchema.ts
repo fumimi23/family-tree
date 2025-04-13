@@ -35,7 +35,7 @@ export const relationSchema = z.object({
   relationType: z.array(
     z.enum(Object.values(RelationType) as [string, ...string[]]),
   ).max(1)
-    .describe('関係性タイプ'),
+    .describe('関係タイプ'),
   persons: z.object({
     personId1: z.array(
       z.string().uuid(),

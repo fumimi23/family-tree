@@ -31,6 +31,7 @@ export function PeopleTable(): React.ReactNode {
             <Table.ColumnHeader>名</Table.ColumnHeader>
             <Table.ColumnHeader>姓（カナ）</Table.ColumnHeader>
             <Table.ColumnHeader>名（カナ）</Table.ColumnHeader>
+            <Table.ColumnHeader>性別</Table.ColumnHeader>
             <Table.ColumnHeader>生年月日</Table.ColumnHeader>
             <Table.ColumnHeader>没年月日</Table.ColumnHeader>
             <Table.ColumnHeader>戒名</Table.ColumnHeader>
@@ -44,6 +45,7 @@ export function PeopleTable(): React.ReactNode {
               <Table.Cell>{person.givenName}</Table.Cell>
               <Table.Cell>{person.familyNameKana}</Table.Cell>
               <Table.Cell>{person.givenNameKana}</Table.Cell>
+              <Table.Cell>{person.sex}</Table.Cell>
               <Table.Cell>{person.birth}</Table.Cell>
               <Table.Cell>{person.death}</Table.Cell>
               <Table.Cell>{person.posthumousName}</Table.Cell>
@@ -54,7 +56,7 @@ export function PeopleTable(): React.ReactNode {
 
       <AddPersonDialog
         isOpen={isOpen}
-        key={isOpen}
+        key={isOpen.toString()}
         onOpenChange={(e) => { setIsOpen(e.open); }}
       />
     </Flex>
