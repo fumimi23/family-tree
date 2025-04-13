@@ -1,4 +1,5 @@
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { toaster } from '@/components/ui/toaster';
 import { type Person } from '@/schemas/personSchema';
 import { type Relation, relationSchema, relationTypes } from '@/schemas/relationSchema';
 import { usePeopleStore } from '@/store/personStore';
@@ -17,11 +18,6 @@ interface AddRelationDialogProps {
 export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogProps): React.ReactNode {
   const people: Person[] = usePeopleStore((state) => state.people);
   const addRelation = useRelationStore((state) => state.addRelation);
-  const onSubmit = (relation: Relation): void => {
-    console.log(relation);
-    addRelation(relation);
-    onOpenChange({ open: false });
-  };
 
   const defaultValues: Relation = {
     id: uuidv4(),
@@ -46,6 +42,17 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
   });
 
   const selectedRelationType = relationTypes.find((relationType) => Boolean(watch('relationType').find((value) => value === relationType.value)));
+
+  const onSubmit = (relation: Relation): void => {
+    console.log(relation);
+    addRelation(relation);
+    onOpenChange({ open: false });
+    toaster.create({
+      title: '関係を追加しました。',
+      description: `${selectedRelationType?.label ?? ''}関係を追加しました。`,
+      type: 'success',
+    });
+  };
 
   return (
     <Dialog.Root
