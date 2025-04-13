@@ -4,6 +4,7 @@ import { RelationTable } from '@/components/relation/RelationTable';
 import { H1 } from '@/components/ui/H1';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { PrimaryLink } from '@/components/ui/PrimaryLink';
+import { toaster, Toaster } from '@/components/ui/toaster';
 import { importJsonSchema } from '@/schemas/importJsonSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
@@ -32,10 +33,20 @@ function App(): React.ReactNode {
       try {
         if (!event.target) {
           console.error('ファイルの読み込みに失敗しました。');
+          toaster.create({
+            title: 'インポートに失敗しました。',
+            description: 'ファイルの読み込みに失敗しました。',
+            type: 'error',
+          });
           return;
         }
         if (event.target.result === null || event.target.result === '') {
-          console.error('ファイルの内容が空です。');
+          console.error('ファイルが空です。');
+          toaster.create({
+            title: 'インポートに失敗しました。',
+            description: 'ファイルが空です。',
+            type: 'error',
+          });
           return;
         }
         const jsonString = event.target.result as string;
@@ -43,8 +54,18 @@ function App(): React.ReactNode {
         const { people: newPeople, relations: newRelations } = jsonData;
         usePeopleStore.setState({ people: newPeople });
         useRelationStore.setState({ relations: newRelations });
+        toaster.create({
+          title: 'インポートに成功しました。',
+          description: 'データの読み込みに成功しました。',
+          type: 'success',
+        });
       } catch (error) {
-        console.error('JSONの読み込みに失敗しました。', error);
+        console.error('データの読み込みに失敗しました。', error);
+        toaster.create({
+          title: 'インポートに失敗しました。',
+          description: 'データの読み込みに失敗しました。',
+          type: 'error',
+        });
       }
     };
     reader.readAsText(file);
@@ -102,6 +123,8 @@ function App(): React.ReactNode {
         ref={inputRef}
         type="file"
       />
+
+      <Toaster />
     </>
   );
 }

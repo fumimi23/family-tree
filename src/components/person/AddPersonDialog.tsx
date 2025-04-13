@@ -1,4 +1,5 @@
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { toaster } from '@/components/ui/toaster';
 import { type Person, personSchema, sex, Sex } from '@/schemas/personSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { Button, CloseButton, Dialog, Field, Flex, Input, Portal, RadioGroup } from '@chakra-ui/react';
@@ -18,6 +19,11 @@ export function AddPersonDialog({ isOpen, onOpenChange }: AddPersonDialogProps):
     console.log(person);
     addPerson(person);
     onOpenChange({ open: false });
+    toaster.create({
+      title: '人物を追加しました。',
+      description: `${person.familyName} ${person.givenName}さんを追加しました。`,
+      type: 'success',
+    });
   };
 
   const defaultValues: Person = {
