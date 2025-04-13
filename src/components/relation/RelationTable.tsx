@@ -13,6 +13,7 @@ export function RelationTable(): React.ReactNode {
   const relations: Relation[] = useRelationStore((state) => state.relations);
   const [isOpen, setIsOpen] = React.useState(false);
   const relationTypeLabelMap = new Map(relationTypeList.map((relationType) => [relationType.value, relationType.label]));
+  const personLabelMap = new Map(people.map((person) => [person.id, `${person.familyName} ${person.givenName}`]));
 
   return (
     <Flex direction="column">
@@ -39,23 +40,10 @@ export function RelationTable(): React.ReactNode {
 
         <Table.Body>
           {relations.map((relation) => {
-            const person1 = people.find((person) => person.id === relation.persons.personId1[0]);
-            const person2 = people.find((person) => person.id === relation.persons.personId2[0]);
-
             return (
               <Table.Row key={relation.id}>
-                <Table.Cell>
-                  {person1?.familyName}
-                  {' '}
-                  {person1?.givenName}
-                </Table.Cell>
-
-                <Table.Cell>
-                  {person2?.familyName}
-                  {' '}
-                  {person2?.givenName}
-                </Table.Cell>
-
+                <Table.Cell>{personLabelMap.get(relation.persons.personId1[0])}</Table.Cell>
+                <Table.Cell>{personLabelMap.get(relation.persons.personId2[0])}</Table.Cell>
                 <Table.Cell>{relationTypeLabelMap.get(relation.relationType[0] as RelationType)}</Table.Cell>
               </Table.Row>
             );
