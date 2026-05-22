@@ -18,6 +18,21 @@ import { type FamilyTreeLayout } from '@/components/familyTree/types';
 import { type Person } from '@/schemas/personSchema';
 import { type Relation } from '@/schemas/relationSchema';
 
+function filterRelationsWithExistingPersons(
+  people: Person[],
+  relations: Relation[],
+): Relation[] {
+  const ids = new Set(people.map((p) => p.id));
+  return relations.filter((r) => {
+    if (r.persons.personId1.length === 0 || r.persons.personId2.length === 0) {
+      return false;
+    }
+    const p1 = r.persons.personId1[0];
+    const p2 = r.persons.personId2[0];
+    return ids.has(p1) && ids.has(p2);
+  });
+}
+
 function emptyLayout(): FamilyTreeLayout {
   return {
     nodes: [],
@@ -70,11 +85,12 @@ export function layoutFamilyTree(
   if (people.length === 0) {
     return emptyLayout();
   }
+  const validRelations = filterRelationsWithExistingPersons(people, relations);
   const unitOfPerson = new Map<string, string>();
-  const coupleUnits = buildCoupleUnits(relations, unitOfPerson);
+  const coupleUnits = buildCoupleUnits(validRelations, unitOfPerson);
   const singleUnits = buildSingleUnits(people, unitOfPerson);
   const allUnits = [...coupleUnits, ...singleUnits];
-  const childToParents = buildChildToParents(relations);
+  const childToParents = buildChildToParents(validRelations);
   assignUnitGenerations(allUnits, childToParents);
   const { unitMap, ctx } = createContext(allUnits);
   ctx.childToParents = childToParents;
