@@ -1,4 +1,5 @@
 import '@/App.css';
+import { FamilyTree } from '@/components/familyTree/FamilyTree';
 import { PeopleTable } from '@/components/person/PeopleTable';
 import { RelationTable } from '@/components/relation/RelationTable';
 import { H1 } from '@/components/ui/H1';
@@ -112,6 +113,10 @@ function App(): React.ReactNode {
 
         <GridItem colSpan={1}>
           <RelationTable />
+        </GridItem>
+
+        <GridItem colSpan={2}>
+          <FamilyTree />
         </GridItem>
 
       </Grid>
