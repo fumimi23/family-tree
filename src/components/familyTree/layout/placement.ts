@@ -1,3 +1,4 @@
+import { computeParentAnchor } from '@/components/familyTree/layout/edgeAnchor';
 import {
   COUPLE_GAP,
   GENERATION_GAP,
@@ -86,23 +87,16 @@ function emitParentGroup(
   childIds: string[],
   ctx: PlacementCtx,
 ): void {
-  const isCouple = parentUnit.type === 'couple';
-  const parentAnchorX = isCouple
-    ? unitLeftX + PERSON_WIDTH + (COUPLE_GAP / 2)
-    : unitLeftX + (PERSON_WIDTH / 2);
-  const parentAnchorY = isCouple
-    ? unitY + (PERSON_HEIGHT / 2)
-    : unitY + PERSON_HEIGHT;
-  const busY = unitY + PERSON_HEIGHT + (GENERATION_GAP / 2);
+  const anchor = computeParentAnchor(parentUnit.type, unitLeftX, unitY);
   const children = buildChildLinks(parentUnit, childIds, ctx);
   if (children.length === 0) {
     return;
   }
   ctx.parentGroups.push({
     id: parentUnit.id,
-    parentAnchorX,
-    parentAnchorY,
-    busY,
+    parentAnchorX: anchor.x,
+    parentAnchorY: anchor.y,
+    busY: anchor.busY,
     children,
   });
 }
