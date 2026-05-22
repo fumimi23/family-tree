@@ -11,6 +11,8 @@ interface Props {
 const NAME_Y_RATIO = 0.29;
 const DATE_Y_RATIO = 0.55;
 const POSTHUMOUS_Y_RATIO = 0.79;
+const DECEASED_RECT_OPACITY = 0.45;
+const DECEASED_TEXT_OPACITY = 0.75;
 
 function yearOf(date: string): string {
   return date === '' ? '' : date.slice(0, 4);
@@ -44,6 +46,9 @@ export function PersonNode({ node, person }: Props): React.ReactNode {
   const fullName = `${person.familyName} ${person.givenName}`;
   const dateText = buildDateText(person.birth, person.death);
   const posthumousName = (person.posthumousName ?? '').trim();
+  const isDeceased = person.death !== '';
+  const rectOpacity = isDeceased ? DECEASED_RECT_OPACITY : 1;
+  const textOpacity = isDeceased ? DECEASED_TEXT_OPACITY : 1;
   const transform = `translate(${node.x.toString()}, ${node.y.toString()})`;
   const centerX = node.width / 2;
   const nameY = node.height * NAME_Y_RATIO;
@@ -53,15 +58,18 @@ export function PersonNode({ node, person }: Props): React.ReactNode {
     <g transform={transform}>
       <rect
         fill={fill}
+        fillOpacity={rectOpacity}
         height={node.height}
         rx={4}
         stroke={theme.nodeStroke}
+        strokeOpacity={rectOpacity}
         strokeWidth={1}
         width={node.width}
       />
 
       <text
         fill={theme.nameFill}
+        fillOpacity={textOpacity}
         fontSize={14}
         fontWeight={600}
         textAnchor="middle"
@@ -76,6 +84,7 @@ export function PersonNode({ node, person }: Props): React.ReactNode {
         : (
           <text
             fill={theme.dateFill}
+            fillOpacity={textOpacity}
             fontSize={11}
             textAnchor="middle"
             x={centerX}
@@ -90,6 +99,7 @@ export function PersonNode({ node, person }: Props): React.ReactNode {
         : (
           <text
             fill={theme.dateFill}
+            fillOpacity={textOpacity}
             fontSize={10}
             textAnchor="middle"
             x={centerX}
