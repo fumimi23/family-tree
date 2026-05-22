@@ -84,7 +84,7 @@ function App(): React.ReactNode {
     <>
       <Grid
         gap={4}
-        templateColumns="repeat(2, 1fr)"
+        templateColumns="repeat(2, minmax(0, 1fr))"
       >
         <GridItem colSpan={2}>
           <Flex justifyContent="space-between">

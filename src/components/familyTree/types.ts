@@ -32,10 +32,17 @@ export interface ParentChildrenGroupLayout {
   children: ChildLinkLayout[];
 }
 
+export interface GenerationRowLayout {
+  generation: number;
+  y: number;
+  height: number;
+}
+
 export interface FamilyTreeLayout {
   nodes: PersonNodeLayout[];
   marriageEdges: MarriageEdgeLayout[];
   parentGroups: ParentChildrenGroupLayout[];
+  generationRows: GenerationRowLayout[];
   width: number;
   height: number;
 }

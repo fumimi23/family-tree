@@ -15,7 +15,10 @@ import { computeOwnership } from '@/components/familyTree/layout/ownership';
 import { placeUnit } from '@/components/familyTree/layout/placement';
 import { sortChildrenByBirth } from '@/components/familyTree/layout/sortChildren';
 import { computeSubtreeWidth } from '@/components/familyTree/layout/subtreeWidth';
-import { type FamilyTreeLayout } from '@/components/familyTree/types';
+import {
+  type FamilyTreeLayout,
+  type GenerationRowLayout,
+} from '@/components/familyTree/types';
 import { type Person } from '@/schemas/personSchema';
 import { type Relation } from '@/schemas/relationSchema';
 
@@ -39,9 +42,26 @@ function emptyLayout(): FamilyTreeLayout {
     nodes: [],
     marriageEdges: [],
     parentGroups: [],
+    generationRows: [],
     width: 0,
     height: 0,
   };
+}
+
+function buildGenerationRows(ctx: PlacementCtx): GenerationRowLayout[] {
+  const heightByY = new Map<number, number>();
+  for (const node of ctx.nodes) {
+    const current = heightByY.get(node.y) ?? 0;
+    if (node.height > current) {
+      heightByY.set(node.y, node.height);
+    }
+  }
+  const ys = Array.from(heightByY.keys()).sort((a, b) => a - b);
+  return ys.map((y, generation) => ({
+    generation,
+    y,
+    height: heightByY.get(y) ?? 0,
+  }));
 }
 
 function buildResult(ctx: PlacementCtx, totalRightX: number): FamilyTreeLayout {
@@ -53,6 +73,7 @@ function buildResult(ctx: PlacementCtx, totalRightX: number): FamilyTreeLayout {
     nodes: ctx.nodes,
     marriageEdges: ctx.marriageEdges,
     parentGroups: ctx.parentGroups,
+    generationRows: buildGenerationRows(ctx),
     width: (totalRightX - UNIT_GAP) + PADDING,
     height: maxBottom + PADDING,
   };
