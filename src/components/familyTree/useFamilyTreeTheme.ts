@@ -6,7 +6,7 @@ export interface FamilyTreeTheme {
   nodeStroke: string;
   nameFill: string;
   dateFill: string;
-  sexFill: Record<string, string>;
+  sexFill: Record<Sex, string>;
 }
 
 const LIGHT_THEME: FamilyTreeTheme = {

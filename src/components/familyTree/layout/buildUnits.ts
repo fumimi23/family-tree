@@ -14,6 +14,9 @@ export function buildCoupleUnits(
     if (!isMarried && !isCouple) {
       continue;
     }
+    if (rel.persons.personId1.length === 0 || rel.persons.personId2.length === 0) {
+      continue;
+    }
     const p1 = rel.persons.personId1[0];
     const p2 = rel.persons.personId2[0];
     if (unitOfPerson.has(p1) || unitOfPerson.has(p2)) {
@@ -66,6 +69,9 @@ export function buildChildToParents(
     const isParent = type === RelationType.PARENT_CHILD;
     const isAdopted = type === RelationType.PARENT_ADOPTED_CHILD;
     if (!isParent && !isAdopted) {
+      continue;
+    }
+    if (rel.persons.personId1.length === 0 || rel.persons.personId2.length === 0) {
       continue;
     }
     const parent = rel.persons.personId1[0];

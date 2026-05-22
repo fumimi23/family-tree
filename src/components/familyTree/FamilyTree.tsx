@@ -9,11 +9,17 @@ import { useRelationStore } from '@/store/relationStore';
 import { Box, Flex, Text } from '@chakra-ui/react';
 import React from 'react';
 
-type LayoutResult =
-  | { ok: false;
-    error: string; }
-    | { ok: true;
-      layout: ReturnType<typeof layoutFamilyTree>; };
+interface LayoutSuccess {
+  ok: true;
+  layout: ReturnType<typeof layoutFamilyTree>;
+}
+
+interface LayoutFailure {
+  ok: false;
+  error: string;
+}
+
+type LayoutResult = LayoutFailure | LayoutSuccess;
 
 export function FamilyTree(): React.ReactNode {
   const people = usePeopleStore((state) => state.people);
@@ -24,12 +30,16 @@ export function FamilyTree(): React.ReactNode {
   );
   const result = React.useMemo<LayoutResult>(() => {
     try {
-      return { ok: true,
-        layout: layoutFamilyTree(people, relations) };
+      return {
+        ok: true,
+        layout: layoutFamilyTree(people, relations),
+      };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      return { ok: false,
-        error: message };
+      return {
+        ok: false,
+        error: message,
+      };
     }
   }, [people, relations]);
 
