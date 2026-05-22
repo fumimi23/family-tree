@@ -13,6 +13,7 @@ import {
 } from '@/components/familyTree/layout/internalTypes';
 import { computeOwnership } from '@/components/familyTree/layout/ownership';
 import { placeUnit } from '@/components/familyTree/layout/placement';
+import { buildSecondaryParentEdges } from '@/components/familyTree/layout/secondaryParents';
 import { sortChildrenByBirth } from '@/components/familyTree/layout/sortChildren';
 import { computeSubtreeWidth } from '@/components/familyTree/layout/subtreeWidth';
 import {
@@ -42,6 +43,7 @@ function emptyLayout(): FamilyTreeLayout {
     nodes: [],
     marriageEdges: [],
     parentGroups: [],
+    secondaryParentEdges: [],
     generationRows: [],
     width: 0,
     height: 0,
@@ -73,6 +75,7 @@ function buildResult(ctx: PlacementCtx, totalRightX: number): FamilyTreeLayout {
     nodes: ctx.nodes,
     marriageEdges: ctx.marriageEdges,
     parentGroups: ctx.parentGroups,
+    secondaryParentEdges: ctx.secondaryParentEdges,
     generationRows: buildGenerationRows(ctx),
     width: (totalRightX - UNIT_GAP) + PADDING,
     height: maxBottom + PADDING,
@@ -87,12 +90,14 @@ function createContext(units: Unit[]): {
   const ctx: PlacementCtx = {
     unitMap,
     childrenOfUnit: new Map(),
+    secondaryParentsOfUnit: new Map(),
     subtreeWidths: new Map(),
     childToParents: new Map(),
     showFamilyNameMap: new Map(),
     nodes: [],
     marriageEdges: [],
     parentGroups: [],
+    secondaryParentEdges: [],
     personPositions: new Map(),
   };
   return {
@@ -120,6 +125,7 @@ export function layoutFamilyTree(
   ctx.showFamilyNameMap = computeShowFamilyNameMap(people, childToParents);
   const ownership = computeOwnership(allUnits, unitOfPerson, childToParents);
   ctx.childrenOfUnit = ownership.childrenOfUnit;
+  ctx.secondaryParentsOfUnit = ownership.secondaryParentsOfUnit;
   const personMap = new Map(people.map((p) => [p.id, p]));
   sortChildrenByBirth(ctx.childrenOfUnit, unitMap, childToParents, personMap);
   for (const rootId of ownership.rootUnitIds) {
@@ -130,5 +136,6 @@ export function layoutFamilyTree(
     placeUnit(rootId, leftX, ctx);
     leftX += (ctx.subtreeWidths.get(rootId) ?? 0) + UNIT_GAP;
   }
+  ctx.secondaryParentEdges = buildSecondaryParentEdges(ctx);
   return buildResult(ctx, leftX);
 }
