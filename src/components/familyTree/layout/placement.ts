@@ -26,6 +26,7 @@ function placeUnitPersons(
       y: unitY,
       width: PERSON_WIDTH,
       height: PERSON_HEIGHT,
+      showFamilyName: ctx.showFamilyNameMap.get(pid) ?? true,
     });
     ctx.personPositions.set(pid, {
       x: px,

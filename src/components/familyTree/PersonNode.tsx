@@ -43,7 +43,9 @@ function buildDateText(birth: string, death: string): string {
 export function PersonNode({ node, person }: Props): React.ReactNode {
   const theme = useFamilyTreeTheme();
   const fill = theme.sexFill[toSex(person.sex)];
-  const fullName = `${person.familyName} ${person.givenName}`;
+  const fullName = node.showFamilyName
+    ? `${person.familyName} ${person.givenName}`
+    : person.givenName;
   const dateText = buildDateText(person.birth, person.death);
   const posthumousName = (person.posthumousName ?? '').trim();
   const isDeceased = person.death !== '';

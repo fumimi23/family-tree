@@ -6,6 +6,7 @@ export interface PersonNodeLayout {
   y: number;
   width: number;
   height: number;
+  showFamilyName: boolean;
 }
 
 export interface MarriageEdgeLayout {
