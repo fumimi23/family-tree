@@ -2,6 +2,7 @@ import { layoutFamilyTree } from '@/components/familyTree/layoutFamilyTree';
 import { MarriageEdge } from '@/components/familyTree/MarriageEdge';
 import { ParentChildEdge } from '@/components/familyTree/ParentChildEdge';
 import { PersonNode } from '@/components/familyTree/PersonNode';
+import { SecondaryParentEdge } from '@/components/familyTree/SecondaryParentEdge';
 import { H2 } from '@/components/ui/H2';
 import { type Person } from '@/schemas/personSchema';
 import { usePeopleStore } from '@/store/personStore';
@@ -111,6 +112,13 @@ export function FamilyTree(): React.ReactNode {
                     <ParentChildEdge
                       group={group}
                       key={group.id}
+                    />
+                  ))}
+
+                  {result.layout.secondaryParentEdges.map((edge) => (
+                    <SecondaryParentEdge
+                      edge={edge}
+                      key={edge.id}
                     />
                   ))}
 
