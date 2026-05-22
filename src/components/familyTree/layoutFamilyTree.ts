@@ -7,7 +7,6 @@ import { computeShowFamilyNameMap } from '@/components/familyTree/layout/familyN
 import { assignUnitGenerations } from '@/components/familyTree/layout/generations';
 import {
   PADDING,
-  PERSON_HEIGHT,
   type PlacementCtx,
   type Unit,
   UNIT_GAP,
@@ -50,13 +49,18 @@ function emptyLayout(): FamilyTreeLayout {
 }
 
 function buildGenerationRows(ctx: PlacementCtx): GenerationRowLayout[] {
-  const ys = Array.from(new Set(ctx.nodes.map((n) => n.y))).sort(
-    (a, b) => a - b,
-  );
-  return ys.map((y, index) => ({
-    index,
+  const heightByY = new Map<number, number>();
+  for (const node of ctx.nodes) {
+    const current = heightByY.get(node.y) ?? 0;
+    if (node.height > current) {
+      heightByY.set(node.y, node.height);
+    }
+  }
+  const ys = Array.from(heightByY.keys()).sort((a, b) => a - b);
+  return ys.map((y, generation) => ({
+    generation,
     y,
-    height: PERSON_HEIGHT,
+    height: heightByY.get(y) ?? 0,
   }));
 }
 

@@ -33,7 +33,7 @@ export interface ParentChildrenGroupLayout {
 }
 
 export interface GenerationRowLayout {
-  index: number;
+  generation: number;
   y: number;
   height: number;
 }

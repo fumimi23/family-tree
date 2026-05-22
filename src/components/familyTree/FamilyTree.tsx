@@ -96,7 +96,7 @@ export function FamilyTree(): React.ReactNode {
                       color="fg.muted"
                       fontSize="xs"
                     >
-                      第{(row.index + 1).toString()}世代
+                      第{(row.generation + 1).toString()}世代
                     </Text>
                   </Box>
                 ))}
