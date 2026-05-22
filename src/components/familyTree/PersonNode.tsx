@@ -11,6 +11,7 @@ interface Props {
 const NAME_Y_RATIO = 0.29;
 const DATE_Y_RATIO = 0.55;
 const POSTHUMOUS_Y_RATIO = 0.79;
+const DECEASED_OPACITY = 0.55;
 
 function yearOf(date: string): string {
   return date === '' ? '' : date.slice(0, 4);
@@ -44,13 +45,17 @@ export function PersonNode({ node, person }: Props): React.ReactNode {
   const fullName = `${person.familyName} ${person.givenName}`;
   const dateText = buildDateText(person.birth, person.death);
   const posthumousName = (person.posthumousName ?? '').trim();
+  const isDeceased = person.death !== '';
   const transform = `translate(${node.x.toString()}, ${node.y.toString()})`;
   const centerX = node.width / 2;
   const nameY = node.height * NAME_Y_RATIO;
   const dateY = node.height * DATE_Y_RATIO;
   const posthumousY = node.height * POSTHUMOUS_Y_RATIO;
   return (
-    <g transform={transform}>
+    <g
+      opacity={isDeceased ? DECEASED_OPACITY : 1}
+      transform={transform}
+    >
       <rect
         fill={fill}
         height={node.height}
