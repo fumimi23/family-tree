@@ -7,6 +7,7 @@ import { computeShowFamilyNameMap } from '@/components/familyTree/layout/familyN
 import { assignUnitGenerations } from '@/components/familyTree/layout/generations';
 import {
   PADDING,
+  PERSON_HEIGHT,
   type PlacementCtx,
   type Unit,
   UNIT_GAP,
@@ -15,7 +16,10 @@ import { computeOwnership } from '@/components/familyTree/layout/ownership';
 import { placeUnit } from '@/components/familyTree/layout/placement';
 import { sortChildrenByBirth } from '@/components/familyTree/layout/sortChildren';
 import { computeSubtreeWidth } from '@/components/familyTree/layout/subtreeWidth';
-import { type FamilyTreeLayout } from '@/components/familyTree/types';
+import {
+  type FamilyTreeLayout,
+  type GenerationRowLayout,
+} from '@/components/familyTree/types';
 import { type Person } from '@/schemas/personSchema';
 import { type Relation } from '@/schemas/relationSchema';
 
@@ -39,9 +43,21 @@ function emptyLayout(): FamilyTreeLayout {
     nodes: [],
     marriageEdges: [],
     parentGroups: [],
+    generationRows: [],
     width: 0,
     height: 0,
   };
+}
+
+function buildGenerationRows(ctx: PlacementCtx): GenerationRowLayout[] {
+  const ys = Array.from(new Set(ctx.nodes.map((n) => n.y))).sort(
+    (a, b) => a - b,
+  );
+  return ys.map((y, index) => ({
+    index,
+    y,
+    height: PERSON_HEIGHT,
+  }));
 }
 
 function buildResult(ctx: PlacementCtx, totalRightX: number): FamilyTreeLayout {
@@ -53,6 +69,7 @@ function buildResult(ctx: PlacementCtx, totalRightX: number): FamilyTreeLayout {
     nodes: ctx.nodes,
     marriageEdges: ctx.marriageEdges,
     parentGroups: ctx.parentGroups,
+    generationRows: buildGenerationRows(ctx),
     width: (totalRightX - UNIT_GAP) + PADDING,
     height: maxBottom + PADDING,
   };

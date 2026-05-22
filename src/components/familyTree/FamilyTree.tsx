@@ -70,38 +70,73 @@ export function FamilyTree(): React.ReactNode {
       {result.ok && people.length > 0
         ? (
           <Box overflowX="auto">
-            <svg
-              height={result.layout.height}
-              width={result.layout.width}
-            >
-              {result.layout.parentGroups.map((group) => (
-                <ParentChildEdge
-                  group={group}
-                  key={group.id}
-                />
-              ))}
+            <Flex>
+              <Box
+                bg="bg"
+                flexShrink={0}
+                height={`${result.layout.height.toString()}px`}
+                left={0}
+                position="sticky"
+                width="64px"
+                zIndex={1}
+              >
+                {result.layout.generationRows.map((row) => (
+                  <Box
+                    alignItems="center"
+                    display="flex"
+                    height={`${row.height.toString()}px`}
+                    justifyContent="center"
+                    key={row.y}
+                    left={0}
+                    position="absolute"
+                    top={`${row.y.toString()}px`}
+                    width="100%"
+                  >
+                    <Text
+                      color="fg.muted"
+                      fontSize="xs"
+                    >
+                      第{(row.index + 1).toString()}世代
+                    </Text>
+                  </Box>
+                ))}
+              </Box>
 
-              {result.layout.marriageEdges.map((edge) => (
-                <MarriageEdge
-                  edge={edge}
-                  key={edge.id}
-                />
-              ))}
+              <Box flexShrink={0}>
+                <svg
+                  height={result.layout.height}
+                  width={result.layout.width}
+                >
+                  {result.layout.parentGroups.map((group) => (
+                    <ParentChildEdge
+                      group={group}
+                      key={group.id}
+                    />
+                  ))}
 
-              {result.layout.nodes.map((node) => {
-                const person = personMap.get(node.personId);
-                if (person === undefined) {
-                  return null;
-                }
-                return (
-                  <PersonNode
-                    key={node.personId}
-                    node={node}
-                    person={person}
-                  />
-                );
-              })}
-            </svg>
+                  {result.layout.marriageEdges.map((edge) => (
+                    <MarriageEdge
+                      edge={edge}
+                      key={edge.id}
+                    />
+                  ))}
+
+                  {result.layout.nodes.map((node) => {
+                    const person = personMap.get(node.personId);
+                    if (person === undefined) {
+                      return null;
+                    }
+                    return (
+                      <PersonNode
+                        key={node.personId}
+                        node={node}
+                        person={person}
+                      />
+                    );
+                  })}
+                </svg>
+              </Box>
+            </Flex>
           </Box>
         )
         : null}
