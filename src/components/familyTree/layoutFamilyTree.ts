@@ -3,6 +3,7 @@ import {
   buildCoupleUnits,
   buildSingleUnits,
 } from '@/components/familyTree/layout/buildUnits';
+import { computeShowFamilyNameMap } from '@/components/familyTree/layout/familyNameVisibility';
 import { assignUnitGenerations } from '@/components/familyTree/layout/generations';
 import {
   PADDING,
@@ -67,6 +68,7 @@ function createContext(units: Unit[]): {
     childrenOfUnit: new Map(),
     subtreeWidths: new Map(),
     childToParents: new Map(),
+    showFamilyNameMap: new Map(),
     nodes: [],
     marriageEdges: [],
     parentGroups: [],
@@ -94,6 +96,7 @@ export function layoutFamilyTree(
   assignUnitGenerations(allUnits, childToParents);
   const { unitMap, ctx } = createContext(allUnits);
   ctx.childToParents = childToParents;
+  ctx.showFamilyNameMap = computeShowFamilyNameMap(people, childToParents);
   const ownership = computeOwnership(allUnits, unitOfPerson, childToParents);
   ctx.childrenOfUnit = ownership.childrenOfUnit;
   const personMap = new Map(people.map((p) => [p.id, p]));

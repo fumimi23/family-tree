@@ -38,6 +38,7 @@ export interface PlacementCtx {
   childrenOfUnit: Map<string, string[]>;
   subtreeWidths: Map<string, number>;
   childToParents: Map<string, ParentLink[]>;
+  showFamilyNameMap: Map<string, boolean>;
   nodes: PersonNodeLayout[];
   marriageEdges: MarriageEdgeLayout[];
   parentGroups: ParentChildrenGroupLayout[];
