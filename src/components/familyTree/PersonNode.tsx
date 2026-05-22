@@ -39,10 +39,12 @@ export function PersonNode({ node, person }: Props): React.ReactNode {
   const fill = theme.sexFill[toSex(person.sex)];
   const fullName = `${person.familyName} ${person.givenName}`;
   const dateText = buildDateText(person.birth, person.death);
+  const posthumousName = person.posthumousName ?? '';
   const transform = `translate(${node.x.toString()}, ${node.y.toString()})`;
   const centerX = node.width / 2;
-  const nameY = (node.height / 2) - 4;
-  const dateY = (node.height / 2) + 14;
+  const nameY = 22;
+  const dateY = 42;
+  const posthumousY = 60;
   return (
     <g transform={transform}>
       <rect
@@ -76,6 +78,20 @@ export function PersonNode({ node, person }: Props): React.ReactNode {
             y={dateY}
           >
             {dateText}
+          </text>
+        )}
+
+      {posthumousName === ''
+        ? null
+        : (
+          <text
+            fill={theme.dateFill}
+            fontSize={10}
+            textAnchor="middle"
+            x={centerX}
+            y={posthumousY}
+          >
+            {posthumousName}
           </text>
         )}
     </g>
