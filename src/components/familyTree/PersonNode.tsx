@@ -8,6 +8,10 @@ interface Props {
   person: Person;
 }
 
+const NAME_Y_RATIO = 0.29;
+const DATE_Y_RATIO = 0.55;
+const POSTHUMOUS_Y_RATIO = 0.79;
+
 function yearOf(date: string): string {
   return date === '' ? '' : date.slice(0, 4);
 }
@@ -39,10 +43,12 @@ export function PersonNode({ node, person }: Props): React.ReactNode {
   const fill = theme.sexFill[toSex(person.sex)];
   const fullName = `${person.familyName} ${person.givenName}`;
   const dateText = buildDateText(person.birth, person.death);
+  const posthumousName = (person.posthumousName ?? '').trim();
   const transform = `translate(${node.x.toString()}, ${node.y.toString()})`;
   const centerX = node.width / 2;
-  const nameY = (node.height / 2) - 4;
-  const dateY = (node.height / 2) + 14;
+  const nameY = node.height * NAME_Y_RATIO;
+  const dateY = node.height * DATE_Y_RATIO;
+  const posthumousY = node.height * POSTHUMOUS_Y_RATIO;
   return (
     <g transform={transform}>
       <rect
@@ -76,6 +82,20 @@ export function PersonNode({ node, person }: Props): React.ReactNode {
             y={dateY}
           >
             {dateText}
+          </text>
+        )}
+
+      {posthumousName === ''
+        ? null
+        : (
+          <text
+            fill={theme.dateFill}
+            fontSize={10}
+            textAnchor="middle"
+            x={centerX}
+            y={posthumousY}
+          >
+            {posthumousName}
           </text>
         )}
     </g>

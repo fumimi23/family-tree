@@ -6,7 +6,7 @@ import {
 } from '@/components/familyTree/types';
 
 export const PERSON_WIDTH = 120;
-export const PERSON_HEIGHT = 64;
+export const PERSON_HEIGHT = 76;
 export const GENERATION_GAP = 80;
 export const UNIT_GAP = 32;
 export const COUPLE_GAP = 16;
