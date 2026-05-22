@@ -32,6 +32,16 @@ export interface ParentChildrenGroupLayout {
   children: ChildLinkLayout[];
 }
 
+export interface SecondaryParentEdgeLayout {
+  id: string;
+  parentAnchorX: number;
+  parentAnchorY: number;
+  busY: number;
+  childX: number;
+  childTopY: number;
+  adopted: boolean;
+}
+
 export interface GenerationRowLayout {
   generation: number;
   y: number;
@@ -42,6 +52,7 @@ export interface FamilyTreeLayout {
   nodes: PersonNodeLayout[];
   marriageEdges: MarriageEdgeLayout[];
   parentGroups: ParentChildrenGroupLayout[];
+  secondaryParentEdges: SecondaryParentEdgeLayout[];
   generationRows: GenerationRowLayout[];
   width: number;
   height: number;

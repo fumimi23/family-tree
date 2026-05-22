@@ -3,6 +3,7 @@ import {
   type MarriageLineType,
   type ParentChildrenGroupLayout,
   type PersonNodeLayout,
+  type SecondaryParentEdgeLayout,
 } from '@/components/familyTree/types';
 
 export const PERSON_WIDTH = 120;
@@ -36,11 +37,13 @@ export interface PersonPosition {
 export interface PlacementCtx {
   unitMap: Map<string, Unit>;
   childrenOfUnit: Map<string, string[]>;
+  secondaryParentsOfUnit: Map<string, string[]>;
   subtreeWidths: Map<string, number>;
   childToParents: Map<string, ParentLink[]>;
   showFamilyNameMap: Map<string, boolean>;
   nodes: PersonNodeLayout[];
   marriageEdges: MarriageEdgeLayout[];
   parentGroups: ParentChildrenGroupLayout[];
+  secondaryParentEdges: SecondaryParentEdgeLayout[];
   personPositions: Map<string, PersonPosition>;
 }
