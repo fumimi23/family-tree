@@ -74,7 +74,8 @@ function App(): React.ReactNode {
 
   const inputRef = React.useRef<HTMLInputElement>(null);
   const handleImportClick = React.useCallback((): void => {
-    if (inputRef.current) {
+    if (inputRef.current !== null) {
+      inputRef.current.value = '';
       inputRef.current.click();
     }
   },
