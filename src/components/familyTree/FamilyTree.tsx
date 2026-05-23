@@ -3,6 +3,7 @@ import { MarriageEdge } from '@/components/familyTree/MarriageEdge';
 import { ParentChildEdge } from '@/components/familyTree/ParentChildEdge';
 import { PersonNode } from '@/components/familyTree/PersonNode';
 import { SecondaryParentEdge } from '@/components/familyTree/SecondaryParentEdge';
+import { PersonDialog } from '@/components/person/PersonDialog';
 import { H2 } from '@/components/ui/H2';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { type Person } from '@/schemas/personSchema';
@@ -47,6 +48,18 @@ export function FamilyTree(): React.ReactNode {
       };
     }
   }, [people, relations]);
+  const [editingPersonId, setEditingPersonId] = React.useState<string | null>(null);
+  const editingPerson = editingPersonId === null
+    ? undefined
+    : personMap.get(editingPersonId);
+  const handleNodeClick = React.useCallback((personId: string): void => {
+    setEditingPersonId(personId);
+  }, []);
+  const handleDialogOpenChange = React.useCallback((e: { open: boolean }): void => {
+    if (!e.open) {
+      setEditingPersonId(null);
+    }
+  }, []);
   const [zoomIndex, setZoomIndex] = React.useState(DEFAULT_ZOOM_INDEX);
   const zoom = ZOOM_LEVELS[zoomIndex];
   const handleZoomIn = React.useCallback((): void => {
@@ -207,6 +220,7 @@ export function FamilyTree(): React.ReactNode {
                       <PersonNode
                         key={node.personId}
                         node={node}
+                        onClick={handleNodeClick}
                         person={person}
                       />
                     );
@@ -217,6 +231,17 @@ export function FamilyTree(): React.ReactNode {
           </Box>
         )
         : null}
+
+      {editingPerson === undefined
+        ? null
+        : (
+          <PersonDialog
+            isOpen
+            key={editingPerson.id}
+            onOpenChange={handleDialogOpenChange}
+            person={editingPerson}
+          />
+        )}
     </Flex>
   );
 }
