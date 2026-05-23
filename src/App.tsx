@@ -17,7 +17,7 @@ function isJsonFile(file: File): boolean {
 }
 
 function isFileDrag(e: React.DragEvent<HTMLDivElement>): boolean {
-  return e.dataTransfer.types.includes('Files');
+  return Array.from(e.dataTransfer.types).includes('Files');
 }
 
 function App(): React.ReactNode {
@@ -41,6 +41,14 @@ function App(): React.ReactNode {
       return;
     }
     const reader = new FileReader();
+    reader.onerror = (): void => {
+      console.error('ファイルの読み込みに失敗しました。');
+      toaster.create({
+        title: 'インポートに失敗しました。',
+        description: 'ファイルの読み込みに失敗しました。',
+        type: 'error',
+      });
+    };
     reader.onload = (event): void => {
       try {
         if (!event.target) {
