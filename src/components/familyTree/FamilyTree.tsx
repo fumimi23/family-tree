@@ -1,7 +1,8 @@
 import { exportAsPng, exportAsSvg } from '@/components/familyTree/exportImage';
+import { LABELS_WIDTH } from '@/components/familyTree/layout/internalTypes';
 import { layoutFamilyTree } from '@/components/familyTree/layoutFamilyTree';
 import { MarriageEdge } from '@/components/familyTree/MarriageEdge';
-import { Minimap, type ScrollState } from '@/components/familyTree/Minimap';
+import { Minimap } from '@/components/familyTree/Minimap';
 import { ParentChildEdge } from '@/components/familyTree/ParentChildEdge';
 import { PersonNode } from '@/components/familyTree/PersonNode';
 import { SecondaryParentEdge } from '@/components/familyTree/SecondaryParentEdge';
@@ -109,48 +110,6 @@ export function FamilyTree(): React.ReactNode {
   const showTree = result.ok && people.length > 0;
 
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const [scrollState, setScrollState] = React.useState<ScrollState>({
-    left: 0,
-    top: 0,
-    clientW: 0,
-    clientH: 0,
-  });
-  React.useEffect(() => {
-    const el = containerRef.current;
-    if (el === null) {
-      return undefined;
-    }
-    const update = (): void => {
-      setScrollState({
-        left: el.scrollLeft,
-        top: el.scrollTop,
-        clientW: el.clientWidth,
-        clientH: el.clientHeight,
-      });
-    };
-    update();
-    el.addEventListener('scroll', update);
-    const resizeObserver = new ResizeObserver(update);
-    resizeObserver.observe(el);
-    return () => {
-      el.removeEventListener('scroll', update);
-      resizeObserver.disconnect();
-    };
-  }, [showTree, zoom]);
-  const handleNavigate = React.useCallback((layoutX: number, layoutY: number): void => {
-    const el = containerRef.current;
-    if (el === null) {
-      return;
-    }
-    const LABELS_WIDTH = 64;
-    const targetLeft = (layoutX * zoom) + LABELS_WIDTH - (el.clientWidth / 2);
-    const targetTop = (layoutY * zoom) - (el.clientHeight / 2);
-    el.scrollTo({
-      left: Math.max(targetLeft, 0),
-      top: Math.max(targetTop, 0),
-      behavior: 'smooth',
-    });
-  }, [zoom]);
   const lastWheelTimeRef = React.useRef(0);
   React.useEffect(() => {
     const el = containerRef.current;
@@ -283,7 +242,7 @@ export function FamilyTree(): React.ReactNode {
                 height={`${(result.layout.height * zoom).toString()}px`}
                 left={0}
                 position="sticky"
-                width="64px"
+                width={`${LABELS_WIDTH.toString()}px`}
                 zIndex={1}
               >
                 {result.layout.generationRows.map((row) => (
@@ -366,9 +325,8 @@ export function FamilyTree(): React.ReactNode {
             zIndex={2}
           >
             <Minimap
+              containerRef={containerRef}
               layout={result.layout}
-              onNavigate={handleNavigate}
-              scrollState={scrollState}
               zoom={zoom}
             />
           </Box>

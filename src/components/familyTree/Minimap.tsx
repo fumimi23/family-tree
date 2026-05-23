@@ -1,3 +1,4 @@
+import { LABELS_WIDTH } from '@/components/familyTree/layout/internalTypes';
 import { type FamilyTreeLayout } from '@/components/familyTree/types';
 import { useFamilyTreeTheme } from '@/components/familyTree/useFamilyTreeTheme';
 import { Box } from '@chakra-ui/react';
@@ -5,9 +6,9 @@ import React from 'react';
 
 const MAX_MINIMAP_WIDTH = 240;
 const MAX_MINIMAP_HEIGHT = 160;
-const LABELS_WIDTH = 64;
+const VIEWPORT_STROKE_PX = 2;
 
-export interface ScrollState {
+interface ScrollState {
   left: number;
   top: number;
   clientW: number;
@@ -15,9 +16,8 @@ export interface ScrollState {
 }
 
 interface Props {
+  containerRef: React.RefObject<HTMLDivElement | null>;
   layout: FamilyTreeLayout;
-  onNavigate: (layoutX: number, layoutY: number) => void;
-  scrollState: ScrollState;
   zoom: number;
 }
 
@@ -76,25 +76,74 @@ function computeViewport(
   };
 }
 
-export function Minimap({
-  layout,
-  onNavigate,
-  scrollState,
-  zoom,
-}: Props): React.ReactNode {
+function useScrollState(containerRef: React.RefObject<HTMLDivElement | null>): ScrollState {
+  const [scrollState, setScrollState] = React.useState<ScrollState>({
+    left: 0,
+    top: 0,
+    clientW: 0,
+    clientH: 0,
+  });
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (el === null) {
+      return undefined;
+    }
+    const update = (): void => {
+      setScrollState({
+        left: el.scrollLeft,
+        top: el.scrollTop,
+        clientW: el.clientWidth,
+        clientH: el.clientHeight,
+      });
+    };
+    update();
+    el.addEventListener('scroll', update);
+    const resizeObserver = new ResizeObserver(update);
+    resizeObserver.observe(el);
+    return () => {
+      el.removeEventListener('scroll', update);
+      resizeObserver.disconnect();
+    };
+  }, [containerRef]);
+  return scrollState;
+}
+
+export function Minimap({ containerRef, layout, zoom }: Props): React.ReactNode {
   const theme = useFamilyTreeTheme();
   const dimensions = computeDimensions(layout);
+  const scrollState = useScrollState(containerRef);
   const viewport = computeViewport(scrollState, zoom, layout);
+  const navigateTo = React.useCallback((layoutX: number, layoutY: number): void => {
+    const el = containerRef.current;
+    if (el === null) {
+      return;
+    }
+    const targetLeft = (layoutX * zoom) + LABELS_WIDTH - (el.clientWidth / 2);
+    const targetTop = (layoutY * zoom) - (el.clientHeight / 2);
+    el.scrollTo({
+      left: Math.max(targetLeft, 0),
+      top: Math.max(targetTop, 0),
+      behavior: 'smooth',
+    });
+  }, [containerRef, zoom]);
   const handleClick = React.useCallback((e: React.MouseEvent<SVGSVGElement>): void => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * layout.width;
     const y = ((e.clientY - rect.top) / rect.height) * layout.height;
-    onNavigate(x, y);
-  }, [layout.width, layout.height, onNavigate]);
+    navigateTo(x, y);
+  }, [layout.width, layout.height, navigateTo]);
+  const handleKeyDown = React.useCallback((e: React.KeyboardEvent<SVGSVGElement>): void => {
+    if (e.key !== 'Enter' && e.key !== ' ') {
+      return;
+    }
+    e.preventDefault();
+    navigateTo(layout.width / 2, layout.height / 2);
+  }, [layout.width, layout.height, navigateTo]);
 
   if (dimensions.width === 0) {
     return null;
   }
+  const viewboxStroke = VIEWPORT_STROKE_PX * (layout.width / dimensions.width);
   return (
     <Box
       bg="bg"
@@ -105,9 +154,13 @@ export function Minimap({
       padding={1}
     >
       <svg
+        aria-label="家系図のミニマップ。クリックして該当位置にスクロールします。"
         height={dimensions.height}
         onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        role="button"
         style={{ cursor: 'pointer', display: 'block' }}
+        tabIndex={0}
         viewBox={`0 0 ${layout.width.toString()} ${layout.height.toString()}`}
         width={dimensions.width}
       >
@@ -128,7 +181,7 @@ export function Minimap({
           height={viewport.height}
           pointerEvents="none"
           stroke="#6366f1"
-          strokeWidth={Math.max(layout.width / dimensions.width, 2)}
+          strokeWidth={viewboxStroke}
           width={viewport.width}
           x={viewport.x}
           y={viewport.y}

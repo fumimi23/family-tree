@@ -12,6 +12,7 @@ export const GENERATION_GAP = 80;
 export const UNIT_GAP = 32;
 export const COUPLE_GAP = 16;
 export const PADDING = 24;
+export const LABELS_WIDTH = 64;
 
 export type UnitType = 'couple' | 'single';
 
