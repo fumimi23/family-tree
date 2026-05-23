@@ -36,8 +36,8 @@ jobs:
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          if [[ ! "$PR_TITLE" =~ ^\[#[0-9]+\][[:space:]] ]]; then
-            echo "::error::PR タイトルは '[#<番号>] <説明>' 形式にしてください"
+          if [[ ! "$PR_TITLE" =~ ^\[#[0-9]+\][[:space:]]+.+ ]]; then
+            echo "::error::PR タイトルは '[#<番号>] <説明>' 形式 (説明は必須) にしてください"
             exit 1
           fi
 
