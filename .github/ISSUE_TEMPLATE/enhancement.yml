@@ -1,0 +1,29 @@
+name: 機能追加・改善
+description: 新機能や既存機能の改善を提案する
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: background
+    attributes:
+      label: 背景
+      description: なぜこの機能が必要か、現状の課題
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待する挙動
+      description: どう動くと良いか
+    validations:
+      required: true
+  - type: textarea
+    id: considerations
+    attributes:
+      label: 検討事項
+      description: 実装案 / 影響範囲 / 既知のトレードオフ など
+  - type: textarea
+    id: related
+    attributes:
+      label: 関連
+      description: 関連する issue / PR / ドキュメント 等
