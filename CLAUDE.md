@@ -50,6 +50,7 @@
   - **既知の副作用**: macOS で Vite/chokidar が依存する `fsevents` のネイティブ binary がビルドされず、`yarn dev` のファイル監視が polling にフォールバックして性能劣化する。問題が出たら上記の手順で回避
 - **新規パブリッシュの即時 install を防ぐ**: `.yarnrc.yml` の `npmMinimalAgeGate: 4320` (分 = 3 日) によって、3 日未満の新規 publish は install されない。即時に削除される悪意のあるパッケージから守る
   - **例外運用**: 緊急のセキュリティ修正で 3 日未満のバージョンを入れたい場合は、`yarn config set npmMinimalAgeGate <小さい値>` で一時的に下げて install し、終わったら元に戻す (.yarnrc.yml への commit 戻しを忘れずに)
+  - **Dependabot 側にも `cooldown` 設定**: `.github/dependabot.yml` で publish からの待機日数を指定し、PR 作成時点でも同様に遅延させている (二重防御)
 - **`yarn.lock` の diff レビュー**: PR で `yarn.lock` の変更を必ず目視確認 (予期せぬ大量更新は怪しい)
 - **GitHub Actions は SHA pin**: `uses: org/action@<40桁の commit SHA>` で固定し、`@v4` のような可変タグは避ける (タグは後から移動できる)
 - **第三者製 Actions は最小限**: 公式 (`actions/*`) を優先
