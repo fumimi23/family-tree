@@ -45,6 +45,7 @@
 
 - **パッケージの素性**: メンテナ / 更新頻度 / GitHub stars / 既知の incident。typosquat (似た名前のパッケージ) に注意
 - **postinstall / install スクリプト**: `.yarnrc.yml` で `enableScripts: false` を設定済み。新しい依存に build script があると `yarn install` で警告が出る。意図的に必要な場合のみ allow する
+- **新規パブリッシュの即時 install を防ぐ**: `.yarnrc.yml` の `npmMinimalAgeGate: 4320` (分 = 3 日) によって、3 日未満の新規 publish は install されない。即時に削除される悪意のあるパッケージから守る
 - **`yarn.lock` の diff レビュー**: PR で `yarn.lock` の変更を必ず目視確認 (予期せぬ大量更新は怪しい)
 - **GitHub Actions は SHA pin**: `uses: org/action@<40桁の commit SHA>` で固定し、`@v4` のような可変タグは避ける (タグは後から移動できる)
 - **第三者製 Actions は最小限**: 公式 (`actions/*`) を優先
