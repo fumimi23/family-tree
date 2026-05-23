@@ -39,6 +39,17 @@
   ```
 - Copilot 再リクエストは API では動かない → UI の「Re-request review」ボタンを使う
 
+## 依存追加時のサプライチェーン対策
+
+新しい依存パッケージや GitHub Actions を追加するときは、以下をチェック:
+
+- **パッケージの素性**: メンテナ / 更新頻度 / GitHub stars / 既知の incident。typosquat (似た名前のパッケージ) に注意
+- **postinstall / install スクリプト**: `.yarnrc.yml` で `enableScripts: false` を設定済み。新しい依存に build script があると `yarn install` で警告が出る。意図的に必要な場合のみ allow する
+- **`yarn.lock` の diff レビュー**: PR で `yarn.lock` の変更を必ず目視確認 (予期せぬ大量更新は怪しい)
+- **GitHub Actions は SHA pin**: `uses: org/action@<40桁の commit SHA>` で固定し、`@v4` のような可変タグは避ける (タグは後から移動できる)
+- **第三者製 Actions は最小限**: 公式 (`actions/*`) を優先
+- **Dependabot PR の merge は手動**: 自動 merge は無効。major / minor / patch を分けて diff レビュー
+
 ## 既知の落とし穴
 
 ### 環境/ツール
