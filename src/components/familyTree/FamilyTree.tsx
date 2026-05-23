@@ -107,6 +107,36 @@ export function FamilyTree(): React.ReactNode {
   const zoomPercent = Math.round(zoom * 100);
   const showTree = result.ok && people.length > 0;
 
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const lastWheelTimeRef = React.useRef(0);
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (el === null) {
+      return undefined;
+    }
+    const WHEEL_COOLDOWN_MS = 80;
+    const handleWheel = (e: WheelEvent): void => {
+      if (!e.ctrlKey && !e.metaKey) {
+        return;
+      }
+      e.preventDefault();
+      const now = performance.now();
+      if (now - lastWheelTimeRef.current < WHEEL_COOLDOWN_MS) {
+        return;
+      }
+      lastWheelTimeRef.current = now;
+      if (e.deltaY < 0) {
+        setZoomIndex((i) => Math.min(i + 1, ZOOM_LEVELS.length - 1));
+      } else if (e.deltaY > 0) {
+        setZoomIndex((i) => Math.max(i - 1, 0));
+      }
+    };
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      el.removeEventListener('wheel', handleWheel);
+    };
+  }, [showTree]);
+
   return (
     <Flex direction="column">
       <Flex
@@ -198,6 +228,7 @@ export function FamilyTree(): React.ReactNode {
             maxHeight="70vh"
             overflowX="auto"
             overflowY="auto"
+            ref={containerRef}
           >
             <Flex>
               <Box
