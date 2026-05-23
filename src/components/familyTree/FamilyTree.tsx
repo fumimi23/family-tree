@@ -230,7 +230,7 @@ export function FamilyTree(): React.ReactNode {
       {showTree
         ? (
           <Box
-            maxHeight="70vh"
+            height="70vh"
             overflowX="auto"
             overflowY="auto"
             ref={containerRef}
