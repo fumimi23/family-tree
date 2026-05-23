@@ -1,6 +1,8 @@
 import { exportAsPng, exportAsSvg } from '@/components/familyTree/exportImage';
+import { LABELS_WIDTH } from '@/components/familyTree/layout/internalTypes';
 import { layoutFamilyTree } from '@/components/familyTree/layoutFamilyTree';
 import { MarriageEdge } from '@/components/familyTree/MarriageEdge';
+import { Minimap } from '@/components/familyTree/Minimap';
 import { ParentChildEdge } from '@/components/familyTree/ParentChildEdge';
 import { PersonNode } from '@/components/familyTree/PersonNode';
 import { SecondaryParentEdge } from '@/components/familyTree/SecondaryParentEdge';
@@ -138,7 +140,10 @@ export function FamilyTree(): React.ReactNode {
   }, [showTree]);
 
   return (
-    <Flex direction="column">
+    <Flex
+      direction="column"
+      position="relative"
+    >
       <Flex
         alignItems="center"
         justifyContent="space-between"
@@ -237,7 +242,7 @@ export function FamilyTree(): React.ReactNode {
                 height={`${(result.layout.height * zoom).toString()}px`}
                 left={0}
                 position="sticky"
-                width="64px"
+                width={`${LABELS_WIDTH.toString()}px`}
                 zIndex={1}
               >
                 {result.layout.generationRows.map((row) => (
@@ -307,6 +312,23 @@ export function FamilyTree(): React.ReactNode {
                 </svg>
               </Box>
             </Flex>
+          </Box>
+        )
+        : null}
+
+      {showTree
+        ? (
+          <Box
+            bottom={4}
+            position="absolute"
+            right={4}
+            zIndex={2}
+          >
+            <Minimap
+              containerRef={containerRef}
+              layout={result.layout}
+              zoom={zoom}
+            />
           </Box>
         )
         : null}
