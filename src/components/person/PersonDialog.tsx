@@ -91,7 +91,11 @@ export function PersonDialog({ isOpen, onOpenChange, person }: PersonDialogProps
               {isEdit ? '人物編集' : '人物追加'}
             </Dialog.Header>
 
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form
+              onSubmit={(e): void => {
+                void handleSubmit(onSubmit)(e);
+              }}
+            >
               <Dialog.Body>
                 <Flex
                   direction="column"

@@ -69,7 +69,11 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
               関係追加
             </Dialog.Header>
 
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form
+              onSubmit={(e): void => {
+                void handleSubmit(onSubmit)(e);
+              }}
+            >
               <Dialog.Body>
                 <Flex direction="column">
                   <Field.Root invalid={Boolean(errors.relationType)}>
