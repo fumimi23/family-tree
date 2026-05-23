@@ -1,7 +1,8 @@
+import { describe, expect, it } from 'vitest';
+
 import { computeShowFamilyNameMap } from '@/components/familyTree/layout/familyNameVisibility';
 import { type ParentLink } from '@/components/familyTree/layout/internalTypes';
 import { type Person, Sex } from '@/schemas/personSchema';
-import { describe, expect, it } from 'vitest';
 
 const ID = {
   PARENT: '11111111-1111-4111-8111-111111111111',

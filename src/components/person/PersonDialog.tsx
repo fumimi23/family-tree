@@ -1,12 +1,13 @@
-import { PrimaryButton } from '@/components/ui/PrimaryButton';
-import { toaster } from '@/components/ui/toaster';
-import { type Person, personSchema, Sex, sexList } from '@/schemas/personSchema';
-import { usePeopleStore } from '@/store/personStore';
 import { Button, CloseButton, Dialog, Field, Flex, Input, Portal, RadioGroup } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
+
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { toaster } from '@/components/ui/toaster';
+import { type Person, personSchema, Sex, sexList } from '@/schemas/personSchema';
+import { usePeopleStore } from '@/store/personStore';
 
 interface PersonDialogProps {
   isOpen: boolean;

@@ -1,3 +1,6 @@
+import { Flex, Table } from '@chakra-ui/react';
+import React from 'react';
+
 import { AddRelationDialog } from '@/components/relation/AddRelationDialog';
 import { H2 } from '@/components/ui/H2';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
@@ -5,8 +8,6 @@ import { type Person } from '@/schemas/personSchema';
 import { type Relation, type RelationType, relationTypeList } from '@/schemas/relationSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
-import { Flex, Table } from '@chakra-ui/react';
-import React from 'react';
 
 export function RelationTable(): React.ReactNode {
   const people: Person[] = usePeopleStore((state) => state.people);

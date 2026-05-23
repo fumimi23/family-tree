@@ -1,6 +1,7 @@
-import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { Flex, Text } from '@chakra-ui/react';
 import React from 'react';
+
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
 
 interface Props {
   onExportPng: () => void;

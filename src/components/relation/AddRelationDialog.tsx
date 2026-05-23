@@ -1,14 +1,15 @@
+import { Button, CloseButton, createListCollection, Dialog, Field, Flex, Portal, Select } from '@chakra-ui/react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import React from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { v4 as uuidv4 } from 'uuid';
+
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { toaster } from '@/components/ui/toaster';
 import { type Person } from '@/schemas/personSchema';
 import { type Relation, relationSchema, relationTypeList } from '@/schemas/relationSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
-import { Button, CloseButton, createListCollection, Dialog, Field, Flex, Portal, Select } from '@chakra-ui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { v4 as uuidv4 } from 'uuid';
 
 interface AddRelationDialogProps {
   isOpen: boolean;

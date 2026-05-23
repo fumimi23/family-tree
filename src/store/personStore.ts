@@ -1,5 +1,6 @@
-import { type Person } from '@/schemas/personSchema';
 import { create } from 'zustand';
+
+import { type Person } from '@/schemas/personSchema';
 
 interface PeopleStore {
   people: Person[];

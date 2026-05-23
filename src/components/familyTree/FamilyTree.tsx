@@ -1,3 +1,6 @@
+import { Box, Flex, Text } from '@chakra-ui/react';
+import React from 'react';
+
 import { exportAsPng, exportAsSvg } from '@/components/familyTree/exportImage';
 import { FamilyTreeToolbar } from '@/components/familyTree/FamilyTreeToolbar';
 import { LABELS_WIDTH } from '@/components/familyTree/layout/internalTypes';
@@ -14,8 +17,6 @@ import { toaster } from '@/components/ui/toaster';
 import { type Person } from '@/schemas/personSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
-import { Box, Flex, Text } from '@chakra-ui/react';
-import React from 'react';
 
 const ZOOM_LEVELS = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 4.0];
 const DEFAULT_ZOOM_INDEX = 3;
@@ -45,7 +46,7 @@ export function FamilyTree(): React.ReactNode {
         ok: true,
         layout: layoutFamilyTree(people, relations),
       };
-    } catch (err) {
+    } catch(err) {
       const message = err instanceof Error ? err.message : String(err);
       return {
         ok: false,

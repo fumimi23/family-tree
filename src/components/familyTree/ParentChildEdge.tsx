@@ -1,7 +1,8 @@
+import React from 'react';
+
 import { ADOPTED_DASH } from '@/components/familyTree/edgeStyle';
 import { type ParentChildrenGroupLayout } from '@/components/familyTree/types';
 import { useFamilyTreeTheme } from '@/components/familyTree/useFamilyTreeTheme';
-import React from 'react';
 
 interface Props {
   group: ParentChildrenGroupLayout;
