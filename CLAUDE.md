@@ -42,12 +42,12 @@
 ## 既知の落とし穴
 
 ### 環境/ツール
-- `Array.prototype.at()` は使えない (target ES2020)。`arr.length === 0` チェック + `arr[0]` で対処
+- `Array.prototype.at()` は使えない (target ES2020)。代替: `at(0)` 相当なら length チェック + `arr[0]`、`at(-1)` 相当なら `arr[arr.length - 1]`。多用するなら `tsconfig.app.json` の `lib` を `ES2022` に上げる選択肢もあり
 - `yarn lint 2>&1 | grep familyTree` だとファイル名行しか拾えない (エラー行は別行)。最終行の `✖ N problems` で総数を見る
 
 ### ESLint で頻繁に引っかかるもの
 - `@stylistic/object-property-newline`: 複数プロパティを同一行に並べない (`{a: 1, b: 2}` 不可)。各プロパティを別行にするか、型なら named interface に抽出する
-- `@stylistic/jsx-one-expression-per-line`: JSX 子要素にテキストと式を混ぜない。`{` ``第${n.toString()}世代`` `}` のように template literal にまとめる
+- `@stylistic/jsx-one-expression-per-line`: JSX 子要素は 1 行 1 つにする (テキスト + 式の混在不可)。対処は (a) テキストと式を別行に分割するか、(b) `{` ``第${n.toString()}世代`` `}` のように 1 つの template literal にまとめる
 - `@typescript-eslint/restrict-template-expressions`: 数値は `.toString()` で文字列化
 - `@typescript-eslint/strict-boolean-expressions`: `if (str)` 不可、`str !== ''` 等で明示
 - `@typescript-eslint/no-unnecessary-condition`: 型上 undefined にならないチェックは無効。`noUncheckedIndexedAccess` が off なので `arr[0]` は `T` 型 → 配列の length チェックで防御する
