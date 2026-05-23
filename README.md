@@ -16,7 +16,7 @@
 
 Node.js のバージョンは [`.node-version`](./.node-version) に固定。[nodenv](https://github.com/nodenv/nodenv) 等のバージョンマネージャ推奨。
 
-パッケージマネージャは **Yarn** 固定 (`package.json` の `engines` で npm / pnpm を禁止)。Yarn は [Corepack](https://nodejs.org/api/corepack.html) 経由で自動取得される。
+パッケージマネージャは **Yarn** を使用 (`package.json` の `engines` で npm / pnpm の利用は想定外として明示。実行すると警告が出る)。Yarn は [Corepack](https://nodejs.org/api/corepack.html) 経由で自動取得される。
 
 ```bash
 corepack enable          # 初回のみ
