@@ -5,6 +5,13 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # publish 直後の悪意あるバージョンを取り込まないよう、
+    # .yarnrc.yml の npmMinimalAgeGate と二重で防御層を作る。
+    cooldown:
+      default-days: 3
+      semver-major-days: 7
+      semver-minor-days: 3
+      semver-patch-days: 1
     groups:
       production:
         dependency-type: production
@@ -15,6 +22,11 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
+      semver-major-days: 7
+      semver-minor-days: 3
+      semver-patch-days: 1
     groups:
       actions:
         patterns:
