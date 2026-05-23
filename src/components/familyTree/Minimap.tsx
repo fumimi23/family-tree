@@ -58,7 +58,7 @@ function computeViewport(
   zoom: number,
   layout: FamilyTreeLayout,
 ): ViewportRect {
-  const visibleLeft = Math.max((scrollState.left - LABELS_WIDTH) / zoom, 0);
+  const visibleLeft = Math.max(scrollState.left / zoom, 0);
   const visibleTop = Math.max(scrollState.top / zoom, 0);
   const visibleW = Math.min(
     (scrollState.clientW - LABELS_WIDTH) / zoom,
