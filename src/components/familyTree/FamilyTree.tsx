@@ -1,6 +1,7 @@
 import { exportAsPng, exportAsSvg } from '@/components/familyTree/exportImage';
 import { layoutFamilyTree } from '@/components/familyTree/layoutFamilyTree';
 import { MarriageEdge } from '@/components/familyTree/MarriageEdge';
+import { Minimap, type ScrollState } from '@/components/familyTree/Minimap';
 import { ParentChildEdge } from '@/components/familyTree/ParentChildEdge';
 import { PersonNode } from '@/components/familyTree/PersonNode';
 import { SecondaryParentEdge } from '@/components/familyTree/SecondaryParentEdge';
@@ -108,6 +109,48 @@ export function FamilyTree(): React.ReactNode {
   const showTree = result.ok && people.length > 0;
 
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const [scrollState, setScrollState] = React.useState<ScrollState>({
+    left: 0,
+    top: 0,
+    clientW: 0,
+    clientH: 0,
+  });
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (el === null) {
+      return undefined;
+    }
+    const update = (): void => {
+      setScrollState({
+        left: el.scrollLeft,
+        top: el.scrollTop,
+        clientW: el.clientWidth,
+        clientH: el.clientHeight,
+      });
+    };
+    update();
+    el.addEventListener('scroll', update);
+    const resizeObserver = new ResizeObserver(update);
+    resizeObserver.observe(el);
+    return () => {
+      el.removeEventListener('scroll', update);
+      resizeObserver.disconnect();
+    };
+  }, [showTree, zoom]);
+  const handleNavigate = React.useCallback((layoutX: number, layoutY: number): void => {
+    const el = containerRef.current;
+    if (el === null) {
+      return;
+    }
+    const LABELS_WIDTH = 64;
+    const targetLeft = (layoutX * zoom) + LABELS_WIDTH - (el.clientWidth / 2);
+    const targetTop = (layoutY * zoom) - (el.clientHeight / 2);
+    el.scrollTo({
+      left: Math.max(targetLeft, 0),
+      top: Math.max(targetTop, 0),
+      behavior: 'smooth',
+    });
+  }, [zoom]);
   const lastWheelTimeRef = React.useRef(0);
   React.useEffect(() => {
     const el = containerRef.current;
@@ -138,7 +181,10 @@ export function FamilyTree(): React.ReactNode {
   }, [showTree]);
 
   return (
-    <Flex direction="column">
+    <Flex
+      direction="column"
+      position="relative"
+    >
       <Flex
         alignItems="center"
         justifyContent="space-between"
@@ -307,6 +353,24 @@ export function FamilyTree(): React.ReactNode {
                 </svg>
               </Box>
             </Flex>
+          </Box>
+        )
+        : null}
+
+      {showTree
+        ? (
+          <Box
+            bottom={4}
+            position="absolute"
+            right={4}
+            zIndex={2}
+          >
+            <Minimap
+              layout={result.layout}
+              onNavigate={handleNavigate}
+              scrollState={scrollState}
+              zoom={zoom}
+            />
           </Box>
         )
         : null}
