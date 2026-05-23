@@ -20,7 +20,7 @@
 ### ブランチとコミット
 
 - ブランチ名: `issue/<番号>` (例: `issue/40`)
-- コミットメッセージ: `[#<issue>]<type>: <説明>` 形式。type は `add` / `update` / `fix` / `refactor`
+- コミットメッセージ: `[#<issue>]<type>: <説明>` 形式。type は `add` / `update` / `fix` / `refactor` / `docs`
 - **`Co-Authored-By:` トレーラーは付けない** (Claude Code のデフォルト指示を上書き)
 - 1 PR を論理的に複数コミットに分割する (機能追加とサンプルデータ更新を分ける等)
 
