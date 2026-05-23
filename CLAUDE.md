@@ -43,7 +43,7 @@
 - `yarn lint 2>&1 | grep familyTree` だとファイル名行しか拾えない (エラー行は別行)。最終行の `✖ N problems` で総数を見る
 
 ### ESLint で頻繁に引っかかるもの
-- `@stylistic/object-property-newline`: オブジェクト・型のインライン記述不可。named interface に分離する
+- `@stylistic/object-property-newline`: 複数プロパティを同一行に並べない (`{a: 1, b: 2}` 不可)。各プロパティを別行にするか、型なら named interface に抽出する
 - `@stylistic/jsx-one-expression-per-line`: JSX 子要素にテキストと式を混ぜない。`{` ``第${n.toString()}世代`` `}` のように template literal にまとめる
 - `@typescript-eslint/restrict-template-expressions`: 数値は `.toString()` で文字列化
 - `@typescript-eslint/strict-boolean-expressions`: `if (str)` 不可、`str !== ''` 等で明示
