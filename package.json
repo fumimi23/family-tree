@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "packageManager": "yarn@4.7.0",
+  "packageManager": "yarn@4.15.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -46,7 +46,7 @@
   },
   "engines": {
     "npm": "use yarn instead",
-    "yarn": "4.7.0",
+    "yarn": "4.15.0",
     "pnpm": "use yarn instead"
   }
 }

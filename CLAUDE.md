@@ -39,6 +39,21 @@
   ```
 - Copilot 再リクエストは API では動かない → UI の「Re-request review」ボタンを使う
 
+## 依存追加時のサプライチェーン対策
+
+新しい依存パッケージや GitHub Actions を追加するときは、以下をチェック:
+
+- **パッケージの素性**: メンテナ / 更新頻度 / GitHub stars / 既知の incident。typosquat (似た名前のパッケージ) に注意
+- **postinstall / install スクリプト**: `.yarnrc.yml` で `enableScripts: false` を設定済み。新しい依存に build script があると `yarn install` で警告が出る。
+  - **運用**: Yarn 4 では個別パッケージの allow-list が直接的にないため、特定パッケージの build script が必要な場合は一時的に `enableScripts: true` で `yarn install` を実行し、その後 `false` に戻す。`yarn.lock` の差分はそのまま残せばOK
+  - **既知の副作用**: macOS で Vite/chokidar が依存する `fsevents` のネイティブ binary がビルドされず、`yarn dev` のファイル監視が polling にフォールバックして性能劣化する。問題が出たら上記の手順で回避
+- **新規パブリッシュの即時 install を防ぐ**: `.yarnrc.yml` の `npmMinimalAgeGate: 4320` (分 = 3 日) によって、3 日未満の新規 publish は install されない。即時に削除される悪意のあるパッケージから守る
+  - **例外運用**: 緊急のセキュリティ修正で 3 日未満のバージョンを入れたい場合は、`yarn config set npmMinimalAgeGate <小さい値>` で一時的に下げて install し、終わったら元に戻す (.yarnrc.yml への commit 戻しを忘れずに)
+- **`yarn.lock` の diff レビュー**: PR で `yarn.lock` の変更を必ず目視確認 (予期せぬ大量更新は怪しい)
+- **GitHub Actions は SHA pin**: `uses: org/action@<40桁の commit SHA>` で固定し、`@v4` のような可変タグは避ける (タグは後から移動できる)
+- **第三者製 Actions は最小限**: 公式 (`actions/*`) を優先
+- **Dependabot PR の merge は手動**: 自動 merge は無効。major / minor / patch を分けて diff レビュー
+
 ## 既知の落とし穴
 
 ### 環境/ツール
