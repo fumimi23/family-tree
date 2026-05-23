@@ -865,7 +865,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:9.39.4, @eslint/js@npm:^9.39.4":
+"@eslint/js@npm:9.39.4, @eslint/js@npm:~9.39.4":
   version: 9.39.4
   resolution: "@eslint/js@npm:9.39.4"
   checksum: 10c0/5aa7dea2cbc5decf7f5e3b0c6f86a084ccee0f792d288ca8e839f8bc1b64e03e227068968e49b26096e6f71fd857ab6e42691d1b993826b9a3883f1bdd7a0e46
@@ -3427,7 +3427,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^9.39.4":
+"eslint@npm:~9.39.4":
   version: 9.39.4
   resolution: "eslint@npm:9.39.4"
   dependencies:
@@ -3549,14 +3549,14 @@ __metadata:
     "@chakra-ui/react": "npm:^3.13.0"
     "@commitlint/cli": "npm:^21.0.1"
     "@emotion/react": "npm:^11.14.0"
-    "@eslint/js": "npm:^9.39.4"
+    "@eslint/js": "npm:~9.39.4"
     "@hookform/resolvers": "npm:^4.1.3"
     "@stylistic/eslint-plugin": "npm:^5.10.0"
     "@types/react": "npm:^19.0.10"
     "@types/react-dom": "npm:^19.0.4"
     "@vitejs/plugin-react": "npm:^6.0.2"
     esbuild: "npm:^0.28.0"
-    eslint: "npm:^9.39.4"
+    eslint: "npm:~9.39.4"
     eslint-plugin-no-relative-import-paths: "npm:^1.6.1"
     eslint-plugin-perfectionist: "npm:^5.9.0"
     eslint-plugin-react: "npm:^7.37.5"

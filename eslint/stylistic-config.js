@@ -271,8 +271,19 @@ export default tseslint.config(
       '@stylistic/semi-style': ['error', 'last'],
       // ブロックの開始波括弧の前にスペースを強制
       '@stylistic/space-before-blocks': ['error', 'always'],
-      // 関数名または関数キーワードと開始括弧の間にスペースは入れない
-      '@stylistic/space-before-function-paren': ['error', 'never'],
+      /*
+       * 関数名または関数キーワードと開始括弧の間にスペースは入れない。
+       * ただし catch は keyword-spacing 側に従い `catch (e)` を維持する。
+       */
+      '@stylistic/space-before-function-paren': [
+        'error',
+        {
+          anonymous: 'never',
+          named: 'never',
+          asyncArrow: 'never',
+          catch: 'always',
+        },
+      ],
       // 括弧内のスペースを禁止
       '@stylistic/space-in-parens': ['error', 'never'],
       // 中置演算子（e.g. +, *）の前後にスペースを強制

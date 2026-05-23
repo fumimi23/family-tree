@@ -80,7 +80,7 @@ function App(): React.ReactNode {
           description: 'データの読み込みに成功しました。',
           type: 'success',
         });
-      } catch(error) {
+      } catch (error) {
         console.error('データの読み込みに失敗しました。', error);
         toaster.create({
           title: 'インポートに失敗しました。',

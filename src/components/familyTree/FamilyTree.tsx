@@ -46,7 +46,7 @@ export function FamilyTree(): React.ReactNode {
         ok: true,
         layout: layoutFamilyTree(people, relations),
       };
-    } catch(err) {
+    } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       return {
         ok: false,
