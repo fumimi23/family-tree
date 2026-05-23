@@ -1,0 +1,62 @@
+name: PR Lint
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    env:
+      IS_DEPENDABOT: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
+    steps:
+      - name: Validate branch name
+        if: env.IS_DEPENDABOT == 'false'
+        env:
+          BRANCH_NAME: ${{ github.head_ref }}
+        run: |
+          if [[ ! "$BRANCH_NAME" =~ ^issue/[0-9]+$ ]]; then
+            echo "::error::ブランチ名 '$BRANCH_NAME' は 'issue/<番号>' 形式にしてください"
+            exit 1
+          fi
+
+      - name: Validate PR title
+        if: env.IS_DEPENDABOT == 'false'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if [[ ! "$PR_TITLE" =~ ^\[#[0-9]+\][[:space:]]+.+ ]]; then
+            echo "::error::PR タイトルは '[#<番号>] <説明>' 形式 (説明は必須) にしてください"
+            exit 1
+          fi
+
+      - name: Validate PR body
+        if: env.IS_DEPENDABOT == 'false'
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          fail=0
+          if ! grep -q '^## Summary' <<< "$PR_BODY"; then
+            echo "::error::PR 本文に '## Summary' セクションがありません"
+            fail=1
+          fi
+          if ! grep -q '^## Test plan' <<< "$PR_BODY"; then
+            echo "::error::PR 本文に '## Test plan' セクションがありません"
+            fail=1
+          fi
+          if ! grep -qE 'Closes #[0-9]+' <<< "$PR_BODY"; then
+            echo "::error::PR 本文に 'Closes #<番号>' がありません"
+            fail=1
+          fi
+          [ "$fail" -eq 0 ]
