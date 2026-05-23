@@ -44,7 +44,8 @@
 新しい依存パッケージや GitHub Actions を追加するときは、以下をチェック:
 
 - **パッケージの素性**: メンテナ / 更新頻度 / GitHub stars / 既知の incident。typosquat (似た名前のパッケージ) に注意
-- **postinstall / install スクリプト**: `.yarnrc.yml` で `enableScripts: false` を設定済み。新しい依存に build script があると `yarn install` で警告が出る。意図的に必要な場合のみ allow する
+- **postinstall / install スクリプト**: `.yarnrc.yml` で `enableScripts: false` を設定済み。新しい依存に build script があると `yarn install` で警告が出る。意図的に必要な場合のみ allow する。
+  - **既知の副作用**: macOS で Vite/chokidar が依存する `fsevents` のネイティブ binary がビルドされず、`yarn dev` のファイル監視が polling にフォールバックして性能劣化する。問題が出たら開発者は一時的に `enableScripts: true` で `yarn install` するなどの回避を検討
 - **新規パブリッシュの即時 install を防ぐ**: `.yarnrc.yml` の `npmMinimalAgeGate: 4320` (分 = 3 日) によって、3 日未満の新規 publish は install されない。即時に削除される悪意のあるパッケージから守る
 - **`yarn.lock` の diff レビュー**: PR で `yarn.lock` の変更を必ず目視確認 (予期せぬ大量更新は怪しい)
 - **GitHub Actions は SHA pin**: `uses: org/action@<40桁の commit SHA>` で固定し、`@v4` のような可変タグは避ける (タグは後から移動できる)
