@@ -108,14 +108,16 @@ function useScrollState(containerRef: React.RefObject<HTMLDivElement | null>): S
           clientW: el.clientWidth,
           clientH: el.clientHeight,
         };
-        setScrollState((prev) => (sameState(prev, next) ? prev : next));
+        setScrollState((prev) => {
+          return sameState(prev, next) ? prev : next;
+        });
       });
     };
     update();
     el.addEventListener('scroll', update);
     const resizeObserver = new ResizeObserver(update);
     resizeObserver.observe(el);
-    return () => {
+    return (): void => {
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
       }
@@ -190,7 +192,10 @@ export function Minimap({ containerRef, layout, zoom }: Props): React.ReactNode 
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         role="button"
-        style={{ cursor: 'pointer', display: 'block' }}
+        style={{
+          cursor: 'pointer',
+          display: 'block',
+        }}
         tabIndex={0}
         viewBox={`0 0 ${layout.width.toString()} ${layout.height.toString()}`}
         width={dimensions.width}
