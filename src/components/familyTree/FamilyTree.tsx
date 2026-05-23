@@ -4,11 +4,15 @@ import { ParentChildEdge } from '@/components/familyTree/ParentChildEdge';
 import { PersonNode } from '@/components/familyTree/PersonNode';
 import { SecondaryParentEdge } from '@/components/familyTree/SecondaryParentEdge';
 import { H2 } from '@/components/ui/H2';
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { type Person } from '@/schemas/personSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
 import { Box, Flex, Text } from '@chakra-ui/react';
 import React from 'react';
+
+const ZOOM_LEVELS = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 4.0];
+const DEFAULT_ZOOM_INDEX = 3;
 
 interface LayoutSuccess {
   ok: true;
@@ -43,12 +47,72 @@ export function FamilyTree(): React.ReactNode {
       };
     }
   }, [people, relations]);
+  const [zoomIndex, setZoomIndex] = React.useState(DEFAULT_ZOOM_INDEX);
+  const zoom = ZOOM_LEVELS[zoomIndex];
+  const handleZoomIn = React.useCallback((): void => {
+    setZoomIndex((i) => Math.min(i + 1, ZOOM_LEVELS.length - 1));
+  }, []);
+  const handleZoomOut = React.useCallback((): void => {
+    setZoomIndex((i) => Math.max(i - 1, 0));
+  }, []);
+  const handleZoomReset = React.useCallback((): void => {
+    setZoomIndex(DEFAULT_ZOOM_INDEX);
+  }, []);
+  const zoomPercent = Math.round(zoom * 100);
+  const showTree = result.ok && people.length > 0;
 
   return (
     <Flex direction="column">
-      <H2>
-        家系図
-      </H2>
+      <Flex
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <H2>
+          家系図
+        </H2>
+
+        {showTree
+          ? (
+            <Flex
+              alignItems="center"
+              gap={2}
+            >
+              <PrimaryButton
+                aria-label="ズームアウト"
+                onClick={handleZoomOut}
+                size="sm"
+                title="ズームアウト"
+              >
+                −
+              </PrimaryButton>
+
+              <Text
+                fontSize="sm"
+                minWidth="50px"
+                textAlign="center"
+              >
+                {`${zoomPercent.toString()}%`}
+              </Text>
+
+              <PrimaryButton
+                aria-label="ズームイン"
+                onClick={handleZoomIn}
+                size="sm"
+                title="ズームイン"
+              >
+                +
+              </PrimaryButton>
+
+              <PrimaryButton
+                onClick={handleZoomReset}
+                size="sm"
+              >
+                リセット
+              </PrimaryButton>
+            </Flex>
+          )
+          : null}
+      </Flex>
 
       {people.length === 0
         ? (
@@ -68,14 +132,18 @@ export function FamilyTree(): React.ReactNode {
           </Text>
         )}
 
-      {result.ok && people.length > 0
+      {showTree
         ? (
-          <Box overflowX="auto">
+          <Box
+            maxHeight="70vh"
+            overflowX="auto"
+            overflowY="auto"
+          >
             <Flex>
               <Box
                 bg="bg"
                 flexShrink={0}
-                height={`${result.layout.height.toString()}px`}
+                height={`${(result.layout.height * zoom).toString()}px`}
                 left={0}
                 position="sticky"
                 width="64px"
@@ -85,19 +153,19 @@ export function FamilyTree(): React.ReactNode {
                   <Box
                     alignItems="center"
                     display="flex"
-                    height={`${row.height.toString()}px`}
+                    height={`${(row.height * zoom).toString()}px`}
                     justifyContent="center"
                     key={row.y}
                     left={0}
                     position="absolute"
-                    top={`${row.y.toString()}px`}
+                    top={`${(row.y * zoom).toString()}px`}
                     width="100%"
                   >
                     <Text
                       color="fg.muted"
                       fontSize="xs"
                     >
-                      第{(row.generation + 1).toString()}世代
+                      {`第${(row.generation + 1).toString()}世代`}
                     </Text>
                   </Box>
                 ))}
@@ -105,8 +173,9 @@ export function FamilyTree(): React.ReactNode {
 
               <Box flexShrink={0}>
                 <svg
-                  height={result.layout.height}
-                  width={result.layout.width}
+                  height={result.layout.height * zoom}
+                  viewBox={`0 0 ${result.layout.width.toString()} ${result.layout.height.toString()}`}
+                  width={result.layout.width * zoom}
                 >
                   {result.layout.parentGroups.map((group) => (
                     <ParentChildEdge
