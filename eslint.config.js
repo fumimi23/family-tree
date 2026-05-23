@@ -61,7 +61,6 @@ export default tseslint.config(
           ignoreAlias: false,
           ignoreCase: true,
           specialCharacters: 'keep',
-          groupKind: 'mixed',
           partitionByNewLine: false,
           partitionByComment: false,
         },

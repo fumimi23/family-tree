@@ -1,10 +1,11 @@
+import { Flex, Table } from '@chakra-ui/react';
+import React from 'react';
+
 import { PersonDialog } from '@/components/person/PersonDialog';
 import { H2 } from '@/components/ui/H2';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { type Person, sexList } from '@/schemas/personSchema';
 import { usePeopleStore } from '@/store/personStore';
-import { Flex, Table } from '@chakra-ui/react';
-import React from 'react';
 
 export function PeopleTable(): React.ReactNode {
   const people: Person[] = usePeopleStore((state) => state.people);

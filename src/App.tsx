@@ -1,4 +1,7 @@
 import '@/App.css';
+import { Box, Flex, Grid, GridItem, Input, Text } from '@chakra-ui/react';
+import React from 'react';
+
 import { FamilyTree } from '@/components/familyTree/FamilyTree';
 import { PeopleTable } from '@/components/person/PeopleTable';
 import { RelationTable } from '@/components/relation/RelationTable';
@@ -9,8 +12,6 @@ import { toaster, Toaster } from '@/components/ui/toaster';
 import { importJsonSchema } from '@/schemas/importJsonSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
-import { Box, Flex, Grid, GridItem, Input, Text } from '@chakra-ui/react';
-import React from 'react';
 
 function isJsonFile(file: File): boolean {
   return file.name.toLowerCase().endsWith('.json') || file.type === 'application/json';

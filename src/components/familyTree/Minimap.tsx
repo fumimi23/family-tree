@@ -1,8 +1,9 @@
+import { Box } from '@chakra-ui/react';
+import React from 'react';
+
 import { LABELS_WIDTH } from '@/components/familyTree/layout/internalTypes';
 import { type FamilyTreeLayout } from '@/components/familyTree/types';
 import { useFamilyTreeTheme } from '@/components/familyTree/useFamilyTreeTheme';
-import { Box } from '@chakra-ui/react';
-import React from 'react';
 
 const MAX_MINIMAP_WIDTH = 240;
 const MAX_MINIMAP_HEIGHT = 160;

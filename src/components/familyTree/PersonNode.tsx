@@ -1,7 +1,8 @@
+import React from 'react';
+
 import { type PersonNodeLayout } from '@/components/familyTree/types';
 import { useFamilyTreeTheme } from '@/components/familyTree/useFamilyTreeTheme';
 import { type Person, Sex } from '@/schemas/personSchema';
-import React from 'react';
 
 interface Props {
   node: PersonNodeLayout;

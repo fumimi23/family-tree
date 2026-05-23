@@ -1,5 +1,6 @@
-import { type Relation } from '@/schemas/relationSchema';
 import { create } from 'zustand';
+
+import { type Relation } from '@/schemas/relationSchema';
 
 interface RelationStore {
   relations: Relation[];
