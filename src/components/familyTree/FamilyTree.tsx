@@ -78,8 +78,10 @@ export function FamilyTree(): React.ReactNode {
               gap={2}
             >
               <PrimaryButton
+                aria-label="ズームアウト"
                 onClick={handleZoomOut}
                 size="sm"
+                title="ズームアウト"
               >
                 −
               </PrimaryButton>
@@ -93,8 +95,10 @@ export function FamilyTree(): React.ReactNode {
               </Text>
 
               <PrimaryButton
+                aria-label="ズームイン"
                 onClick={handleZoomIn}
                 size="sm"
+                title="ズームイン"
               >
                 +
               </PrimaryButton>
