@@ -5,6 +5,7 @@ import React from 'react';
 
 interface Props {
   node: PersonNodeLayout;
+  onClick?: (personId: string) => void;
   person: Person;
 }
 
@@ -40,7 +41,7 @@ function buildDateText(birth: string, death: string): string {
   return `${b} - ${d}`;
 }
 
-export function PersonNode({ node, person }: Props): React.ReactNode {
+export function PersonNode({ node, onClick, person }: Props): React.ReactNode {
   const theme = useFamilyTreeTheme();
   const fill = theme.sexFill[toSex(person.sex)];
   const fullName = node.showFamilyName
@@ -56,8 +57,29 @@ export function PersonNode({ node, person }: Props): React.ReactNode {
   const nameY = node.height * NAME_Y_RATIO;
   const dateY = node.height * DATE_Y_RATIO;
   const posthumousY = node.height * POSTHUMOUS_Y_RATIO;
+  const isClickable = onClick !== undefined;
+  const handleClick = !isClickable
+    ? undefined
+    : (): void => { onClick(person.id); };
+  const handleKeyDown = !isClickable
+    ? undefined
+    : (e: React.KeyboardEvent<SVGGElement>): void => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onClick(person.id);
+      }
+    };
+  const ariaLabel = `${person.familyName} ${person.givenName}`;
   return (
-    <g transform={transform}>
+    <g
+      aria-label={isClickable ? ariaLabel : undefined}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      role={isClickable ? 'button' : undefined}
+      style={isClickable ? { cursor: 'pointer' } : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      transform={transform}
+    >
       <rect
         fill={fill}
         fillOpacity={rectOpacity}
