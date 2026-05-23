@@ -5,6 +5,7 @@ import React from 'react';
 
 interface Props {
   node: PersonNodeLayout;
+  onClick?: (personId: string) => void;
   person: Person;
 }
 
@@ -40,7 +41,7 @@ function buildDateText(birth: string, death: string): string {
   return `${b} - ${d}`;
 }
 
-export function PersonNode({ node, person }: Props): React.ReactNode {
+export function PersonNode({ node, onClick, person }: Props): React.ReactNode {
   const theme = useFamilyTreeTheme();
   const fill = theme.sexFill[toSex(person.sex)];
   const fullName = node.showFamilyName
@@ -56,8 +57,15 @@ export function PersonNode({ node, person }: Props): React.ReactNode {
   const nameY = node.height * NAME_Y_RATIO;
   const dateY = node.height * DATE_Y_RATIO;
   const posthumousY = node.height * POSTHUMOUS_Y_RATIO;
+  const handleClick = onClick === undefined
+    ? undefined
+    : (): void => { onClick(person.id); };
   return (
-    <g transform={transform}>
+    <g
+      onClick={handleClick}
+      style={onClick === undefined ? undefined : { cursor: 'pointer' }}
+      transform={transform}
+    >
       <rect
         fill={fill}
         fillOpacity={rectOpacity}
