@@ -1,4 +1,5 @@
 import { exportAsPng, exportAsSvg } from '@/components/familyTree/exportImage';
+import { FamilyTreeToolbar } from '@/components/familyTree/FamilyTreeToolbar';
 import { LABELS_WIDTH } from '@/components/familyTree/layout/internalTypes';
 import { layoutFamilyTree } from '@/components/familyTree/layoutFamilyTree';
 import { MarriageEdge } from '@/components/familyTree/MarriageEdge';
@@ -6,9 +7,9 @@ import { Minimap } from '@/components/familyTree/Minimap';
 import { ParentChildEdge } from '@/components/familyTree/ParentChildEdge';
 import { PersonNode } from '@/components/familyTree/PersonNode';
 import { SecondaryParentEdge } from '@/components/familyTree/SecondaryParentEdge';
+import { useWheelZoom } from '@/components/familyTree/useWheelZoom';
 import { PersonDialog } from '@/components/person/PersonDialog';
 import { H2 } from '@/components/ui/H2';
-import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { toaster } from '@/components/ui/toaster';
 import { type Person } from '@/schemas/personSchema';
 import { usePeopleStore } from '@/store/personStore';
@@ -110,34 +111,12 @@ export function FamilyTree(): React.ReactNode {
   const showTree = result.ok && people.length > 0;
 
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const lastWheelTimeRef = React.useRef(0);
-  React.useEffect(() => {
-    const el = containerRef.current;
-    if (el === null) {
-      return undefined;
-    }
-    const WHEEL_COOLDOWN_MS = 80;
-    const handleWheel = (e: WheelEvent): void => {
-      if (!e.ctrlKey && !e.metaKey) {
-        return;
-      }
-      e.preventDefault();
-      const now = performance.now();
-      if (now - lastWheelTimeRef.current < WHEEL_COOLDOWN_MS) {
-        return;
-      }
-      lastWheelTimeRef.current = now;
-      if (e.deltaY < 0) {
-        setZoomIndex((i) => Math.min(i + 1, ZOOM_LEVELS.length - 1));
-      } else if (e.deltaY > 0) {
-        setZoomIndex((i) => Math.max(i - 1, 0));
-      }
-    };
-    el.addEventListener('wheel', handleWheel, { passive: false });
-    return () => {
-      el.removeEventListener('wheel', handleWheel);
-    };
-  }, [showTree]);
+  useWheelZoom({
+    containerRef,
+    enabled: showTree,
+    onZoomIn: handleZoomIn,
+    onZoomOut: handleZoomOut,
+  });
 
   return (
     <Flex
@@ -154,57 +133,14 @@ export function FamilyTree(): React.ReactNode {
 
         {showTree
           ? (
-            <Flex
-              alignItems="center"
-              gap={2}
-            >
-              <PrimaryButton
-                aria-label="ズームアウト"
-                onClick={handleZoomOut}
-                size="sm"
-                title="ズームアウト"
-              >
-                −
-              </PrimaryButton>
-
-              <Text
-                fontSize="sm"
-                minWidth="50px"
-                textAlign="center"
-              >
-                {`${zoomPercent.toString()}%`}
-              </Text>
-
-              <PrimaryButton
-                aria-label="ズームイン"
-                onClick={handleZoomIn}
-                size="sm"
-                title="ズームイン"
-              >
-                +
-              </PrimaryButton>
-
-              <PrimaryButton
-                onClick={handleZoomReset}
-                size="sm"
-              >
-                リセット
-              </PrimaryButton>
-
-              <PrimaryButton
-                onClick={handleExportSvg}
-                size="sm"
-              >
-                SVG
-              </PrimaryButton>
-
-              <PrimaryButton
-                onClick={handleExportPng}
-                size="sm"
-              >
-                PNG
-              </PrimaryButton>
-            </Flex>
+            <FamilyTreeToolbar
+              onExportPng={handleExportPng}
+              onExportSvg={handleExportSvg}
+              onZoomIn={handleZoomIn}
+              onZoomOut={handleZoomOut}
+              onZoomReset={handleZoomReset}
+              zoomPercent={zoomPercent}
+            />
           )
           : null}
       </Flex>
