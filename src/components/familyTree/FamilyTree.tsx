@@ -91,7 +91,7 @@ export function FamilyTree(): React.ReactNode {
                 minWidth="50px"
                 textAlign="center"
               >
-                {zoomPercent.toString()}%
+                {`${zoomPercent.toString()}%`}
               </Text>
 
               <PrimaryButton
@@ -165,7 +165,7 @@ export function FamilyTree(): React.ReactNode {
                       color="fg.muted"
                       fontSize="xs"
                     >
-                      第{(row.generation + 1).toString()}世代
+                      {`第${(row.generation + 1).toString()}世代`}
                     </Text>
                   </Box>
                 ))}

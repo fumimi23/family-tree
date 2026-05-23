@@ -8,10 +8,15 @@ import {
 import { findAnchorPersonId } from '@/components/familyTree/layout/ownership';
 import { type SecondaryParentEdgeLayout } from '@/components/familyTree/types';
 
+interface UnitOrigin {
+  leftX: number;
+  y: number;
+}
+
 function getParentUnitOrigin(
   parentUnit: Unit,
   personPositions: Map<string, PersonPosition>,
-): { leftX: number; y: number } | null {
+): UnitOrigin | null {
   const positions = parentUnit.personIds
     .map((pid) => personPositions.get(pid))
     .filter((p): p is PersonPosition => p !== undefined);
