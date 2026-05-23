@@ -29,7 +29,7 @@ export const sexList = [
 ];
 
 export const personSchema = z.object({
-  id: z.string().uuid()
+  id: z.uuid()
     .describe('ID'),
   familyName: z.string().min(1)
     .describe('姓'),
@@ -42,12 +42,12 @@ export const personSchema = z.object({
   sex: z.enum(Object.values(Sex) as [string, ...string[]])
     .describe('性別'),
   birth: z.union([
-    z.string().date(),
+    z.iso.date(),
     z.literal(''),
   ])
     .describe('生年月日'),
   death: z.union([
-    z.string().date(),
+    z.iso.date(),
     z.literal(''),
   ])
     .describe('没年月日'),
