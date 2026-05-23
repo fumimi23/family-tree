@@ -76,6 +76,13 @@ function computeViewport(
   };
 }
 
+function sameState(a: ScrollState, b: ScrollState): boolean {
+  return a.left === b.left
+    && a.top === b.top
+    && a.clientW === b.clientW
+    && a.clientH === b.clientH;
+}
+
 function useScrollState(containerRef: React.RefObject<HTMLDivElement | null>): ScrollState {
   const [scrollState, setScrollState] = React.useState<ScrollState>({
     left: 0,
@@ -88,12 +95,20 @@ function useScrollState(containerRef: React.RefObject<HTMLDivElement | null>): S
     if (el === null) {
       return undefined;
     }
+    let rafId: number | null = null;
     const update = (): void => {
-      setScrollState({
-        left: el.scrollLeft,
-        top: el.scrollTop,
-        clientW: el.clientWidth,
-        clientH: el.clientHeight,
+      if (rafId !== null) {
+        return;
+      }
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        const next: ScrollState = {
+          left: el.scrollLeft,
+          top: el.scrollTop,
+          clientW: el.clientWidth,
+          clientH: el.clientHeight,
+        };
+        setScrollState((prev) => (sameState(prev, next) ? prev : next));
       });
     };
     update();
@@ -101,6 +116,9 @@ function useScrollState(containerRef: React.RefObject<HTMLDivElement | null>): S
     const resizeObserver = new ResizeObserver(update);
     resizeObserver.observe(el);
     return () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
       el.removeEventListener('scroll', update);
       resizeObserver.disconnect();
     };
@@ -118,7 +136,8 @@ export function Minimap({ containerRef, layout, zoom }: Props): React.ReactNode 
     if (el === null) {
       return;
     }
-    const targetLeft = (layoutX * zoom) + LABELS_WIDTH - (el.clientWidth / 2);
+    const visibleTreeWidth = el.clientWidth - LABELS_WIDTH;
+    const targetLeft = (layoutX * zoom) - (visibleTreeWidth / 2);
     const targetTop = (layoutY * zoom) - (el.clientHeight / 2);
     el.scrollTo({
       left: Math.max(targetLeft, 0),
@@ -139,6 +158,18 @@ export function Minimap({ containerRef, layout, zoom }: Props): React.ReactNode 
     e.preventDefault();
     navigateTo(layout.width / 2, layout.height / 2);
   }, [layout.width, layout.height, navigateTo]);
+
+  const nodeRects = React.useMemo(() => layout.nodes.map((node) => (
+    <rect
+      fill={theme.nodeStroke}
+      height={node.height}
+      key={node.personId}
+      opacity={0.6}
+      width={node.width}
+      x={node.x}
+      y={node.y}
+    />
+  )), [layout.nodes, theme.nodeStroke]);
 
   if (dimensions.width === 0) {
     return null;
@@ -164,17 +195,7 @@ export function Minimap({ containerRef, layout, zoom }: Props): React.ReactNode 
         viewBox={`0 0 ${layout.width.toString()} ${layout.height.toString()}`}
         width={dimensions.width}
       >
-        {layout.nodes.map((node) => (
-          <rect
-            fill={theme.nodeStroke}
-            height={node.height}
-            key={node.personId}
-            opacity={0.6}
-            width={node.width}
-            x={node.x}
-            y={node.y}
-          />
-        ))}
+        {nodeRects}
 
         <rect
           fill="rgba(99, 102, 241, 0.15)"
