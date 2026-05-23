@@ -57,13 +57,27 @@ export function PersonNode({ node, onClick, person }: Props): React.ReactNode {
   const nameY = node.height * NAME_Y_RATIO;
   const dateY = node.height * DATE_Y_RATIO;
   const posthumousY = node.height * POSTHUMOUS_Y_RATIO;
-  const handleClick = onClick === undefined
+  const isClickable = onClick !== undefined;
+  const handleClick = !isClickable
     ? undefined
     : (): void => { onClick(person.id); };
+  const handleKeyDown = !isClickable
+    ? undefined
+    : (e: React.KeyboardEvent<SVGGElement>): void => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onClick(person.id);
+      }
+    };
+  const ariaLabel = `${person.familyName} ${person.givenName}`;
   return (
     <g
+      aria-label={isClickable ? ariaLabel : undefined}
       onClick={handleClick}
-      style={onClick === undefined ? undefined : { cursor: 'pointer' }}
+      onKeyDown={handleKeyDown}
+      role={isClickable ? 'button' : undefined}
+      style={isClickable ? { cursor: 'pointer' } : undefined}
+      tabIndex={isClickable ? 0 : undefined}
       transform={transform}
     >
       <rect
