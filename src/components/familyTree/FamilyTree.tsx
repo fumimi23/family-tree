@@ -1,3 +1,4 @@
+import { exportAsPng, exportAsSvg } from '@/components/familyTree/exportImage';
 import { layoutFamilyTree } from '@/components/familyTree/layoutFamilyTree';
 import { MarriageEdge } from '@/components/familyTree/MarriageEdge';
 import { ParentChildEdge } from '@/components/familyTree/ParentChildEdge';
@@ -6,6 +7,7 @@ import { SecondaryParentEdge } from '@/components/familyTree/SecondaryParentEdge
 import { PersonDialog } from '@/components/person/PersonDialog';
 import { H2 } from '@/components/ui/H2';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { toaster } from '@/components/ui/toaster';
 import { type Person } from '@/schemas/personSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
@@ -60,6 +62,37 @@ export function FamilyTree(): React.ReactNode {
       setEditingPersonId(null);
     }
   }, []);
+  const svgRef = React.useRef<SVGSVGElement>(null);
+  const handleExportSvg = React.useCallback((): void => {
+    if (svgRef.current === null || !result.ok) {
+      return;
+    }
+    exportAsSvg(
+      svgRef.current,
+      result.layout.width,
+      result.layout.height,
+      'family-tree.svg',
+    );
+  }, [result]);
+  const handleExportPng = React.useCallback((): void => {
+    if (svgRef.current === null || !result.ok) {
+      return;
+    }
+    void exportAsPng(
+      svgRef.current,
+      result.layout.width,
+      result.layout.height,
+      'family-tree.png',
+      '#ffffff',
+    ).catch((err: unknown) => {
+      const message = err instanceof Error ? err.message : String(err);
+      toaster.create({
+        title: 'PNG エクスポートに失敗しました。',
+        description: message,
+        type: 'error',
+      });
+    });
+  }, [result]);
   const [zoomIndex, setZoomIndex] = React.useState(DEFAULT_ZOOM_INDEX);
   const zoom = ZOOM_LEVELS[zoomIndex];
   const handleZoomIn = React.useCallback((): void => {
@@ -121,6 +154,20 @@ export function FamilyTree(): React.ReactNode {
                 size="sm"
               >
                 リセット
+              </PrimaryButton>
+
+              <PrimaryButton
+                onClick={handleExportSvg}
+                size="sm"
+              >
+                SVG
+              </PrimaryButton>
+
+              <PrimaryButton
+                onClick={handleExportPng}
+                size="sm"
+              >
+                PNG
               </PrimaryButton>
             </Flex>
           )
@@ -187,6 +234,7 @@ export function FamilyTree(): React.ReactNode {
               <Box flexShrink={0}>
                 <svg
                   height={result.layout.height * zoom}
+                  ref={svgRef}
                   viewBox={`0 0 ${result.layout.width.toString()} ${result.layout.height.toString()}`}
                   width={result.layout.width * zoom}
                 >
