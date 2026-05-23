@@ -8,25 +8,17 @@ import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
-interface AddPersonDialogProps {
+interface PersonDialogProps {
   isOpen: boolean;
   onOpenChange: (e: { open: boolean }) => void;
+  person?: Person;
 }
 
-export function AddPersonDialog({ isOpen, onOpenChange }: AddPersonDialogProps): React.ReactNode {
-  const addPerson = usePeopleStore((state) => state.addPerson);
-  const onSubmit = (person: Person): void => {
-    console.log(person);
-    addPerson(person);
-    onOpenChange({ open: false });
-    toaster.create({
-      title: '人物を追加しました。',
-      description: `${person.familyName} ${person.givenName}さんを追加しました。`,
-      type: 'success',
-    });
-  };
-
-  const defaultValues: Person = {
+function buildDefaultValues(person: Person | undefined): Person {
+  if (person !== undefined) {
+    return person;
+  }
+  return {
     id: uuidv4(),
     familyName: '',
     givenName: '',
@@ -37,10 +29,52 @@ export function AddPersonDialog({ isOpen, onOpenChange }: AddPersonDialogProps):
     death: '',
     posthumousName: '',
   };
+}
+
+export function PersonDialog({ isOpen, onOpenChange, person }: PersonDialogProps): React.ReactNode {
+  const addPerson = usePeopleStore((state) => state.addPerson);
+  const updatePerson = usePeopleStore((state) => state.updatePerson);
+  const deletePerson = usePeopleStore((state) => state.deletePerson);
+  const isEdit = person !== undefined;
+  const defaultValues = buildDefaultValues(person);
   const { control, register, handleSubmit, formState: { errors } } = useForm<Person>({
     defaultValues,
     resolver: zodResolver(personSchema),
   });
+  const onSubmit = (data: Person): void => {
+    if (isEdit) {
+      updatePerson(data);
+      toaster.create({
+        title: '人物を更新しました。',
+        description: `${data.familyName} ${data.givenName}さんを更新しました。`,
+        type: 'success',
+      });
+    } else {
+      addPerson(data);
+      toaster.create({
+        title: '人物を追加しました。',
+        description: `${data.familyName} ${data.givenName}さんを追加しました。`,
+        type: 'success',
+      });
+    }
+    onOpenChange({ open: false });
+  };
+  const handleDelete = (): void => {
+    if (person === undefined) {
+      return;
+    }
+    const fullName = `${person.familyName} ${person.givenName}`;
+    if (!window.confirm(`${fullName}さんを削除しますか?`)) {
+      return;
+    }
+    deletePerson(person.id);
+    onOpenChange({ open: false });
+    toaster.create({
+      title: '人物を削除しました。',
+      description: `${fullName}さんを削除しました。`,
+      type: 'success',
+    });
+  };
 
   return (
     <Dialog.Root
@@ -54,7 +88,7 @@ export function AddPersonDialog({ isOpen, onOpenChange }: AddPersonDialogProps):
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header>
-              人物追加
+              {isEdit ? '人物編集' : '人物追加'}
             </Dialog.Header>
 
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -180,6 +214,19 @@ export function AddPersonDialog({ isOpen, onOpenChange }: AddPersonDialogProps):
               </Dialog.Body>
 
               <Dialog.Footer>
+                {isEdit
+                  ? (
+                    <Button
+                      colorPalette="red"
+                      onClick={handleDelete}
+                      type="button"
+                      variant="outline"
+                    >
+                      削除
+                    </Button>
+                  )
+                  : null}
+
                 <Dialog.ActionTrigger asChild>
                   <Button variant="outline">キャンセル</Button>
                 </Dialog.ActionTrigger>

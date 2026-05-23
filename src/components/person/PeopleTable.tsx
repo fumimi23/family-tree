@@ -1,4 +1,4 @@
-import { AddPersonDialog } from '@/components/person/AddPersonDialog';
+import { PersonDialog } from '@/components/person/PersonDialog';
 import { H2 } from '@/components/ui/H2';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { type Person, sexList } from '@/schemas/personSchema';
@@ -54,7 +54,7 @@ export function PeopleTable(): React.ReactNode {
         </Table.Body>
       </Table.Root>
 
-      <AddPersonDialog
+      <PersonDialog
         isOpen={isOpen}
         key={isOpen.toString()}
         onOpenChange={(e) => { setIsOpen(e.open); }}
