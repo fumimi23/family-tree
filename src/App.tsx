@@ -9,8 +9,16 @@ import { toaster, Toaster } from '@/components/ui/toaster';
 import { importJsonSchema } from '@/schemas/importJsonSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
-import { Flex, Grid, GridItem, Input } from '@chakra-ui/react';
+import { Box, Flex, Grid, GridItem, Input, Text } from '@chakra-ui/react';
 import React from 'react';
+
+function isJsonFile(file: File): boolean {
+  return file.name.toLowerCase().endsWith('.json') || file.type === 'application/json';
+}
+
+function isFileDrag(e: React.DragEvent<HTMLDivElement>): boolean {
+  return Array.from(e.dataTransfer.types).includes('Files');
+}
 
 function App(): React.ReactNode {
   const people = usePeopleStore((state) => state.people);
@@ -23,13 +31,24 @@ function App(): React.ReactNode {
   },
   [people, relations]);
 
-  const handleFileChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
-    if (!e.target.files) {
+  const processFile = React.useCallback((file: File): void => {
+    if (!isJsonFile(file)) {
+      toaster.create({
+        title: 'インポートに失敗しました。',
+        description: 'JSON ファイルのみ対応しています。',
+        type: 'error',
+      });
       return;
     }
-
-    const file = e.target.files[0];
     const reader = new FileReader();
+    reader.onerror = (): void => {
+      console.error('ファイルの読み込みに失敗しました。');
+      toaster.create({
+        title: 'インポートに失敗しました。',
+        description: 'ファイルの読み込みに失敗しました。',
+        type: 'error',
+      });
+    };
     reader.onload = (event): void => {
       try {
         if (!event.target) {
@@ -72,6 +91,52 @@ function App(): React.ReactNode {
     reader.readAsText(file);
   }, []);
 
+  const handleFileChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
+    if (!e.target.files || e.target.files.length === 0) {
+      return;
+    }
+    processFile(e.target.files[0]);
+  }, [processFile]);
+
+  const [isDragging, setIsDragging] = React.useState(false);
+  const dragCounterRef = React.useRef(0);
+  const handleDragEnter = React.useCallback((e: React.DragEvent<HTMLDivElement>): void => {
+    if (!isFileDrag(e)) {
+      return;
+    }
+    e.preventDefault();
+    dragCounterRef.current += 1;
+    setIsDragging(true);
+  }, []);
+  const handleDragLeave = React.useCallback((e: React.DragEvent<HTMLDivElement>): void => {
+    if (!isFileDrag(e)) {
+      return;
+    }
+    dragCounterRef.current -= 1;
+    if (dragCounterRef.current <= 0) {
+      dragCounterRef.current = 0;
+      setIsDragging(false);
+    }
+  }, []);
+  const handleDragOver = React.useCallback((e: React.DragEvent<HTMLDivElement>): void => {
+    if (!isFileDrag(e)) {
+      return;
+    }
+    e.preventDefault();
+  }, []);
+  const handleDrop = React.useCallback((e: React.DragEvent<HTMLDivElement>): void => {
+    if (!isFileDrag(e)) {
+      return;
+    }
+    e.preventDefault();
+    dragCounterRef.current = 0;
+    setIsDragging(false);
+    if (e.dataTransfer.files.length === 0) {
+      return;
+    }
+    processFile(e.dataTransfer.files[0]);
+  }, [processFile]);
+
   const inputRef = React.useRef<HTMLInputElement>(null);
   const handleImportClick = React.useCallback((): void => {
     if (inputRef.current !== null) {
@@ -82,7 +147,13 @@ function App(): React.ReactNode {
   []);
 
   return (
-    <>
+    <Box
+      minHeight="100vh"
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
       <Grid
         gap={4}
         templateColumns="repeat(2, minmax(0, 1fr))"
@@ -130,8 +201,34 @@ function App(): React.ReactNode {
         type="file"
       />
 
+      {isDragging
+        ? (
+          <Box
+            alignItems="center"
+            bg="blackAlpha.700"
+            bottom={0}
+            display="flex"
+            justifyContent="center"
+            left={0}
+            pointerEvents="none"
+            position="fixed"
+            right={0}
+            top={0}
+            zIndex={9999}
+          >
+            <Text
+              color="white"
+              fontSize="2xl"
+              fontWeight={600}
+            >
+              JSON ファイルをドロップしてインポート
+            </Text>
+          </Box>
+        )
+        : null}
+
       <Toaster />
-    </>
+    </Box>
   );
 }
 
