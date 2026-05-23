@@ -11,9 +11,8 @@ import { useRelationStore } from '@/store/relationStore';
 import { Box, Flex, Text } from '@chakra-ui/react';
 import React from 'react';
 
-const ZOOM_STEP = 1.25;
-const ZOOM_MIN = 0.25;
-const ZOOM_MAX = 4;
+const ZOOM_LEVELS = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 4.0];
+const DEFAULT_ZOOM_INDEX = 3;
 
 interface LayoutSuccess {
   ok: true;
@@ -48,15 +47,16 @@ export function FamilyTree(): React.ReactNode {
       };
     }
   }, [people, relations]);
-  const [zoom, setZoom] = React.useState(1);
+  const [zoomIndex, setZoomIndex] = React.useState(DEFAULT_ZOOM_INDEX);
+  const zoom = ZOOM_LEVELS[zoomIndex];
   const handleZoomIn = React.useCallback((): void => {
-    setZoom((z) => Math.min(z * ZOOM_STEP, ZOOM_MAX));
+    setZoomIndex((i) => Math.min(i + 1, ZOOM_LEVELS.length - 1));
   }, []);
   const handleZoomOut = React.useCallback((): void => {
-    setZoom((z) => Math.max(z / ZOOM_STEP, ZOOM_MIN));
+    setZoomIndex((i) => Math.max(i - 1, 0));
   }, []);
   const handleZoomReset = React.useCallback((): void => {
-    setZoom(1);
+    setZoomIndex(DEFAULT_ZOOM_INDEX);
   }, []);
   const zoomPercent = Math.round(zoom * 100);
   const showTree = result.ok && people.length > 0;
