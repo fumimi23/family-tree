@@ -1,0 +1,37 @@
+name: 設計議論
+description: 実装方針が複数あり、設計判断が必要な議題を立ち上げる
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: background
+    attributes:
+      label: 背景
+      description: 議論したい問題・課題の概要
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: 選択肢
+      description: 検討中のアプローチを A / B / C の形で列挙し、それぞれの pros / cons を整理する
+      value: |
+        ### A.
+        - Pros:
+        - Cons:
+
+        ### B.
+        - Pros:
+        - Cons:
+    validations:
+      required: true
+  - type: textarea
+    id: axes
+    attributes:
+      label: 比較軸
+      description: 何を基準に意思決定するか (コスト / メンテ性 / UX / 互換性 等)
+  - type: textarea
+    id: related
+    attributes:
+      label: 関連
+      description: 関連 issue / PR / ドキュメント 等
