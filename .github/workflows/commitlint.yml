@@ -31,6 +31,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Lint PR commits
+        if: github.event.pull_request.user.login != 'dependabot[bot]'
         run: |
           yarn commitlint \
             --from "${{ github.event.pull_request.base.sha }}" \
