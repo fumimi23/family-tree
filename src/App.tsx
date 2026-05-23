@@ -12,6 +12,14 @@ import { useRelationStore } from '@/store/relationStore';
 import { Box, Flex, Grid, GridItem, Input, Text } from '@chakra-ui/react';
 import React from 'react';
 
+function isJsonFile(file: File): boolean {
+  return file.name.toLowerCase().endsWith('.json') || file.type === 'application/json';
+}
+
+function isFileDrag(e: React.DragEvent<HTMLDivElement>): boolean {
+  return e.dataTransfer.types.includes('Files');
+}
+
 function App(): React.ReactNode {
   const people = usePeopleStore((state) => state.people);
   const relations = useRelationStore((state) => state.relations);
@@ -24,6 +32,14 @@ function App(): React.ReactNode {
   [people, relations]);
 
   const processFile = React.useCallback((file: File): void => {
+    if (!isJsonFile(file)) {
+      toaster.create({
+        title: 'インポートに失敗しました。',
+        description: 'JSON ファイルのみ対応しています。',
+        type: 'error',
+      });
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (event): void => {
       try {
@@ -77,15 +93,17 @@ function App(): React.ReactNode {
   const [isDragging, setIsDragging] = React.useState(false);
   const dragCounterRef = React.useRef(0);
   const handleDragEnter = React.useCallback((e: React.DragEvent<HTMLDivElement>): void => {
-    e.preventDefault();
-    if (!e.dataTransfer.types.includes('Files')) {
+    if (!isFileDrag(e)) {
       return;
     }
+    e.preventDefault();
     dragCounterRef.current += 1;
     setIsDragging(true);
   }, []);
   const handleDragLeave = React.useCallback((e: React.DragEvent<HTMLDivElement>): void => {
-    e.preventDefault();
+    if (!isFileDrag(e)) {
+      return;
+    }
     dragCounterRef.current -= 1;
     if (dragCounterRef.current <= 0) {
       dragCounterRef.current = 0;
@@ -93,26 +111,22 @@ function App(): React.ReactNode {
     }
   }, []);
   const handleDragOver = React.useCallback((e: React.DragEvent<HTMLDivElement>): void => {
+    if (!isFileDrag(e)) {
+      return;
+    }
     e.preventDefault();
   }, []);
   const handleDrop = React.useCallback((e: React.DragEvent<HTMLDivElement>): void => {
+    if (!isFileDrag(e)) {
+      return;
+    }
     e.preventDefault();
     dragCounterRef.current = 0;
     setIsDragging(false);
     if (e.dataTransfer.files.length === 0) {
       return;
     }
-    const file = e.dataTransfer.files[0];
-    const isJson = file.name.toLowerCase().endsWith('.json') || file.type === 'application/json';
-    if (!isJson) {
-      toaster.create({
-        title: 'インポートに失敗しました。',
-        description: 'JSON ファイルのみ対応しています。',
-        type: 'error',
-      });
-      return;
-    }
-    processFile(file);
+    processFile(e.dataTransfer.files[0]);
   }, [processFile]);
 
   const inputRef = React.useRef<HTMLInputElement>(null);
