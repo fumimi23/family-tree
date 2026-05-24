@@ -1,4 +1,4 @@
-import { Button, CloseButton, createListCollection, Dialog, Field, Flex, Portal, Select } from '@chakra-ui/react';
+import { Button, Checkbox, CloseButton, createListCollection, Dialog, Field, Flex, Portal, Select } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { toaster } from '@/components/ui/toaster';
 import { type Person } from '@/schemas/personSchema';
-import { type Relation, relationSchema, relationTypeList } from '@/schemas/relationSchema';
+import { type Relation, relationSchema, RelationType, relationTypeList } from '@/schemas/relationSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
 
@@ -27,6 +27,7 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
       personId2: [],
     },
     relationType: [],
+    divorced: false,
   };
   const { control, handleSubmit, formState: { errors }, watch } = useForm<Relation>({
     defaultValues,
@@ -43,6 +44,8 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
   });
 
   const selectedRelationType = relationTypeList.find((relationType) => Boolean(watch('relationType').find((value) => value === relationType.value)));
+  const isMarriageRelation = selectedRelationType?.value === RelationType.MARRIED_COUPLE
+    || selectedRelationType?.value === RelationType.COUPLE;
 
   const onSubmit = (relation: Relation): void => {
     console.log(relation);
@@ -231,6 +234,32 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
                           <Field.ErrorText>{errors.persons?.message}</Field.ErrorText>
                           <Field.ErrorText>{errors.persons?.personId2?.message}</Field.ErrorText>
                         </Field.Root>
+
+                        {isMarriageRelation
+                          ? (
+                            <Field.Root invalid={Boolean(errors.divorced)}>
+                              <Controller
+                                control={control}
+                                name="divorced"
+                                render={({ field }) => (
+                                  <Checkbox.Root
+                                    checked={field.value === true}
+                                    name={field.name}
+                                    onCheckedChange={(e): void => {
+                                      field.onChange(e.checked === true);
+                                    }}
+                                  >
+                                    <Checkbox.HiddenInput onBlur={field.onBlur} />
+                                    <Checkbox.Control />
+                                    <Checkbox.Label>離婚済み</Checkbox.Label>
+                                  </Checkbox.Root>
+                                )}
+                              />
+
+                              <Field.ErrorText>{errors.divorced?.message}</Field.ErrorText>
+                            </Field.Root>
+                          )
+                          : null}
                       </>
                     )
                     : null}
