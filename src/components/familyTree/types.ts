@@ -42,6 +42,24 @@ export interface SecondaryParentEdgeLayout {
   adopted: boolean;
 }
 
+/*
+ * 同一人物の 2 回目以降の婚姻を表現するための線。
+ * primary 婚姻 (MarriageEdgeLayout) と区別するため、人物ノードの上下方向に
+ * オフセットを付けて引く (= ジェノグラム慣例の段差表現)。
+ */
+export interface SecondaryMarriageEdgeLayout {
+  id: string;
+  type: MarriageLineType;
+  // primary person 側のノード右/左中央 (xy)
+  primaryAnchorX: number;
+  primaryAnchorY: number;
+  // 配偶者側のノード中央 (xy)
+  spouseAnchorX: number;
+  spouseAnchorY: number;
+  // ベンドする y 座標 (段差用)
+  busY: number;
+}
+
 export interface GenerationRowLayout {
   generation: number;
   y: number;
@@ -51,6 +69,7 @@ export interface GenerationRowLayout {
 export interface FamilyTreeLayout {
   nodes: PersonNodeLayout[];
   marriageEdges: MarriageEdgeLayout[];
+  secondaryMarriageEdges: SecondaryMarriageEdgeLayout[];
   parentGroups: ParentChildrenGroupLayout[];
   secondaryParentEdges: SecondaryParentEdgeLayout[];
   generationRows: GenerationRowLayout[];
