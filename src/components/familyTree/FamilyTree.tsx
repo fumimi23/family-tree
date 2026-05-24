@@ -9,6 +9,7 @@ import { MarriageEdge } from '@/components/familyTree/MarriageEdge';
 import { Minimap } from '@/components/familyTree/Minimap';
 import { ParentChildEdge } from '@/components/familyTree/ParentChildEdge';
 import { PersonNode } from '@/components/familyTree/PersonNode';
+import { SecondaryMarriageEdge } from '@/components/familyTree/SecondaryMarriageEdge';
 import { SecondaryParentEdge } from '@/components/familyTree/SecondaryParentEdge';
 import { useWheelZoom } from '@/components/familyTree/useWheelZoom';
 import { PersonDialog } from '@/components/person/PersonDialog';
@@ -227,6 +228,13 @@ export function FamilyTree(): React.ReactNode {
 
                   {result.layout.marriageEdges.map((edge) => (
                     <MarriageEdge
+                      edge={edge}
+                      key={edge.id}
+                    />
+                  ))}
+
+                  {result.layout.secondaryMarriageEdges.map((edge) => (
+                    <SecondaryMarriageEdge
                       edge={edge}
                       key={edge.id}
                     />
