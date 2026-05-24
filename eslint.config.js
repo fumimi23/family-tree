@@ -75,9 +75,10 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/**/*.{ts}'],
+    files: ['src/**/*.ts'],
+    ignores: ['src/**/*.test.ts'],
     rules: {
-      // 1つの関数の行数を50以下に制限
+      // 1つの関数の行数を50以下に制限 (.tsx とテストファイルは対象外)
       'max-lines-per-function': ['error', { max: 50 }],
     },
   },

@@ -68,7 +68,7 @@
 - `@typescript-eslint/restrict-template-expressions`: 数値は `.toString()` で文字列化
 - `@typescript-eslint/strict-boolean-expressions`: `if (str)` 不可、`str !== ''` 等で明示
 - `@typescript-eslint/no-unnecessary-condition`: 型上 undefined にならないチェックは無効。`noUncheckedIndexedAccess` が off なので `arr[0]` は `T` 型 → 配列の length チェックで防御する
-- `max-lines-per-function: 50` は `.ts` のみ (`.tsx` は対象外)。長い関数は小さなヘルパに分割
+- `max-lines-per-function: 50` は `.ts` のみ (`.tsx` とテストファイル `.test.ts` は対象外)。長い関数は小さなヘルパに分割
 
 ### CSS / レイアウト
 - `<input type="file">` の change イベントは同じファイルを再選択しても発火しない。click 前に `inputRef.current.value = ''` でリセットする

@@ -94,10 +94,12 @@ describe('layoutFamilyTree', () => {
       parentRel(ID.REL_PARENT_NEW_H, ID.HUSBAND, ID.CHILD_NEW),
     ];
     const result = layoutFamilyTree(people, relations);
-    const xByPerson = new Map(result.nodes.map((n) => [n.personId, n.x]));
-    const xOld = xByPerson.get(ID.CHILD_OLD) ?? 0;
-    const xNew = xByPerson.get(ID.CHILD_NEW) ?? 0;
-    expect(xOld).toBeGreaterThan(xNew);
+    const oldNode = result.nodes.find((n) => n.personId === ID.CHILD_OLD);
+    const newNode = result.nodes.find((n) => n.personId === ID.CHILD_NEW);
+    if (oldNode === undefined || newNode === undefined) {
+      throw new Error('期待した子ノードが見つかりません');
+    }
+    expect(oldNode.x).toBeGreaterThan(newNode.x);
   });
 
   it('存在しない人物を参照する relation は無視する', () => {
