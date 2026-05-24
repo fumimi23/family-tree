@@ -143,6 +143,23 @@ describe('layoutFamilyTree', () => {
     expect(edge.busY).toBeGreaterThanOrEqual(secondWifeNode.y + secondWifeNode.height);
   });
 
+  it('secondary 婚姻線の busY がノードより下に出る場合は layout.height に含まれる', () => {
+    const SECOND_WIFE = 'cccccccc-0000-4000-8000-000000000200';
+    const REL_SECOND = 'dddddddd-0000-4000-8000-000000000200';
+    const people = [
+      person(ID.HUSBAND, '1970-01-01'),
+      person(ID.WIFE, '1972-01-01'),
+      person(SECOND_WIFE, '1980-01-01'),
+    ];
+    const relations = [
+      marriedRel(ID.REL_MARRIED, ID.HUSBAND, ID.WIFE),
+      marriedRel(REL_SECOND, ID.HUSBAND, SECOND_WIFE),
+    ];
+    const result = layoutFamilyTree(people, relations);
+    const edge = result.secondaryMarriageEdges[0];
+    expect(result.height).toBeGreaterThanOrEqual(edge.busY);
+  });
+
   it('同一人物の 3 回目以降の婚姻は段差で busY が深くなる', () => {
     const SPOUSE2 = 'cccccccc-0000-4000-8000-000000000101';
     const SPOUSE3 = 'cccccccc-0000-4000-8000-000000000102';

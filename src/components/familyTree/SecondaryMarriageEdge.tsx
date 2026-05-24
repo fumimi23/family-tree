@@ -19,6 +19,13 @@ export function SecondaryMarriageEdge({ edge }: Props): React.ReactNode {
   const theme = useFamilyTreeTheme();
   const isMarried = edge.type === 'married';
 
+  /*
+   * 二重線は busY ± DOUBLE_LINE_OFFSET で描かれるため、縦線の終端も
+   * 下側の横線まで延ばさないと交差点で隙間が空く。married のときは
+   * busY + DOUBLE_LINE_OFFSET、couple のときは busY をそのまま使う。
+   */
+  const verticalEndY = isMarried ? edge.busY + DOUBLE_LINE_OFFSET : edge.busY;
+
   function horizontalLine(yOffset: number): React.ReactNode {
     return (
       <line
@@ -40,7 +47,7 @@ export function SecondaryMarriageEdge({ edge }: Props): React.ReactNode {
         x1={edge.primaryAnchorX}
         x2={edge.primaryAnchorX}
         y1={edge.primaryAnchorY}
-        y2={edge.busY}
+        y2={verticalEndY}
       />
 
       {isMarried
@@ -57,7 +64,7 @@ export function SecondaryMarriageEdge({ edge }: Props): React.ReactNode {
         strokeWidth={STROKE_WIDTH}
         x1={edge.spouseAnchorX}
         x2={edge.spouseAnchorX}
-        y1={edge.busY}
+        y1={verticalEndY}
         y2={edge.spouseAnchorY}
       />
     </g>

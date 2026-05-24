@@ -72,10 +72,20 @@ function buildGenerationRows(ctx: PlacementCtx): GenerationRowLayout[] {
 }
 
 function buildResult(ctx: PlacementCtx, totalRightX: number): FamilyTreeLayout {
-  const maxBottom = ctx.nodes.reduce(
+  const nodeBottom = ctx.nodes.reduce(
     (acc, n) => Math.max(acc, n.y + n.height),
     PADDING,
   );
+
+  /*
+   * secondary 婚姻線がノードより下に来るケース (子なし再婚など) を考慮して
+   * viewBox 用の最大下端を計算する。
+   */
+  const busBottom = ctx.secondaryMarriageEdges.reduce(
+    (acc, e) => Math.max(acc, e.busY),
+    0,
+  );
+  const maxBottom = Math.max(nodeBottom, busBottom);
   return {
     nodes: ctx.nodes,
     marriageEdges: ctx.marriageEdges,
