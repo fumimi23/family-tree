@@ -10,10 +10,17 @@ interface Props {
   person: Person;
 }
 
-const MAIDEN_Y_RATIO = 0.14;
-const NAME_Y_RATIO = 0.34;
-const DATE_Y_RATIO = 0.58;
-const POSTHUMOUS_Y_RATIO = 0.82;
+/*
+ * 旧姓を併記する場合は、他の行が下に押し下げられる。旧姓なしの通常レイアウトは
+ * 既存の比率を維持する (下の Y_RATIO_*_DEFAULT)。
+ */
+const Y_RATIO_NAME_DEFAULT = 0.29;
+const Y_RATIO_DATE_DEFAULT = 0.55;
+const Y_RATIO_POSTHUMOUS_DEFAULT = 0.79;
+const Y_RATIO_MAIDEN_SHIFTED = 0.22;
+const Y_RATIO_NAME_SHIFTED = 0.46;
+const Y_RATIO_DATE_SHIFTED = 0.68;
+const Y_RATIO_POSTHUMOUS_SHIFTED = 0.88;
 const DECEASED_RECT_OPACITY = 0.45;
 const DECEASED_TEXT_OPACITY = 0.75;
 
@@ -63,10 +70,10 @@ export function PersonNode({ node, onClick, person }: Props): React.ReactNode {
   const textOpacity = isDeceased ? DECEASED_TEXT_OPACITY : 1;
   const transform = `translate(${node.x.toString()}, ${node.y.toString()})`;
   const centerX = node.width / 2;
-  const maidenY = node.height * MAIDEN_Y_RATIO;
-  const nameY = node.height * NAME_Y_RATIO;
-  const dateY = node.height * DATE_Y_RATIO;
-  const posthumousY = node.height * POSTHUMOUS_Y_RATIO;
+  const maidenY = node.height * Y_RATIO_MAIDEN_SHIFTED;
+  const nameY = node.height * (showMaidenName ? Y_RATIO_NAME_SHIFTED : Y_RATIO_NAME_DEFAULT);
+  const dateY = node.height * (showMaidenName ? Y_RATIO_DATE_SHIFTED : Y_RATIO_DATE_DEFAULT);
+  const posthumousY = node.height * (showMaidenName ? Y_RATIO_POSTHUMOUS_SHIFTED : Y_RATIO_POSTHUMOUS_DEFAULT);
   const isClickable = onClick !== undefined;
   const handleClick = !isClickable
     ? undefined
