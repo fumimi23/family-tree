@@ -33,9 +33,10 @@
     },
     {
       "id": "10000000-0000-4000-8000-000000000004",
-      "familyName": "鈴木",
+      "familyName": "山田",
+      "maidenName": "鈴木",
       "givenName": "美咲",
-      "familyNameKana": "スズキ",
+      "familyNameKana": "ヤマダ",
       "givenNameKana": "ミサキ",
       "sex": "female",
       "birth": "1950-08-12",
