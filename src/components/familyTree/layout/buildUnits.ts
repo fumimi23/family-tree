@@ -1,17 +1,43 @@
-import { type ParentLink, type Unit } from '@/components/familyTree/layout/internalTypes';
+import {
+  type MarriageLineType,
+  type ParentLink,
+  type Unit,
+} from '@/components/familyTree/layout/internalTypes';
 import { type Person } from '@/schemas/personSchema';
 import { type Relation, RelationType } from '@/schemas/relationSchema';
+
+export interface SecondaryMarriage {
+  relationId: string;
+  primaryPersonId: string;
+  spousePersonId: string;
+  marriageType: MarriageLineType;
+}
+
+export interface CoupleBuildResult {
+  units: Unit[];
+  secondaryMarriages: SecondaryMarriage[];
+}
+
+function classifyMarriage(rel: Relation): MarriageLineType | null {
+  const type = rel.relationType[0];
+  if (type === RelationType.MARRIED_COUPLE) {
+    return 'married';
+  }
+  if (type === RelationType.COUPLE) {
+    return 'couple';
+  }
+  return null;
+}
 
 export function buildCoupleUnits(
   relations: Relation[],
   unitOfPerson: Map<string, string>,
-): Unit[] {
+): CoupleBuildResult {
   const units: Unit[] = [];
+  const secondaryMarriages: SecondaryMarriage[] = [];
   for (const rel of relations) {
-    const type = rel.relationType[0];
-    const isMarried = type === RelationType.MARRIED_COUPLE;
-    const isCouple = type === RelationType.COUPLE;
-    if (!isMarried && !isCouple) {
+    const marriageType = classifyMarriage(rel);
+    if (marriageType === null) {
       continue;
     }
     if (rel.persons.personId1.length === 0 || rel.persons.personId2.length === 0) {
@@ -19,7 +45,20 @@ export function buildCoupleUnits(
     }
     const p1 = rel.persons.personId1[0];
     const p2 = rel.persons.personId2[0];
-    if (unitOfPerson.has(p1) || unitOfPerson.has(p2)) {
+    const p1Used = unitOfPerson.has(p1);
+    const p2Used = unitOfPerson.has(p2);
+    if (p1Used && p2Used) {
+      // どちらも他の婚姻 unit に居る場合は線だけ表現する手段がないので一旦スキップ。
+      continue;
+    }
+    if (p1Used || p2Used) {
+      // 既にユニット化されている側を primary、未配置側を spouse として secondary 婚姻を記録する。
+      secondaryMarriages.push({
+        relationId: rel.id,
+        primaryPersonId: p1Used ? p1 : p2,
+        spousePersonId: p1Used ? p2 : p1,
+        marriageType,
+      });
       continue;
     }
     const id = `couple-${rel.id}`;
@@ -28,13 +67,16 @@ export function buildCoupleUnits(
       type: 'couple',
       personIds: [p1, p2],
       marriageRelationId: rel.id,
-      marriageType: isMarried ? 'married' : 'couple',
+      marriageType,
       generation: 0,
     });
     unitOfPerson.set(p1, id);
     unitOfPerson.set(p2, id);
   }
-  return units;
+  return {
+    units,
+    secondaryMarriages,
+  };
 }
 
 export function buildSingleUnits(
