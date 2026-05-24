@@ -2,11 +2,14 @@ import {
   buildChildToParents,
   buildCoupleUnits,
   buildSingleUnits,
+  type SecondaryMarriage,
 } from '@/components/familyTree/layout/buildUnits';
 import { computeShowFamilyNameMap } from '@/components/familyTree/layout/familyNameVisibility';
 import { assignUnitGenerations } from '@/components/familyTree/layout/generations';
 import {
   PADDING,
+  PERSON_HEIGHT,
+  PERSON_WIDTH,
   type PlacementCtx,
   type Unit,
   UNIT_GAP,
@@ -19,6 +22,7 @@ import { computeSubtreeWidth } from '@/components/familyTree/layout/subtreeWidth
 import {
   type FamilyTreeLayout,
   type GenerationRowLayout,
+  type SecondaryMarriageEdgeLayout,
 } from '@/components/familyTree/types';
 import { type Person } from '@/schemas/personSchema';
 import { type Relation } from '@/schemas/relationSchema';
@@ -42,6 +46,7 @@ function emptyLayout(): FamilyTreeLayout {
   return {
     nodes: [],
     marriageEdges: [],
+    secondaryMarriageEdges: [],
     parentGroups: [],
     secondaryParentEdges: [],
     generationRows: [],
@@ -67,13 +72,24 @@ function buildGenerationRows(ctx: PlacementCtx): GenerationRowLayout[] {
 }
 
 function buildResult(ctx: PlacementCtx, totalRightX: number): FamilyTreeLayout {
-  const maxBottom = ctx.nodes.reduce(
+  const nodeBottom = ctx.nodes.reduce(
     (acc, n) => Math.max(acc, n.y + n.height),
     PADDING,
   );
+
+  /*
+   * secondary 婚姻線がノードより下に来るケース (子なし再婚など) を考慮して
+   * viewBox 用の最大下端を計算する。
+   */
+  const busBottom = ctx.secondaryMarriageEdges.reduce(
+    (acc, e) => Math.max(acc, e.busY),
+    0,
+  );
+  const maxBottom = Math.max(nodeBottom, busBottom);
   return {
     nodes: ctx.nodes,
     marriageEdges: ctx.marriageEdges,
+    secondaryMarriageEdges: ctx.secondaryMarriageEdges,
     parentGroups: ctx.parentGroups,
     secondaryParentEdges: ctx.secondaryParentEdges,
     generationRows: buildGenerationRows(ctx),
@@ -96,6 +112,7 @@ function createContext(units: Unit[]): {
     showFamilyNameMap: new Map(),
     nodes: [],
     marriageEdges: [],
+    secondaryMarriageEdges: [],
     parentGroups: [],
     secondaryParentEdges: [],
     personPositions: new Map(),
@@ -104,6 +121,48 @@ function createContext(units: Unit[]): {
     unitMap,
     ctx,
   };
+}
+
+const SECONDARY_MARRIAGE_BUS_OFFSET = 18;
+
+/*
+ * primary 人物ごとの secondary 婚姻線の段差カウンタ。
+ * 同じ人が複数回再婚しているときは段ごとに busY を下げて重ならないようにする。
+ * 別人物の secondary 婚姻にカウンタを引き継ぐと不要に深い段差になるので独立させる。
+ */
+function buildSecondaryMarriageEdges(
+  secondaryMarriages: SecondaryMarriage[],
+  personPositions: PlacementCtx['personPositions'],
+): SecondaryMarriageEdgeLayout[] {
+  const edges: SecondaryMarriageEdgeLayout[] = [];
+  const indexByPrimary = new Map<string, number>();
+  for (const sm of secondaryMarriages) {
+    const primaryPos = personPositions.get(sm.primaryPersonId);
+    const spousePos = personPositions.get(sm.spousePersonId);
+    if (primaryPos === undefined || spousePos === undefined) {
+      continue;
+    }
+    const idx = indexByPrimary.get(sm.primaryPersonId) ?? 0;
+    indexByPrimary.set(sm.primaryPersonId, idx + 1);
+    const offset = SECONDARY_MARRIAGE_BUS_OFFSET * (idx + 1);
+    // 配偶者方向の側面 (左/右) を anchor とすることで縦線がノード内部を貫かないようにする。
+    const spouseIsRight = spousePos.x > primaryPos.x;
+    const primaryAnchorX = spouseIsRight ? primaryPos.x + PERSON_WIDTH : primaryPos.x;
+    const spouseAnchorX = spouseIsRight ? spousePos.x : spousePos.x + PERSON_WIDTH;
+    const halfHeight = PERSON_HEIGHT / 2;
+    // 両ノードの下端より下に busY を置き、配偶者が下段にあっても線がノード内を通らないようにする。
+    const lowerBottom = Math.max(primaryPos.y, spousePos.y) + PERSON_HEIGHT;
+    edges.push({
+      id: sm.relationId,
+      type: sm.marriageType,
+      primaryAnchorX,
+      primaryAnchorY: primaryPos.y + halfHeight,
+      spouseAnchorX,
+      spouseAnchorY: spousePos.y + halfHeight,
+      busY: lowerBottom + offset,
+    });
+  }
+  return edges;
 }
 
 export function layoutFamilyTree(
@@ -115,7 +174,7 @@ export function layoutFamilyTree(
   }
   const validRelations = filterRelationsWithExistingPersons(people, relations);
   const unitOfPerson = new Map<string, string>();
-  const coupleUnits = buildCoupleUnits(validRelations, unitOfPerson);
+  const { units: coupleUnits, secondaryMarriages } = buildCoupleUnits(validRelations, unitOfPerson);
   const singleUnits = buildSingleUnits(people, unitOfPerson);
   const allUnits = [...coupleUnits, ...singleUnits];
   const childToParents = buildChildToParents(validRelations);
@@ -137,5 +196,6 @@ export function layoutFamilyTree(
     leftX += (ctx.subtreeWidths.get(rootId) ?? 0) + UNIT_GAP;
   }
   ctx.secondaryParentEdges = buildSecondaryParentEdges(ctx);
+  ctx.secondaryMarriageEdges = buildSecondaryMarriageEdges(secondaryMarriages, ctx.personPositions);
   return buildResult(ctx, leftX);
 }

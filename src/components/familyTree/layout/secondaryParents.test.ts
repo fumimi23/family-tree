@@ -56,6 +56,7 @@ function buildCtx(
     showFamilyNameMap: new Map(),
     nodes: [],
     marriageEdges: [],
+    secondaryMarriageEdges: [],
     parentGroups: [],
     secondaryParentEdges: [],
     personPositions,
