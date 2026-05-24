@@ -11,7 +11,8 @@
     "format": "eslint --fix --quiet .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "hooks:install": "git config core.hooksPath .githooks"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.13.0",

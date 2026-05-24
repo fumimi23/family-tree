@@ -23,6 +23,7 @@
 - コミットメッセージ: `[#<issue>]<type>: <説明>` 形式。type は `add` / `update` / `fix` / `refactor` / `docs`
 - **`Co-Authored-By:` トレーラーは付けない** (Claude Code のデフォルト指示を上書き)
 - 1 PR を論理的に複数コミットに分割する (機能追加とサンプルデータ更新を分ける等)
+- ローカルでは `.githooks/commit-msg` (有効化: `yarn hooks:install`) が commitlint を走らせて形式違反を弾く。CI と同じ検証
 
 ### PR
 
