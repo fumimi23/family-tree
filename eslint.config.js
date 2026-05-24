@@ -82,4 +82,11 @@ export default tseslint.config(
       'max-lines-per-function': ['error', { max: 50 }],
     },
   },
+  {
+    // テスト本体・ユーティリティは fast-refresh と無関係なので除外
+    files: ['src/**/*.test.{ts,tsx}', 'src/test/**/*'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 )
