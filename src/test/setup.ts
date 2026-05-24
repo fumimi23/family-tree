@@ -18,14 +18,23 @@ Object.defineProperty(window, 'matchMedia', {
   }),
 });
 
-// jsdom には ResizeObserver もないので最小実装で stub する。
+/*
+ * jsdom には ResizeObserver もないので最小実装で stub する。
+ * `new ResizeObserver(cb)` で構築できるように関数コンストラクタ風に定義する。
+ */
+const noop = (): void => { /* no-op for ResizeObserver stub */ };
+function ResizeObserverStub(): { observe: () => void;
+  unobserve: () => void;
+  disconnect: () => void; } {
+  return {
+    observe: noop,
+    unobserve: noop,
+    disconnect: noop,
+  };
+}
 Object.defineProperty(window, 'ResizeObserver', {
   writable: true,
-  value: vi.fn(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-  })),
+  value: ResizeObserverStub,
 });
 
 afterEach(() => {
