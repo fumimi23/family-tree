@@ -22,6 +22,7 @@ function buildDefaultValues(person: Person | undefined): Person {
   return {
     id: uuidv4(),
     familyName: '',
+    maidenName: '',
     givenName: '',
     familyNameKana: '',
     givenNameKana: '',
@@ -111,6 +112,17 @@ export function PersonDialog({ isOpen, onOpenChange, person }: PersonDialogProps
                     />
 
                     <Field.ErrorText>{errors.familyName?.message}</Field.ErrorText>
+                  </Field.Root>
+
+                  <Field.Root invalid={Boolean(errors.maidenName)}>
+                    <Field.Label>旧姓 (出生時の姓、任意)</Field.Label>
+
+                    <Input
+                      {...register('maidenName')}
+                      placeholder="旧姓"
+                    />
+
+                    <Field.ErrorText>{errors.maidenName?.message}</Field.ErrorText>
                   </Field.Root>
 
                   <Field.Root invalid={Boolean(errors.givenName)}>
