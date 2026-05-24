@@ -4,6 +4,7 @@ import { afterEach, vi } from 'vitest';
 
 // jsdom には matchMedia がないため、color-mode / next-themes 用に no-op を差し込む。
 Object.defineProperty(window, 'matchMedia', {
+  configurable: true,
   writable: true,
   value: (query: string) => ({
     matches: false,
@@ -19,20 +20,30 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 /*
- * jsdom には ResizeObserver もないので最小実装で stub する。
- * `new ResizeObserver(cb)` で構築できるように関数コンストラクタ風に定義する。
+ * jsdom には ResizeObserver がないため、実 API に寄せた最小実装で stub する。
+ * 後から `instanceof ResizeObserver` や callback 引数を検査するコードが入っても
+ * テストだけ壊れないよう、シグネチャを揃えておく。
  */
-const noop = (): void => { /* no-op for ResizeObserver stub */ };
-function ResizeObserverStub(): { observe: () => void;
-  unobserve: () => void;
-  disconnect: () => void; } {
-  return {
-    observe: noop,
-    unobserve: noop,
-    disconnect: noop,
-  };
+class ResizeObserverStub implements ResizeObserver {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  public constructor(_callback: ResizeObserverCallback) {
+    // callback は今は未使用。実 API シグネチャに合わせて受け取るだけ。
+  }
+
+  public observe(_target: Element, _options?: ResizeObserverOptions): void {
+    // no-op
+  }
+
+  public unobserve(_target: Element): void {
+    // no-op
+  }
+
+  public disconnect(): void {
+    // no-op
+  }
 }
 Object.defineProperty(window, 'ResizeObserver', {
+  configurable: true,
   writable: true,
   value: ResizeObserverStub,
 });

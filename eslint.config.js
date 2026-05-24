@@ -87,6 +87,8 @@ export default tseslint.config(
     files: ['src/**/*.test.{ts,tsx}', 'src/test/**/*'],
     rules: {
       'react-refresh/only-export-components': 'off',
+      // スタブのメソッドは this を使わなくて正しい
+      'class-methods-use-this': 'off',
     },
   },
 )
