@@ -33,7 +33,7 @@ function MinimapHarness({ scrollTo }: { scrollTo: ReturnType<typeof vi.fn> }): R
     }
     Object.defineProperty(el, 'clientWidth', { value: 800 });
     Object.defineProperty(el, 'clientHeight', { value: 600 });
-    el.scrollTo = scrollTo;
+    el.scrollTo = scrollTo as unknown as HTMLElement['scrollTo'];
   }, [scrollTo]);
   return (
     <div>
