@@ -10,9 +10,10 @@ interface Props {
   person: Person;
 }
 
-const NAME_Y_RATIO = 0.29;
-const DATE_Y_RATIO = 0.55;
-const POSTHUMOUS_Y_RATIO = 0.79;
+const MAIDEN_Y_RATIO = 0.14;
+const NAME_Y_RATIO = 0.34;
+const DATE_Y_RATIO = 0.58;
+const POSTHUMOUS_Y_RATIO = 0.82;
 const DECEASED_RECT_OPACITY = 0.45;
 const DECEASED_TEXT_OPACITY = 0.75;
 
@@ -50,11 +51,19 @@ export function PersonNode({ node, onClick, person }: Props): React.ReactNode {
     : person.givenName;
   const dateText = buildDateText(person.birth, person.death);
   const posthumousName = (person.posthumousName ?? '').trim();
+  const maidenName = (person.maidenName ?? '').trim();
+
+  /*
+   * 旧姓は姓を表示している場合のみ併記する (showFamilyName=false は姓を隠す指示なので
+   * 旧姓も出さない方が一貫する)。
+   */
+  const showMaidenName = node.showFamilyName && maidenName !== '';
   const isDeceased = person.death !== '';
   const rectOpacity = isDeceased ? DECEASED_RECT_OPACITY : 1;
   const textOpacity = isDeceased ? DECEASED_TEXT_OPACITY : 1;
   const transform = `translate(${node.x.toString()}, ${node.y.toString()})`;
   const centerX = node.width / 2;
+  const maidenY = node.height * MAIDEN_Y_RATIO;
   const nameY = node.height * NAME_Y_RATIO;
   const dateY = node.height * DATE_Y_RATIO;
   const posthumousY = node.height * POSTHUMOUS_Y_RATIO;
@@ -91,6 +100,21 @@ export function PersonNode({ node, onClick, person }: Props): React.ReactNode {
         strokeWidth={1}
         width={node.width}
       />
+
+      {showMaidenName
+        ? (
+          <text
+            fill={theme.dateFill}
+            fillOpacity={textOpacity}
+            fontSize={10}
+            textAnchor="middle"
+            x={centerX}
+            y={maidenY}
+          >
+            {`(旧姓 ${maidenName})`}
+          </text>
+        )
+        : null}
 
       <text
         fill={theme.nameFill}
