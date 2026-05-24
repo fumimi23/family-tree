@@ -33,6 +33,16 @@ export const personSchema = z.object({
     .describe('ID'),
   familyName: z.string().min(1)
     .describe('姓'),
+
+  /*
+   * 出生時の姓 (= 真の旧姓)。中間の改姓履歴は扱わない。
+   * フォームから空文字が来た場合は preprocess で undefined に正規化し、
+   * 「未設定」が "" / undefined で混在するのを防ぐ。
+   */
+  maidenName: z.preprocess((v) => {
+    return v === '' ? undefined : v;
+  }, z.string().optional())
+    .describe('旧姓'),
   givenName: z.string().min(1)
     .describe('名'),
   familyNameKana: z.string().min(1)
