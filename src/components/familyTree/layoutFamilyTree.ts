@@ -115,30 +115,41 @@ function createContext(units: Unit[]): {
 
 const SECONDARY_MARRIAGE_BUS_OFFSET = 18;
 
+/*
+ * primary 人物ごとの secondary 婚姻線の段差カウンタ。
+ * 同じ人が複数回再婚しているときは段ごとに busY を下げて重ならないようにする。
+ * 別人物の secondary 婚姻にカウンタを引き継ぐと不要に深い段差になるので独立させる。
+ */
 function buildSecondaryMarriageEdges(
   secondaryMarriages: SecondaryMarriage[],
   personPositions: PlacementCtx['personPositions'],
 ): SecondaryMarriageEdgeLayout[] {
   const edges: SecondaryMarriageEdgeLayout[] = [];
-  let index = 0;
+  const indexByPrimary = new Map<string, number>();
   for (const sm of secondaryMarriages) {
     const primaryPos = personPositions.get(sm.primaryPersonId);
     const spousePos = personPositions.get(sm.spousePersonId);
     if (primaryPos === undefined || spousePos === undefined) {
       continue;
     }
-    const halfWidth = PERSON_WIDTH / 2;
+    const idx = indexByPrimary.get(sm.primaryPersonId) ?? 0;
+    indexByPrimary.set(sm.primaryPersonId, idx + 1);
+    const offset = SECONDARY_MARRIAGE_BUS_OFFSET * (idx + 1);
+    // 配偶者方向の側面 (左/右) を anchor とすることで縦線がノード内部を貫かないようにする。
+    const spouseIsRight = spousePos.x > primaryPos.x;
+    const primaryAnchorX = spouseIsRight ? primaryPos.x + PERSON_WIDTH : primaryPos.x;
+    const spouseAnchorX = spouseIsRight ? spousePos.x : spousePos.x + PERSON_WIDTH;
     const halfHeight = PERSON_HEIGHT / 2;
-    const offset = SECONDARY_MARRIAGE_BUS_OFFSET * (index + 1);
-    index += 1;
+    // 両ノードの下端より下に busY を置き、配偶者が下段にあっても線がノード内を通らないようにする。
+    const lowerBottom = Math.max(primaryPos.y, spousePos.y) + PERSON_HEIGHT;
     edges.push({
       id: sm.relationId,
       type: sm.marriageType,
-      primaryAnchorX: primaryPos.x + halfWidth,
+      primaryAnchorX,
       primaryAnchorY: primaryPos.y + halfHeight,
-      spouseAnchorX: spousePos.x + halfWidth,
+      spouseAnchorX,
       spouseAnchorY: spousePos.y + halfHeight,
-      busY: primaryPos.y + halfHeight + offset,
+      busY: lowerBottom + offset,
     });
   }
   return edges;

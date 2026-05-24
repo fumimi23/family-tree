@@ -111,6 +111,35 @@ describe('buildCoupleUnits', () => {
     expect(secondaryMarriages[0].spousePersonId).toBe(ID.SOLO);
     expect(secondaryMarriages[0].marriageType).toBe('married');
   });
+
+  it('双方が既に別の婚姻 unit に居る場合も secondary 婚姻として記録する', () => {
+    const OTHER = '99999999-9999-4999-8999-999999999999';
+    const rel1 = makeRelation(
+      ID.REL_MARRIED,
+      RelationType.MARRIED_COUPLE,
+      ID.HUSBAND,
+      ID.WIFE,
+    );
+    const rel2 = makeRelation(
+      'cccccccc-0000-4000-8000-000000000002',
+      RelationType.MARRIED_COUPLE,
+      ID.SOLO,
+      OTHER,
+    );
+    const rel3 = makeRelation(
+      'cccccccc-0000-4000-8000-000000000003',
+      RelationType.MARRIED_COUPLE,
+      ID.HUSBAND,
+      ID.SOLO,
+    );
+    const { units, secondaryMarriages } = buildCoupleUnits([rel1, rel2, rel3], new Map());
+    expect(units).toHaveLength(2);
+    expect(secondaryMarriages).toHaveLength(1);
+    expect(secondaryMarriages[0].relationId).toBe('cccccccc-0000-4000-8000-000000000003');
+    // 両者既配置のとき personId1 が primary になる
+    expect(secondaryMarriages[0].primaryPersonId).toBe(ID.HUSBAND);
+    expect(secondaryMarriages[0].spousePersonId).toBe(ID.SOLO);
+  });
 });
 
 describe('buildSingleUnits', () => {

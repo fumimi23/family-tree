@@ -29,6 +29,28 @@ function classifyMarriage(rel: Relation): MarriageLineType | null {
   return null;
 }
 
+function recordSecondaryMarriage(
+  rel: Relation,
+  p1: string,
+  p2: string,
+  p1Used: boolean,
+  marriageType: MarriageLineType,
+  out: SecondaryMarriage[],
+): void {
+  /*
+   * 片方だけ既配置のときは既配置側を primary とする。
+   * 両方既配置のときは personId1 を primary に固定する (順序を再現可能にする)。
+   */
+  const primaryPersonId = p1Used ? p1 : p2;
+  const spousePersonId = primaryPersonId === p1 ? p2 : p1;
+  out.push({
+    relationId: rel.id,
+    primaryPersonId,
+    spousePersonId,
+    marriageType,
+  });
+}
+
 export function buildCoupleUnits(
   relations: Relation[],
   unitOfPerson: Map<string, string>,
@@ -47,18 +69,8 @@ export function buildCoupleUnits(
     const p2 = rel.persons.personId2[0];
     const p1Used = unitOfPerson.has(p1);
     const p2Used = unitOfPerson.has(p2);
-    if (p1Used && p2Used) {
-      // どちらも他の婚姻 unit に居る場合は線だけ表現する手段がないので一旦スキップ。
-      continue;
-    }
     if (p1Used || p2Used) {
-      // 既にユニット化されている側を primary、未配置側を spouse として secondary 婚姻を記録する。
-      secondaryMarriages.push({
-        relationId: rel.id,
-        primaryPersonId: p1Used ? p1 : p2,
-        spousePersonId: p1Used ? p2 : p1,
-        marriageType,
-      });
+      recordSecondaryMarriage(rel, p1, p2, p1Used, marriageType, secondaryMarriages);
       continue;
     }
     const id = `couple-${rel.id}`;
