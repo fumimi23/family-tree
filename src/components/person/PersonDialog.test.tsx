@@ -29,10 +29,11 @@ describe('PersonDialog', () => {
   beforeEach(() => {
     usePeopleStore.setState({ people: [] });
     confirmMock = vi.fn();
-    window.confirm = confirmMock;
+    vi.stubGlobal('confirm', confirmMock);
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
 

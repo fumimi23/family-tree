@@ -59,7 +59,7 @@ describe('Minimap', () => {
     const scrollTo = vi.fn();
     renderWithProvider(<MinimapHarness scrollTo={scrollTo} />);
     const minimap = screen.getByRole('button', { name: /ミニマップ/u });
-    // happy-dom では getBoundingClientRect が 0 を返すので click 座標も 0
+    // jsdom では getBoundingClientRect が 0 を返すので click 座標も 0 になる
     fireEvent.click(minimap, { clientX: 0,
       clientY: 0 });
     expect(scrollTo).toHaveBeenCalledTimes(1);
