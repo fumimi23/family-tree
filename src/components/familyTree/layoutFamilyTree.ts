@@ -160,6 +160,7 @@ function buildSecondaryMarriageEdges(
       spouseAnchorX,
       spouseAnchorY: spousePos.y + halfHeight,
       busY: lowerBottom + offset,
+      divorced: sm.divorced,
     });
   }
   return edges;

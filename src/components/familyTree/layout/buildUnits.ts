@@ -11,6 +11,7 @@ export interface SecondaryMarriage {
   primaryPersonId: string;
   spousePersonId: string;
   marriageType: MarriageLineType;
+  divorced: boolean;
 }
 
 export interface CoupleBuildResult {
@@ -48,6 +49,7 @@ function recordSecondaryMarriage(
     primaryPersonId,
     spousePersonId,
     marriageType,
+    divorced: rel.divorced ?? false,
   });
 }
 
@@ -80,6 +82,7 @@ export function buildCoupleUnits(
       personIds: [p1, p2],
       marriageRelationId: rel.id,
       marriageType,
+      marriageDivorced: rel.divorced ?? false,
       generation: 0,
     });
     unitOfPerson.set(p1, id);
@@ -107,6 +110,7 @@ export function buildSingleUnits(
       personIds: [p.id],
       marriageRelationId: null,
       marriageType: null,
+      marriageDivorced: false,
       generation: 0,
     });
     unitOfPerson.set(p.id, id);

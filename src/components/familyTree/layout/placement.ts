@@ -46,6 +46,7 @@ function placeUnitPersons(
       x1: unitLeftX + PERSON_WIDTH,
       x2: unitLeftX + PERSON_WIDTH + COUPLE_GAP,
       y: unitY + (PERSON_HEIGHT / 2),
+      divorced: unit.marriageDivorced,
     });
   }
 }

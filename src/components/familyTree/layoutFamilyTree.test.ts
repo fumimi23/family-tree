@@ -29,7 +29,7 @@ function person(id: string, birth: string): Person {
   };
 }
 
-function marriedRel(id: string, p1: string, p2: string): Relation {
+function marriedRel(id: string, p1: string, p2: string, divorced = false): Relation {
   return {
     id,
     relationType: [RelationType.MARRIED_COUPLE],
@@ -37,6 +37,7 @@ function marriedRel(id: string, p1: string, p2: string): Relation {
       personId1: [p1],
       personId2: [p2],
     },
+    divorced,
   };
 }
 
@@ -158,6 +159,33 @@ describe('layoutFamilyTree', () => {
     const result = layoutFamilyTree(people, relations);
     const edge = result.secondaryMarriageEdges[0];
     expect(result.height).toBeGreaterThanOrEqual(edge.busY);
+  });
+
+  it('離婚フラグは primary 婚姻線にも secondary 婚姻線にも伝搬する', () => {
+    const SECOND_WIFE = 'cccccccc-0000-4000-8000-000000000300';
+    const REL_SECOND = 'dddddddd-0000-4000-8000-000000000300';
+    const people = [
+      person(ID.HUSBAND, '1970-01-01'),
+      person(ID.WIFE, '1972-01-01'),
+      person(SECOND_WIFE, '1980-01-01'),
+    ];
+    const relations = [
+      marriedRel(ID.REL_MARRIED, ID.HUSBAND, ID.WIFE, true),
+      marriedRel(REL_SECOND, ID.HUSBAND, SECOND_WIFE, true),
+    ];
+    const result = layoutFamilyTree(people, relations);
+    expect(result.marriageEdges[0].divorced).toBe(true);
+    expect(result.secondaryMarriageEdges[0].divorced).toBe(true);
+  });
+
+  it('離婚フラグが指定されていない relation は divorced=false で出力される', () => {
+    const people = [
+      person(ID.HUSBAND, '1970-01-01'),
+      person(ID.WIFE, '1972-01-01'),
+    ];
+    const relations = [marriedRel(ID.REL_MARRIED, ID.HUSBAND, ID.WIFE)];
+    const result = layoutFamilyTree(people, relations);
+    expect(result.marriageEdges[0].divorced).toBe(false);
   });
 
   it('同一人物の 3 回目以降の婚姻は段差で busY が深くなる', () => {
