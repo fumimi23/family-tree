@@ -31,6 +31,9 @@ yarn dev
 
 `yarn hooks:install` を 1 度実行すると、`.githooks/commit-msg` がコミット時に commitlint を走らせ、`[#<issue>]<type>: <説明>` 形式から外れたメッセージを弾く。CI と同等の検証をローカルでも行えるので push 前のリトライを減らせる。
 
+> [!NOTE]
+> 仕組みは `git config core.hooksPath .githooks` (リポジトリローカル)。**この設定が有効な間は `.git/hooks/*` に置いた既存フックは実行されない**ので、すでに別のフックを使っている場合は注意。元に戻すには `git config --unset core.hooksPath` を実行する。
+
 ## ドキュメント
 
 - [docs/family-tree.md](docs/family-tree.md) — 家系図の表記ルール
