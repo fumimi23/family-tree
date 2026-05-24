@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# commitlint をローカルで実行する commit-msg フック。
+# 有効化: `yarn hooks:install` (= git config core.hooksPath .githooks)
+yarn commitlint --edit "$1"

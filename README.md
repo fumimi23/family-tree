@@ -21,10 +21,18 @@ Node.js のバージョンは [`.node-version`](./.node-version) に固定。[no
 ```bash
 corepack enable          # 初回のみ
 yarn install
+yarn hooks:install       # 初回のみ。commit-msg フックを有効化
 yarn dev
 ```
 
 利用可能なスクリプトは `package.json` の `scripts` を参照 (`yarn dev` / `yarn build` / `yarn lint` / `yarn test` 等)。
+
+### Git フック
+
+`yarn hooks:install` を 1 度実行すると、`.githooks/commit-msg` がコミット時に commitlint を走らせ、`[#<issue>]<type>: <説明>` 形式から外れたメッセージを弾く。CI と同等の検証をローカルでも行えるので push 前のリトライを減らせる。
+
+> [!NOTE]
+> 仕組みは `git config core.hooksPath .githooks` (リポジトリローカル)。**この設定が有効な間は `.git/hooks/*` に置いた既存フックは実行されない**ので、すでに別のフックを使っている場合は注意。元に戻すには `git config --unset core.hooksPath` を実行する。
 
 ## ドキュメント
 
