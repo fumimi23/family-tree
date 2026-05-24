@@ -13,7 +13,7 @@ const GAP = 3;
 
 /*
  * 離婚を表す二重斜線 (`//`) を婚姻線の中央に描く。
- * 婚姻線は水平方向なので、斜線は右肩下がりに 2 本配置する。
+ * 婚姻線は水平方向なので、斜線は右肩上がりに 2 本配置する。
  */
 export function DivorcedMark({ centerX, centerY }: Props): React.ReactNode {
   const theme = useFamilyTreeTheme();

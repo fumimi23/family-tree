@@ -36,6 +36,8 @@ export const relationTypeList = [
   },
 ];
 
+const MARRIAGE_RELATION_TYPES: string[] = [RelationType.MARRIED_COUPLE, RelationType.COUPLE];
+
 export const relationSchema = z.object({
   id: z.uuid()
     .describe('ID'),
@@ -58,9 +60,20 @@ export const relationSchema = z.object({
   }, {
     message: '同じ人物を指定することはできません。',
   }),
-  // 婚姻 (married-couple / couple) の解消フラグ。親子関係では未使用。
+  // 婚姻 (married-couple / couple) の解消フラグ。親子関係では指定不可。
   divorced: z.boolean().optional()
     .describe('離婚済み'),
+}).superRefine((val, ctx) => {
+  if (val.divorced === undefined) {
+    return;
+  }
+  if (val.relationType.length === 0 || !MARRIAGE_RELATION_TYPES.includes(val.relationType[0])) {
+    ctx.addIssue({
+      code: 'custom',
+      message: '離婚フラグは婚姻関係 (夫婦 / 事実婚) でのみ指定できます。',
+      path: ['divorced'],
+    });
+  }
 });
 
 export type Relation = z.infer<typeof relationSchema>;

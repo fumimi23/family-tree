@@ -27,7 +27,6 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
       personId2: [],
     },
     relationType: [],
-    divorced: false,
   };
   const { control, handleSubmit, formState: { errors }, watch } = useForm<Relation>({
     defaultValues,
@@ -238,6 +237,10 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
                         {isMarriageRelation
                           ? (
                             <Field.Root invalid={Boolean(errors.divorced)}>
+                              {/*
+                                * 非婚姻リレーションに切り替えたとき divorced を unregister し、
+                                * スキーマの superRefine に違反する値が残らないようにする。
+                                */}
                               <Controller
                                 control={control}
                                 name="divorced"
@@ -254,6 +257,7 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
                                     <Checkbox.Label>離婚済み</Checkbox.Label>
                                   </Checkbox.Root>
                                 )}
+                                shouldUnregister
                               />
 
                               <Field.ErrorText>{errors.divorced?.message}</Field.ErrorText>
