@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { DivorcedMark } from '@/components/familyTree/DivorcedMark';
 import { type SecondaryMarriageEdgeLayout } from '@/components/familyTree/types';
 import { useFamilyTreeTheme } from '@/components/familyTree/useFamilyTreeTheme';
 
@@ -67,6 +68,15 @@ export function SecondaryMarriageEdge({ edge }: Props): React.ReactNode {
         y1={verticalEndY}
         y2={edge.spouseAnchorY}
       />
+
+      {edge.divorced
+        ? (
+          <DivorcedMark
+            centerX={(edge.primaryAnchorX + edge.spouseAnchorX) / 2}
+            centerY={edge.busY}
+          />
+        )
+        : null}
     </g>
   );
 }

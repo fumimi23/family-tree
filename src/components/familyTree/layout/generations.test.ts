@@ -21,6 +21,7 @@ function singleUnit(id: string, personId: string): Unit {
     personIds: [personId],
     marriageRelationId: null,
     marriageType: null,
+    marriageDivorced: false,
     generation: 0,
   };
 }

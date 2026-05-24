@@ -25,6 +25,7 @@ export interface Unit {
   personIds: string[];
   marriageRelationId: string | null;
   marriageType: MarriageLineType | null;
+  marriageDivorced: boolean;
   generation: number;
 }
 

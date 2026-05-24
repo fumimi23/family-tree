@@ -15,6 +15,7 @@ export interface MarriageEdgeLayout {
   x1: number;
   x2: number;
   y: number;
+  divorced: boolean;
 }
 
 export interface ChildLinkLayout {
@@ -60,6 +61,7 @@ export interface SecondaryMarriageEdgeLayout {
   spouseAnchorY: number;
   // 段差用にベンドする y 座標 (両ノードの下端より下)
   busY: number;
+  divorced: boolean;
 }
 
 export interface GenerationRowLayout {
