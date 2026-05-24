@@ -10,17 +10,9 @@ interface Props {
   person: Person;
 }
 
-/*
- * 旧姓を併記する場合は、他の行が下に押し下げられる。旧姓なしの通常レイアウトは
- * 既存の比率を維持する (下の Y_RATIO_*_DEFAULT)。
- */
-const Y_RATIO_NAME_DEFAULT = 0.29;
-const Y_RATIO_DATE_DEFAULT = 0.55;
-const Y_RATIO_POSTHUMOUS_DEFAULT = 0.79;
-const Y_RATIO_MAIDEN_SHIFTED = 0.22;
-const Y_RATIO_NAME_SHIFTED = 0.46;
-const Y_RATIO_DATE_SHIFTED = 0.68;
-const Y_RATIO_POSTHUMOUS_SHIFTED = 0.88;
+const NAME_Y_RATIO = 0.29;
+const DATE_Y_RATIO = 0.55;
+const POSTHUMOUS_Y_RATIO = 0.79;
 const DECEASED_RECT_OPACITY = 0.45;
 const DECEASED_TEXT_OPACITY = 0.75;
 
@@ -58,22 +50,14 @@ export function PersonNode({ node, onClick, person }: Props): React.ReactNode {
     : person.givenName;
   const dateText = buildDateText(person.birth, person.death);
   const posthumousName = (person.posthumousName ?? '').trim();
-  const maidenName = (person.maidenName ?? '').trim();
-
-  /*
-   * 旧姓は姓を表示している場合のみ併記する (showFamilyName=false は姓を隠す指示なので
-   * 旧姓も出さない方が一貫する)。
-   */
-  const showMaidenName = node.showFamilyName && maidenName !== '';
   const isDeceased = person.death !== '';
   const rectOpacity = isDeceased ? DECEASED_RECT_OPACITY : 1;
   const textOpacity = isDeceased ? DECEASED_TEXT_OPACITY : 1;
   const transform = `translate(${node.x.toString()}, ${node.y.toString()})`;
   const centerX = node.width / 2;
-  const maidenY = node.height * Y_RATIO_MAIDEN_SHIFTED;
-  const nameY = node.height * (showMaidenName ? Y_RATIO_NAME_SHIFTED : Y_RATIO_NAME_DEFAULT);
-  const dateY = node.height * (showMaidenName ? Y_RATIO_DATE_SHIFTED : Y_RATIO_DATE_DEFAULT);
-  const posthumousY = node.height * (showMaidenName ? Y_RATIO_POSTHUMOUS_SHIFTED : Y_RATIO_POSTHUMOUS_DEFAULT);
+  const nameY = node.height * NAME_Y_RATIO;
+  const dateY = node.height * DATE_Y_RATIO;
+  const posthumousY = node.height * POSTHUMOUS_Y_RATIO;
   const isClickable = onClick !== undefined;
   const handleClick = !isClickable
     ? undefined
@@ -107,21 +91,6 @@ export function PersonNode({ node, onClick, person }: Props): React.ReactNode {
         strokeWidth={1}
         width={node.width}
       />
-
-      {showMaidenName
-        ? (
-          <text
-            fill={theme.dateFill}
-            fillOpacity={textOpacity}
-            fontSize={10}
-            textAnchor="middle"
-            x={centerX}
-            y={maidenY}
-          >
-            {`(旧姓 ${maidenName})`}
-          </text>
-        )
-        : null}
 
       <text
         fill={theme.nameFill}

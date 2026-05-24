@@ -89,23 +89,4 @@ describe('PersonNode', () => {
     await user.keyboard('{Enter}');
     expect(onClick).toHaveBeenCalledExactlyOnceWith(ID);
   });
-
-  it('maidenName が指定されている人物は「(旧姓 X)」が併記される', () => {
-    renderNode({ person: makePerson({ maidenName: '鈴木' }) });
-    expect(screen.getByText('(旧姓 鈴木)')).toBeInTheDocument();
-  });
-
-  it('maidenName 未指定なら「旧姓」表示は出ない', () => {
-    renderNode({ person: makePerson({ maidenName: undefined }) });
-    expect(screen.queryByText(/旧姓/u)).not.toBeInTheDocument();
-  });
-
-  it('showFamilyName=false なら maidenName があっても表示しない', () => {
-    renderNode({
-      person: makePerson({ maidenName: '鈴木' }),
-      node: { ...NODE_LAYOUT,
-        showFamilyName: false },
-    });
-    expect(screen.queryByText(/旧姓/u)).not.toBeInTheDocument();
-  });
 });
