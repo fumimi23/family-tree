@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { DivorcedMark } from '@/components/familyTree/DivorcedMark';
 import { type MarriageEdgeLayout } from '@/components/familyTree/types';
 import { useFamilyTreeTheme } from '@/components/familyTree/useFamilyTreeTheme';
 
@@ -12,6 +13,7 @@ const DOUBLE_LINE_OFFSET = 2;
 
 export function MarriageEdge({ edge }: Props): React.ReactNode {
   const theme = useFamilyTreeTheme();
+  const centerX = (edge.x1 + edge.x2) / 2;
   if (edge.type === 'married') {
     return (
       <g>
@@ -32,17 +34,37 @@ export function MarriageEdge({ edge }: Props): React.ReactNode {
           y1={edge.y + DOUBLE_LINE_OFFSET}
           y2={edge.y + DOUBLE_LINE_OFFSET}
         />
+
+        {edge.divorced
+          ? (
+            <DivorcedMark
+              centerX={centerX}
+              centerY={edge.y}
+            />
+          )
+          : null}
       </g>
     );
   }
   return (
-    <line
-      stroke={theme.lineStroke}
-      strokeWidth={STROKE_WIDTH}
-      x1={edge.x1}
-      x2={edge.x2}
-      y1={edge.y}
-      y2={edge.y}
-    />
+    <g>
+      <line
+        stroke={theme.lineStroke}
+        strokeWidth={STROKE_WIDTH}
+        x1={edge.x1}
+        x2={edge.x2}
+        y1={edge.y}
+        y2={edge.y}
+      />
+
+      {edge.divorced
+        ? (
+          <DivorcedMark
+            centerX={centerX}
+            centerY={edge.y}
+          />
+        )
+        : null}
+    </g>
   );
 }
