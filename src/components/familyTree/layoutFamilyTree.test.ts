@@ -29,16 +29,19 @@ function person(id: string, birth: string): Person {
   };
 }
 
-function marriedRel(id: string, p1: string, p2: string, divorced = false): Relation {
-  return {
+function marriedRel(id: string, p1: string, p2: string, divorced?: boolean): Relation {
+  const rel: Relation = {
     id,
     relationType: [RelationType.MARRIED_COUPLE],
     persons: {
       personId1: [p1],
       personId2: [p2],
     },
-    divorced,
   };
+  if (divorced !== undefined) {
+    rel.divorced = divorced;
+  }
+  return rel;
 }
 
 function parentRel(id: string, parent: string, child: string): Relation {
