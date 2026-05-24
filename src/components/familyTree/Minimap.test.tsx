@@ -18,6 +18,7 @@ const LAYOUT: FamilyTreeLayout = {
     },
   ],
   marriageEdges: [],
+  secondaryMarriageEdges: [],
   parentGroups: [],
   secondaryParentEdges: [],
   generationRows: [],

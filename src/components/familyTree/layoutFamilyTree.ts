@@ -2,11 +2,14 @@ import {
   buildChildToParents,
   buildCoupleUnits,
   buildSingleUnits,
+  type SecondaryMarriage,
 } from '@/components/familyTree/layout/buildUnits';
 import { computeShowFamilyNameMap } from '@/components/familyTree/layout/familyNameVisibility';
 import { assignUnitGenerations } from '@/components/familyTree/layout/generations';
 import {
   PADDING,
+  PERSON_HEIGHT,
+  PERSON_WIDTH,
   type PlacementCtx,
   type Unit,
   UNIT_GAP,
@@ -19,6 +22,7 @@ import { computeSubtreeWidth } from '@/components/familyTree/layout/subtreeWidth
 import {
   type FamilyTreeLayout,
   type GenerationRowLayout,
+  type SecondaryMarriageEdgeLayout,
 } from '@/components/familyTree/types';
 import { type Person } from '@/schemas/personSchema';
 import { type Relation } from '@/schemas/relationSchema';
@@ -42,6 +46,7 @@ function emptyLayout(): FamilyTreeLayout {
   return {
     nodes: [],
     marriageEdges: [],
+    secondaryMarriageEdges: [],
     parentGroups: [],
     secondaryParentEdges: [],
     generationRows: [],
@@ -74,6 +79,7 @@ function buildResult(ctx: PlacementCtx, totalRightX: number): FamilyTreeLayout {
   return {
     nodes: ctx.nodes,
     marriageEdges: ctx.marriageEdges,
+    secondaryMarriageEdges: ctx.secondaryMarriageEdges,
     parentGroups: ctx.parentGroups,
     secondaryParentEdges: ctx.secondaryParentEdges,
     generationRows: buildGenerationRows(ctx),
@@ -96,6 +102,7 @@ function createContext(units: Unit[]): {
     showFamilyNameMap: new Map(),
     nodes: [],
     marriageEdges: [],
+    secondaryMarriageEdges: [],
     parentGroups: [],
     secondaryParentEdges: [],
     personPositions: new Map(),
@@ -104,6 +111,37 @@ function createContext(units: Unit[]): {
     unitMap,
     ctx,
   };
+}
+
+const SECONDARY_MARRIAGE_BUS_OFFSET = 18;
+
+function buildSecondaryMarriageEdges(
+  secondaryMarriages: SecondaryMarriage[],
+  personPositions: PlacementCtx['personPositions'],
+): SecondaryMarriageEdgeLayout[] {
+  const edges: SecondaryMarriageEdgeLayout[] = [];
+  let index = 0;
+  for (const sm of secondaryMarriages) {
+    const primaryPos = personPositions.get(sm.primaryPersonId);
+    const spousePos = personPositions.get(sm.spousePersonId);
+    if (primaryPos === undefined || spousePos === undefined) {
+      continue;
+    }
+    const halfWidth = PERSON_WIDTH / 2;
+    const halfHeight = PERSON_HEIGHT / 2;
+    const offset = SECONDARY_MARRIAGE_BUS_OFFSET * (index + 1);
+    index += 1;
+    edges.push({
+      id: sm.relationId,
+      type: sm.marriageType,
+      primaryAnchorX: primaryPos.x + halfWidth,
+      primaryAnchorY: primaryPos.y + halfHeight,
+      spouseAnchorX: spousePos.x + halfWidth,
+      spouseAnchorY: spousePos.y + halfHeight,
+      busY: primaryPos.y + halfHeight + offset,
+    });
+  }
+  return edges;
 }
 
 export function layoutFamilyTree(
@@ -115,7 +153,7 @@ export function layoutFamilyTree(
   }
   const validRelations = filterRelationsWithExistingPersons(people, relations);
   const unitOfPerson = new Map<string, string>();
-  const coupleUnits = buildCoupleUnits(validRelations, unitOfPerson);
+  const { units: coupleUnits, secondaryMarriages } = buildCoupleUnits(validRelations, unitOfPerson);
   const singleUnits = buildSingleUnits(people, unitOfPerson);
   const allUnits = [...coupleUnits, ...singleUnits];
   const childToParents = buildChildToParents(validRelations);
@@ -137,5 +175,6 @@ export function layoutFamilyTree(
     leftX += (ctx.subtreeWidths.get(rootId) ?? 0) + UNIT_GAP;
   }
   ctx.secondaryParentEdges = buildSecondaryParentEdges(ctx);
+  ctx.secondaryMarriageEdges = buildSecondaryMarriageEdges(secondaryMarriages, ctx.personPositions);
   return buildResult(ctx, leftX);
 }

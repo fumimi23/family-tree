@@ -109,4 +109,27 @@ describe('layoutFamilyTree', () => {
     expect(result.nodes).toHaveLength(1);
     expect(result.marriageEdges).toHaveLength(0);
   });
+
+  it('再婚: 2 つ目の婚姻は secondaryMarriageEdges として primary 人物と新配偶者を繋ぐ', () => {
+    const SECOND_WIFE = 'cccccccc-0000-4000-8000-000000000099';
+    const REL_SECOND = 'dddddddd-0000-4000-8000-000000000099';
+    const people = [
+      person(ID.HUSBAND, '1970-01-01'),
+      person(ID.WIFE, '1972-01-01'),
+      person(SECOND_WIFE, '1980-01-01'),
+    ];
+    const relations = [
+      marriedRel(ID.REL_MARRIED, ID.HUSBAND, ID.WIFE),
+      marriedRel(REL_SECOND, ID.HUSBAND, SECOND_WIFE),
+    ];
+    const result = layoutFamilyTree(people, relations);
+    expect(result.marriageEdges).toHaveLength(1);
+    expect(result.secondaryMarriageEdges).toHaveLength(1);
+    const edge = result.secondaryMarriageEdges[0];
+    expect(edge.id).toBe(REL_SECOND);
+    expect(edge.type).toBe('married');
+    // 二人とも描画される (= 重複なし)
+    expect(result.nodes.filter((n) => n.personId === ID.HUSBAND)).toHaveLength(1);
+    expect(result.nodes.filter((n) => n.personId === SECOND_WIFE)).toHaveLength(1);
+  });
 });
