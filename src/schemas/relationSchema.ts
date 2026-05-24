@@ -58,6 +58,9 @@ export const relationSchema = z.object({
   }, {
     message: '同じ人物を指定することはできません。',
   }),
+  // 婚姻 (married-couple / couple) の解消フラグ。親子関係では未使用。
+  divorced: z.boolean().optional()
+    .describe('離婚済み'),
 });
 
 export type Relation = z.infer<typeof relationSchema>;
