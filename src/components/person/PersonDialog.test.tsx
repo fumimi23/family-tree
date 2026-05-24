@@ -105,4 +105,33 @@ describe('PersonDialog', () => {
     await user.click(screen.getByRole('button', { name: '削除' }));
     expect(usePeopleStore.getState().people).toEqual([person]);
   });
+
+  it('編集モードでは既存の maidenName が入力欄に反映される', () => {
+    renderWithProvider(
+      <PersonDialog
+        isOpen
+        onOpenChange={vi.fn()}
+        person={makePerson({ maidenName: '鈴木' })}
+      />,
+    );
+    const maidenName = screen.getByPlaceholderText('旧姓');
+    expect(maidenName).toHaveValue('鈴木');
+  });
+
+  it('編集モードで maidenName を入力 → 保存すると store に反映される', async() => {
+    const user = userEvent.setup();
+    const person = makePerson();
+    usePeopleStore.setState({ people: [person] });
+    renderWithProvider(
+      <PersonDialog
+        isOpen
+        onOpenChange={vi.fn()}
+        person={person}
+      />,
+    );
+    const maidenName = screen.getByPlaceholderText('旧姓');
+    await user.type(maidenName, '佐藤');
+    await user.click(screen.getByRole('button', { name: '保存' }));
+    expect(usePeopleStore.getState().people[0].maidenName).toBe('佐藤');
+  });
 });
