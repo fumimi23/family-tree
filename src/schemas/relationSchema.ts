@@ -9,6 +9,13 @@ export const RelationType = {
 
 export type RelationType = typeof RelationType[keyof typeof RelationType];
 
+export const HouseholdSide = {
+  PERSON1: 'person1',
+  PERSON2: 'person2',
+} as const;
+
+export type HouseholdSide = typeof HouseholdSide[keyof typeof HouseholdSide];
+
 export const relationTypeList = [
   {
     label: '親子(実子)',
@@ -63,15 +70,29 @@ export const relationSchema = z.object({
   // 婚姻 (married-couple / couple) の解消フラグ。親子関係では指定不可。
   divorced: z.boolean().optional()
     .describe('離婚済み'),
+
+  /*
+   * 家系を継ぐ側 (= レイアウトで自分の親系統を primary にする側)。婚姻関係でのみ指定可。
+   * 未指定なら従来どおり personId1 側が primary になる。
+   * 値のタプルを直接渡し、出力型を 'person1' | 'person2' の union に保つ。
+   */
+  householdSide: z.enum([HouseholdSide.PERSON1, HouseholdSide.PERSON2]).optional()
+    .describe('家系を継ぐ側'),
 }).superRefine((val, ctx) => {
-  if (val.divorced === undefined) {
-    return;
-  }
-  if (val.relationType.length === 0 || !MARRIAGE_RELATION_TYPES.includes(val.relationType[0])) {
+  const isMarriage = val.relationType.length > 0
+    && MARRIAGE_RELATION_TYPES.includes(val.relationType[0]);
+  if (val.divorced !== undefined && !isMarriage) {
     ctx.addIssue({
       code: 'custom',
       message: '離婚フラグは婚姻関係 (夫婦 / 事実婚) でのみ指定できます。',
       path: ['divorced'],
+    });
+  }
+  if (val.householdSide !== undefined && !isMarriage) {
+    ctx.addIssue({
+      code: 'custom',
+      message: '家系を継ぐ側は婚姻関係 (夫婦 / 事実婚) でのみ指定できます。',
+      path: ['householdSide'],
     });
   }
 });

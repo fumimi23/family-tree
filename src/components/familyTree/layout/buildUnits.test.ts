@@ -6,7 +6,7 @@ import {
   buildSingleUnits,
 } from '@/components/familyTree/layout/buildUnits';
 import { type Person, Sex } from '@/schemas/personSchema';
-import { type Relation, RelationType } from '@/schemas/relationSchema';
+import { HouseholdSide, type Relation, RelationType } from '@/schemas/relationSchema';
 
 const ID = {
   PARENT: '11111111-1111-4111-8111-111111111111',
@@ -77,6 +77,38 @@ describe('buildCoupleUnits', () => {
     );
     const { units } = buildCoupleUnits([rel], new Map());
     expect(units[0].marriageType).toBe('couple');
+  });
+
+  it('householdSide 未指定なら householdHeadPersonId は null (personIds 順も不変)', () => {
+    const rel = makeRelation(
+      ID.REL_MARRIED,
+      RelationType.MARRIED_COUPLE,
+      ID.HUSBAND,
+      ID.WIFE,
+    );
+    const { units } = buildCoupleUnits([rel], new Map());
+    expect(units[0].householdHeadPersonId).toBeNull();
+    expect(units[0].personIds).toEqual([ID.HUSBAND, ID.WIFE]);
+  });
+
+  it('householdSide=person2 なら householdHeadPersonId=p2 (personIds 順は変えない)', () => {
+    const rel: Relation = {
+      ...makeRelation(ID.REL_MARRIED, RelationType.MARRIED_COUPLE, ID.HUSBAND, ID.WIFE),
+      householdSide: HouseholdSide.PERSON2,
+    };
+    const { units } = buildCoupleUnits([rel], new Map());
+    expect(units[0].householdHeadPersonId).toBe(ID.WIFE);
+    // 視覚順 (personIds) は person1, person2 のまま
+    expect(units[0].personIds).toEqual([ID.HUSBAND, ID.WIFE]);
+  });
+
+  it('householdSide=person1 なら householdHeadPersonId=p1', () => {
+    const rel: Relation = {
+      ...makeRelation(ID.REL_MARRIED, RelationType.MARRIED_COUPLE, ID.HUSBAND, ID.WIFE),
+      householdSide: HouseholdSide.PERSON1,
+    };
+    const { units } = buildCoupleUnits([rel], new Map());
+    expect(units[0].householdHeadPersonId).toBe(ID.HUSBAND);
   });
 
   it('親子関係は無視する', () => {

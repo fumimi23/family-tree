@@ -6,6 +6,19 @@ export interface OwnershipResult {
   rootUnitIds: string[];
 }
 
+/*
+ * householdHeadPersonId が指定されていれば、その人物を先頭にした personIds 順を返す。
+ * 親ユニット探索はこの順で行われ、先に見つかった親ユニットが primary になるため、
+ * 「家系を継ぐ側」の親系統が primary に選ばれる。視覚上の personIds 順は変えない。
+ */
+function orderedPersonIds(unit: Unit): string[] {
+  const head = unit.householdHeadPersonId;
+  if (head === null || !unit.personIds.includes(head)) {
+    return unit.personIds;
+  }
+  return [head, ...unit.personIds.filter((pid) => pid !== head)];
+}
+
 function findAllParentUnits(
   unit: Unit,
   unitOfPerson: Map<string, string>,
@@ -13,7 +26,7 @@ function findAllParentUnits(
 ): string[] {
   const seen = new Set<string>();
   const result: string[] = [];
-  for (const pid of unit.personIds) {
+  for (const pid of orderedPersonIds(unit)) {
     const parents = childToParents.get(pid) ?? [];
     for (const { parentId } of parents) {
       const ownerId = unitOfPerson.get(parentId);

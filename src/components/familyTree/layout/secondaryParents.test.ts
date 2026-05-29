@@ -27,6 +27,7 @@ function singleUnit(id: string, personId: string): Unit {
     marriageRelationId: null,
     marriageType: null,
     marriageDivorced: false,
+    householdHeadPersonId: null,
     generation: 0,
   };
 }
@@ -39,6 +40,7 @@ function coupleUnit(id: string, p1: string, p2: string): Unit {
     marriageRelationId: 'rel',
     marriageType: 'married',
     marriageDivorced: false,
+    householdHeadPersonId: null,
     generation: 0,
   };
 }
