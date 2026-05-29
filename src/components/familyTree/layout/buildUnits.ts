@@ -4,7 +4,7 @@ import {
   type Unit,
 } from '@/components/familyTree/layout/internalTypes';
 import { type Person } from '@/schemas/personSchema';
-import { type Relation, RelationType } from '@/schemas/relationSchema';
+import { HouseholdSide, type Relation, RelationType } from '@/schemas/relationSchema';
 
 export interface SecondaryMarriage {
   relationId: string;
@@ -17,6 +17,17 @@ export interface SecondaryMarriage {
 export interface CoupleBuildResult {
   units: Unit[];
   secondaryMarriages: SecondaryMarriage[];
+}
+
+// householdSide に対応する人物 id を返す。未指定なら null (= 従来どおり personId1 が primary)。
+function resolveHouseholdHead(rel: Relation, p1: string, p2: string): string | null {
+  if (rel.householdSide === HouseholdSide.PERSON1) {
+    return p1;
+  }
+  if (rel.householdSide === HouseholdSide.PERSON2) {
+    return p2;
+  }
+  return null;
 }
 
 function classifyMarriage(rel: Relation): MarriageLineType | null {
@@ -83,6 +94,7 @@ export function buildCoupleUnits(
       marriageRelationId: rel.id,
       marriageType,
       marriageDivorced: rel.divorced ?? false,
+      householdHeadPersonId: resolveHouseholdHead(rel, p1, p2),
       generation: 0,
     });
     unitOfPerson.set(p1, id);
@@ -111,6 +123,7 @@ export function buildSingleUnits(
       marriageRelationId: null,
       marriageType: null,
       marriageDivorced: false,
+      householdHeadPersonId: null,
       generation: 0,
     });
     unitOfPerson.set(p.id, id);

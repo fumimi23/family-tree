@@ -26,6 +26,8 @@ export interface Unit {
   marriageRelationId: string | null;
   marriageType: MarriageLineType | null;
   marriageDivorced: boolean;
+  // 家系を継ぐ側の人物 (この人の親系統を primary にする)。未指定は null。
+  householdHeadPersonId: string | null;
   generation: number;
 }
 

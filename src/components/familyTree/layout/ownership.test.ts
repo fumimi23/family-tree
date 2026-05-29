@@ -25,6 +25,7 @@ function singleUnit(id: string, personId: string): Unit {
     marriageRelationId: null,
     marriageType: null,
     marriageDivorced: false,
+    householdHeadPersonId: null,
     generation: 0,
   };
 }
@@ -37,6 +38,7 @@ function coupleUnit(id: string, p1: string, p2: string): Unit {
     marriageRelationId: 'rel',
     marriageType: 'married',
     marriageDivorced: false,
+    householdHeadPersonId: null,
     generation: 0,
   };
 }
@@ -105,6 +107,57 @@ describe('computeOwnership', () => {
     const result = computeOwnership(units, unitOfPerson, childToParents);
     expect(result.childrenOfUnit.get('u-couple')).toEqual(['u-child']);
     expect(result.secondaryParentsOfUnit.size).toBe(0);
+  });
+
+  it('householdHeadPersonId が指定された側の親系統が primary になる', () => {
+    // 子夫婦 = [CHILD(親=u-pa), WIFE(親=u-pb)]。householdHead を WIFE 側にすると u-pb が primary。
+    const childCouple = {
+      ...coupleUnit('u-childcouple', ID.CHILD, ID.WIFE),
+      householdHeadPersonId: ID.WIFE,
+    };
+    const units = [
+      singleUnit('u-pa', ID.HUSBAND),
+      singleUnit('u-pb', ID.PARENT),
+      childCouple,
+    ];
+    const unitOfPerson = new Map([
+      [ID.HUSBAND, 'u-pa'],
+      [ID.PARENT, 'u-pb'],
+      [ID.CHILD, 'u-childcouple'],
+      [ID.WIFE, 'u-childcouple'],
+    ]);
+    const childToParents = new Map([
+      [ID.CHILD, [link(ID.HUSBAND)]],
+      [ID.WIFE, [link(ID.PARENT)]],
+    ]);
+    const result = computeOwnership(units, unitOfPerson, childToParents);
+    // WIFE 側の親ユニット u-pb が primary
+    expect(result.childrenOfUnit.get('u-pb')).toEqual(['u-childcouple']);
+    // CHILD 側の u-pa は secondary
+    expect(result.secondaryParentsOfUnit.get('u-childcouple')).toEqual(['u-pa']);
+  });
+
+  it('householdHeadPersonId 未指定なら personIds 先頭 (=person1) 側が primary', () => {
+    const childCouple = coupleUnit('u-childcouple', ID.CHILD, ID.WIFE);
+    const units = [
+      singleUnit('u-pa', ID.HUSBAND),
+      singleUnit('u-pb', ID.PARENT),
+      childCouple,
+    ];
+    const unitOfPerson = new Map([
+      [ID.HUSBAND, 'u-pa'],
+      [ID.PARENT, 'u-pb'],
+      [ID.CHILD, 'u-childcouple'],
+      [ID.WIFE, 'u-childcouple'],
+    ]);
+    const childToParents = new Map([
+      [ID.CHILD, [link(ID.HUSBAND)]],
+      [ID.WIFE, [link(ID.PARENT)]],
+    ]);
+    const result = computeOwnership(units, unitOfPerson, childToParents);
+    // 先頭 CHILD 側の u-pa が primary
+    expect(result.childrenOfUnit.get('u-pa')).toEqual(['u-childcouple']);
+    expect(result.secondaryParentsOfUnit.get('u-childcouple')).toEqual(['u-pb']);
   });
 });
 
