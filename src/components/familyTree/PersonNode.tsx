@@ -46,6 +46,11 @@ interface DetailRow {
   value: string;
 }
 
+/*
+ * 性別はノードの色で既に表現されている。tooltip では情報の重複を避けつつ、
+ * 他に表示する詳細 (旧姓/生没年/戒名) があるときだけ、ラベル形式で改めて補足する。
+ * したがって性別だけでは tooltip を出さない (= rows が空) ようにする。
+ */
 function buildDetailRows(person: Person): DetailRow[] {
   const rows: DetailRow[] = [];
   const maiden = (person.maidenName ?? '').trim();
@@ -53,13 +58,6 @@ function buildDetailRows(person: Person): DetailRow[] {
     rows.push({
       label: '旧姓',
       value: maiden,
-    });
-  }
-  const sexLabel = sexList.find((s) => s.value === toSex(person.sex))?.label;
-  if (sexLabel !== undefined) {
-    rows.push({
-      label: '性別',
-      value: sexLabel,
     });
   }
   const dateText = buildDateText(person.birth, person.death);
@@ -74,6 +72,17 @@ function buildDetailRows(person: Person): DetailRow[] {
     rows.push({
       label: '戒名',
       value: posthumousName,
+    });
+  }
+  if (rows.length === 0) {
+    return rows;
+  }
+  const sexLabel = sexList.find((s) => s.value === toSex(person.sex))?.label;
+  if (sexLabel !== undefined) {
+    // 性別は旧姓の直後に挿入する (元の並び順を維持)。
+    rows.splice(maiden === '' ? 0 : 1, 0, {
+      label: '性別',
+      value: sexLabel,
     });
   }
   return rows;

@@ -120,4 +120,21 @@ describe('PersonNode', () => {
     expect(screen.getByText('鈴木')).toBeInTheDocument();
     expect(screen.getByText('釋浄信')).toBeInTheDocument();
   });
+
+  it('詳細が一切無い人物 (生没年/旧姓/戒名すべて空) は tooltip を持たない', async() => {
+    const user = userEvent.setup();
+    renderNode({
+      person: makePerson({
+        birth: '',
+        death: '',
+        posthumousName: '',
+        maidenName: undefined,
+      }),
+      onClick: vi.fn(),
+    });
+    await user.hover(screen.getByRole('button'));
+    // 性別はノードの色で表現されるので、tooltip 単独では出さない。
+    expect(screen.queryByText('性別')).not.toBeInTheDocument();
+    expect(screen.queryByText('男性')).not.toBeInTheDocument();
+  });
 });
