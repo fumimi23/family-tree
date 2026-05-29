@@ -137,6 +137,25 @@ describe('applyFilter', () => {
     expect(ids).toEqual(['m-me', 'par-me-c', 'par-s-c'].sort());
   });
 
+  it('削除済み人物を経由した辿りでその先の親類を含めない', () => {
+    /*
+     * P_FATHER が削除されたが par-gpf-pf / par-gpm-pf / par-pf-me などの relation は残っている状態。
+     * 起点 = ME で祖先方向に辿るとき、削除済みの P_FATHER を経由して GP_FATHER / GP_MOTHER に
+     * 到達してしまわないことを検証する。
+     */
+    const peopleWithoutFather = people.filter((p) => p.id !== ID.P_FATHER);
+    const result = applyFilter(peopleWithoutFather, relations, {
+      focusPersonId: ID.ME,
+      scope: 'ancestors',
+    });
+    const ids = result.people.map((p) => p.id);
+    expect(ids).not.toContain(ID.GP_FATHER);
+    expect(ids).not.toContain(ID.GP_MOTHER);
+    // 母 (P_MOTHER) と起点 (ME) は残る (P_MOTHER は別経路で繋がっている)
+    expect(ids).toContain(ID.P_MOTHER);
+    expect(ids).toContain(ID.ME);
+  });
+
   it('relations にだけ残っていて people に無い id は filteredRelations に含めない', () => {
     /*
      * 親 (P_FATHER) が削除された状態 (people には居ないが、par-pf-me / par-gpf-pf 等の

@@ -109,18 +109,17 @@ export interface FilterResult {
   relations: Relation[];
 }
 
-export function applyFilter(
-  people: Person[],
-  relations: Relation[],
-  criteria: FilterCriteria | null,
-): FilterResult {
-  if (criteria === null) {
-    return {
-      people,
-      relations,
-    };
+function hasBothEndsIn(rel: Relation, ids: Set<string>): boolean {
+  if (rel.persons.personId1.length === 0 || rel.persons.personId2.length === 0) {
+    return false;
   }
-  const maps = buildMaps(relations);
+  return ids.has(rel.persons.personId1[0]) && ids.has(rel.persons.personId2[0]);
+}
+
+function collectInScope(
+  criteria: FilterCriteria,
+  maps: ParentChildMaps,
+): Set<string> {
   const collected = new Set<string>();
   if (criteria.scope === 'ancestors' || criteria.scope === 'both') {
     for (const id of collectAncestors(criteria.focusPersonId, maps)) {
@@ -133,6 +132,29 @@ export function applyFilter(
     }
   }
   addSpouses(collected, maps.spouseMap);
+  return collected;
+}
+
+export function applyFilter(
+  people: Person[],
+  relations: Relation[],
+  criteria: FilterCriteria | null,
+): FilterResult {
+  if (criteria === null) {
+    return {
+      people,
+      relations,
+    };
+  }
+
+  /*
+   * 削除済み人物を経由した辿りで遠い親類が含まれてしまわないよう、
+   * 両端が people に実在する relation だけで親子グラフを構築する。
+   */
+  const personIds = new Set(people.map((p) => p.id));
+  const validRelations = relations.filter((r) => hasBothEndsIn(r, personIds));
+  const maps = buildMaps(validRelations);
+  const collected = collectInScope(criteria, maps);
   const filteredPeople = people.filter((p) => collected.has(p.id));
 
   /*
@@ -141,13 +163,7 @@ export function applyFilter(
    * 残るケースがあり、それを基準にすると people / relations が内部的に不整合になる。
    */
   const filteredPersonIds = new Set(filteredPeople.map((p) => p.id));
-  const filteredRelations = relations.filter((r) => {
-    if (r.persons.personId1.length === 0 || r.persons.personId2.length === 0) {
-      return false;
-    }
-    return filteredPersonIds.has(r.persons.personId1[0])
-      && filteredPersonIds.has(r.persons.personId2[0]);
-  });
+  const filteredRelations = relations.filter((r) => hasBothEndsIn(r, filteredPersonIds));
   return {
     people: filteredPeople,
     relations: filteredRelations,
