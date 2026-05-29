@@ -89,4 +89,52 @@ describe('PersonNode', () => {
     await user.keyboard('{Enter}');
     expect(onClick).toHaveBeenCalledExactlyOnceWith(ID);
   });
+
+  it('ノード内の text 要素は主名のみで、日付/戒名はインラインで描画しない', () => {
+    renderNode({
+      person: makePerson({
+        birth: '1980-01-01',
+        death: '2020-01-01',
+        posthumousName: '釋浄信',
+        maidenName: '鈴木',
+      }),
+    });
+    const svgTexts = Array.from(document.querySelectorAll('svg text'));
+    expect(svgTexts).toHaveLength(1);
+    expect(svgTexts[0]?.textContent).toBe('山田 太郎');
+  });
+
+  it('詳細情報のある人物はホバーで tooltip に旧姓/生没年/戒名が表示される', async() => {
+    const user = userEvent.setup();
+    renderNode({
+      person: makePerson({
+        birth: '1980-01-01',
+        death: '2020-01-01',
+        posthumousName: '釋浄信',
+        maidenName: '鈴木',
+      }),
+      onClick: vi.fn(),
+    });
+    await user.hover(screen.getByRole('button'));
+    expect(await screen.findByText('1980 - 2020')).toBeInTheDocument();
+    expect(screen.getByText('鈴木')).toBeInTheDocument();
+    expect(screen.getByText('釋浄信')).toBeInTheDocument();
+  });
+
+  it('詳細が一切無い人物 (生没年/旧姓/戒名すべて空) は tooltip を持たない', async() => {
+    const user = userEvent.setup();
+    renderNode({
+      person: makePerson({
+        birth: '',
+        death: '',
+        posthumousName: '',
+        maidenName: undefined,
+      }),
+      onClick: vi.fn(),
+    });
+    await user.hover(screen.getByRole('button'));
+    // 性別はノードの色で表現されるので、tooltip 単独では出さない。
+    expect(screen.queryByText('性別')).not.toBeInTheDocument();
+    expect(screen.queryByText('男性')).not.toBeInTheDocument();
+  });
 });
