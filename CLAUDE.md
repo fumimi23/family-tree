@@ -75,6 +75,8 @@
 - ユニット/コンポーネントテストは Vitest (`yarn test`、jsdom)、ページ全体の E2E は Playwright (`yarn e2e`)。Vitest の `include` は `src/**/*.test.{ts,tsx}` に絞ってあり、`e2e/*.spec.ts` は拾わない (両者の `test`/`expect` import 元が違うので混ざると壊れる)
 - Playwright のブラウザは `enableScripts: false` のため `yarn install` で自動取得されない。`yarn playwright install chromium` を手動実行する。CI は `--with-deps` でシステムライブラリも入れる
 - e2e は `tsconfig.app.json` の対象外。型解決のため `tsconfig.e2e.json` を用意し eslint の `parserOptions.project` にも追加してある
+- Playwright の project で機能 E2E (`yarn e2e` = `--project=e2e`) と VRT (`yarn vrt` = `--project=vrt`) を分離。`visual.spec.ts` のみ vrt project。新規の機能 E2E は `e2e` project が自動で拾う (visual.spec.ts 以外)
+- VRT の baseline はフォント差で誤検知しないよう**必ず公式 Docker イメージ `mcr.microsoft.com/playwright:v<version>-noble` + `fonts-noto-cjk`** で生成・比較する。ローカルの素の chromium で生成すると日本語が豆腐になり CI と一致しない。更新は `VRT Update Baselines` ワークフロー (手動) → artifact を `e2e/__screenshots__/` に commit
 
 ### CSS / レイアウト
 - `<input type="file">` の change イベントは同じファイルを再選択しても発火しない。click 前に `inputRef.current.value = ''` でリセットする

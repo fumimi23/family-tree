@@ -46,6 +46,23 @@ yarn e2e
 > [!NOTE]
 > `.yarnrc.yml` の `enableScripts: false` によりブラウザは `yarn install` 時に自動取得されないため、上記の `yarn playwright install` を手動で実行する。Linux でブラウザ起動に必要なシステムライブラリが足りない場合は `yarn playwright install --with-deps chromium` (要 sudo) を使う。
 
+### VRT (ビジュアルリグレッションテスト)
+
+家系図描画の見た目崩れは Playwright のスクリーンショット比較で検知する (`yarn vrt`)。フォント描画は OS / 環境で差が出るため、**baseline は公式 Playwright Docker イメージで生成・比較する** (CI もこのイメージで実行)。
+
+baseline の更新は GitHub Actions の **VRT Update Baselines** ワークフロー (手動実行) で行う:
+
+1. Actions タブから `VRT Update Baselines` を `workflow_dispatch` で実行
+2. 生成された `vrt-baselines` artifact をダウンロード
+3. `e2e/__screenshots__/` に展開して commit
+
+ローカルで生成・確認する場合は同じイメージを使う:
+
+```bash
+docker run --rm -v "$(pwd):/work" -w /work mcr.microsoft.com/playwright:v1.60.0-noble \
+  sh -c "apt-get update && apt-get install -y fonts-noto-cjk && corepack enable && yarn install --immutable && yarn vrt --update-snapshots"
+```
+
 ## ドキュメント
 
 - [docs/family-tree.md](docs/family-tree.md) — 家系図の表記ルール
