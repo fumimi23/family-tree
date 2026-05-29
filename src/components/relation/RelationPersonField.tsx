@@ -75,9 +75,11 @@ export function RelationPersonField({
         )}
       />
 
-      {errorMessages.map((message, i) => (
-        <Field.ErrorText key={`${name}-err-${i.toString()}`}>{message}</Field.ErrorText>
-      ))}
+      {errorMessages
+        .filter((message): message is string => message !== undefined)
+        .map((message) => (
+          <Field.ErrorText key={`${name}-${message}`}>{message}</Field.ErrorText>
+        ))}
     </Field.Root>
   );
 }
