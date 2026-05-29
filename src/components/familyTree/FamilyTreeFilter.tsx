@@ -158,9 +158,16 @@ export function FamilyTreeFilter({ people, criteria, onChange }: Props): React.R
             checked={criteria.includeSiblings === true}
             onCheckedChange={(e): void => { handleSiblingsChange(e.checked === true); }}
             size="sm"
+            variant="outline"
           >
             <Checkbox.HiddenInput />
-            <Checkbox.Control />
+
+            {/* 未チェック時も枠が見えるよう明示的に border を指定する (Chakra v3 の既定だと薄い) */}
+            <Checkbox.Control
+              borderColor="border.emphasized"
+              borderWidth="1px"
+            />
+
             <Checkbox.Label>兄弟も含める</Checkbox.Label>
           </Checkbox.Root>
         )}

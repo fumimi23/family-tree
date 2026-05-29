@@ -76,3 +76,4 @@
 - CSS Grid `1fr` はコンテンツ幅に拡張される。内側で `overflowX:auto` したい時は `templateColumns="repeat(N, minmax(0, 1fr))"` にする
 - Flex 子の SVG は `flex-shrink: 1` で縮む。横スクロールを効かせたい時は SVG を `<Box flexShrink={0}>` でラップする
 - Chakra v3 の `<Button>` デフォルトはテキストが見えづらいことがある。既存の `PrimaryButton` を使うか variant を明示する
+- Chakra v3 の `<Checkbox.Control>` は未チェック時の枠線が薄く存在に気づきにくい。`variant="outline"` + `borderColor="border.emphasized"` / `borderWidth="1px"` を明示する
