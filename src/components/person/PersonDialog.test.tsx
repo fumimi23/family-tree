@@ -134,4 +134,53 @@ describe('PersonDialog', () => {
     await user.click(screen.getByRole('button', { name: '保存' }));
     expect(usePeopleStore.getState().people[0].maidenName).toBe('佐藤');
   });
+
+  it('編集モードで onFilterFocus が指定されていると「起点にする」ボタンが出る', () => {
+    renderWithProvider(
+      <PersonDialog
+        isOpen
+        onFilterFocus={vi.fn()}
+        onOpenChange={vi.fn()}
+        person={makePerson()}
+      />,
+    );
+    expect(screen.getByRole('button', { name: 'この人を起点にフィルタ' })).toBeInTheDocument();
+  });
+
+  it('onFilterFocus 未指定なら「起点にする」ボタンは出ない', () => {
+    renderWithProvider(
+      <PersonDialog
+        isOpen
+        onOpenChange={vi.fn()}
+        person={makePerson()}
+      />,
+    );
+    expect(screen.queryByRole('button', { name: 'この人を起点にフィルタ' })).not.toBeInTheDocument();
+  });
+
+  it('「起点にする」を押すと onFilterFocus が person.id 付きで呼ばれる', async() => {
+    const user = userEvent.setup();
+    const onFilterFocus = vi.fn();
+    renderWithProvider(
+      <PersonDialog
+        isOpen
+        onFilterFocus={onFilterFocus}
+        onOpenChange={vi.fn()}
+        person={makePerson()}
+      />,
+    );
+    await user.click(screen.getByRole('button', { name: 'この人を起点にフィルタ' }));
+    expect(onFilterFocus).toHaveBeenCalledExactlyOnceWith(ID);
+  });
+
+  it('新規追加モード (person 未指定) では「起点にする」ボタンは出ない', () => {
+    renderWithProvider(
+      <PersonDialog
+        isOpen
+        onFilterFocus={vi.fn()}
+        onOpenChange={vi.fn()}
+      />,
+    );
+    expect(screen.queryByRole('button', { name: 'この人を起点にフィルタ' })).not.toBeInTheDocument();
+  });
 });
