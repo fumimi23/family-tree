@@ -56,6 +56,9 @@ baseline の更新は GitHub Actions の **VRT Update Baselines** ワークフ�
 2. 生成された `vrt-baselines` artifact をダウンロード
 3. `e2e/__screenshots__/` に展開して commit
 
+> [!NOTE]
+> 初回 baseline 投入が済むまで `vrt.yml` は `pull_request` トリガーのみ (main への `push` は付けていない)。baseline を commit したら `push: branches: [main]` を追加して main でも回す。
+
 ローカルで生成・確認する場合は同じイメージを使う:
 
 ```bash

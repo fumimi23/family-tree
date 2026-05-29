@@ -2,7 +2,8 @@ name: VRT Run (reusable)
 
 # VRT の実行手順を集約した再利用ワークフロー。
 # - 比較 (vrt.yml) と baseline 生成 (vrt-update.yml) で同一のイメージ・手順を使う
-# - Playwright のイメージタグは PLAYWRIGHT_IMAGE に 1 箇所だけ定義する
+# - Playwright のイメージタグは下の jobs.vrt.container.image に 1 箇所だけ書く
+#   (@playwright/test との一致は "Verify Playwright version matches image" で検証)
 on:
   workflow_call:
     inputs:
