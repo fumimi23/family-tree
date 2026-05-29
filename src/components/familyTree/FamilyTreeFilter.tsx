@@ -1,4 +1,4 @@
-import { Button, createListCollection, Flex, Portal, Select } from '@chakra-ui/react';
+import { Button, Checkbox, createListCollection, Flex, Portal, Select } from '@chakra-ui/react';
 import React from 'react';
 
 import { type FilterCriteria, type FilterScope } from '@/components/familyTree/applyFilter';
@@ -53,6 +53,16 @@ export function FamilyTreeFilter({ people, criteria, onChange }: Props): React.R
     onChange({
       ...criteria,
       scope: value[0] as FilterScope,
+    });
+  };
+
+  const handleSiblingsChange = (checked: boolean): void => {
+    if (criteria === null) {
+      return;
+    }
+    onChange({
+      ...criteria,
+      includeSiblings: checked,
     });
   };
 
@@ -140,6 +150,27 @@ export function FamilyTreeFilter({ people, criteria, onChange }: Props): React.R
           </Select.Positioner>
         </Portal>
       </Select.Root>
+
+      {criteria === null
+        ? null
+        : (
+          <Checkbox.Root
+            checked={criteria.includeSiblings === true}
+            onCheckedChange={(e): void => { handleSiblingsChange(e.checked === true); }}
+            size="sm"
+            variant="outline"
+          >
+            <Checkbox.HiddenInput />
+
+            {/* 未チェック時も枠が見えるよう明示的に border を指定する (Chakra v3 の既定だと薄い) */}
+            <Checkbox.Control
+              borderColor="border.emphasized"
+              borderWidth="1px"
+            />
+
+            <Checkbox.Label>兄弟も含める</Checkbox.Label>
+          </Checkbox.Root>
+        )}
 
       {criteria === null
         ? null

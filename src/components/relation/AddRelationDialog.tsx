@@ -251,9 +251,16 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
                                     onCheckedChange={(e): void => {
                                       field.onChange(e.checked === true);
                                     }}
+                                    variant="outline"
                                   >
                                     <Checkbox.HiddenInput onBlur={field.onBlur} />
-                                    <Checkbox.Control />
+
+                                    {/* 未チェック時も枠が見えるよう明示的に border を指定する */}
+                                    <Checkbox.Control
+                                      borderColor="border.emphasized"
+                                      borderWidth="1px"
+                                    />
+
                                     <Checkbox.Label>離婚済み</Checkbox.Label>
                                   </Checkbox.Root>
                                 )}
