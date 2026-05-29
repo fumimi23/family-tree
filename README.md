@@ -59,6 +59,15 @@ baseline の更新は GitHub Actions の **VRT Update Baselines** ワークフ�
 > [!IMPORTANT]
 > artifact の中身は `e2e/__screenshots__/` 配下のファイル群。展開時に階層を間違えると `e2e/__screenshots__/e2e/__screenshots__/...` の二重階層になりやすい。**最終的に `e2e/__screenshots__/visual.spec.ts/family-tree-light.png` (と dark) が存在する**ことを確認してから commit する。
 
+#### PR レビュー用の現在スクショ
+
+VRT ジョブは比較とは別に、**そのブランチの現在の見た目**を `vrt-current` artifact として毎 PR で出力する (リグレッション差分の有無に関わらず取得できる)。新規画面や「見やすさ」の確認に使う:
+
+```bash
+# 対象 PR の最新 VRT 実行から現在スクショを取得
+gh run download <run-id> -n vrt-current -D /tmp/vrt-current
+```
+
 
 baseline 更新は上記の **VRT Update Baselines** ワークフローを使うのが基本 (ローカルを汚さない)。どうしてもローカルで生成する場合は同じイメージを使う:
 

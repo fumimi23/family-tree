@@ -15,6 +15,10 @@ on:
         description: Playwright 公式 Docker イメージ (@playwright/test と版を揃える)
         type: string
         default: mcr.microsoft.com/playwright:v1.60.0-noble
+      snapshot-artifact-name:
+        description: update-snapshots=true のときに生成スクショを上げる artifact 名
+        type: string
+        default: vrt-baselines
 
 permissions:
   contents: read
@@ -74,11 +78,11 @@ jobs:
           # 依存インストール失敗等で report 未生成のとき、二次的な path not found を避ける
           if-no-files-found: ignore
 
-      - name: Upload baselines
+      - name: Upload snapshots
         if: ${{ inputs['update-snapshots'] }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: vrt-baselines
+          name: ${{ inputs['snapshot-artifact-name'] }}
           path: e2e/__screenshots__/
           retention-days: 7
           # 生成途中で失敗し screenshots 未作成のとき、二次的な path not found を避ける
