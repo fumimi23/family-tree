@@ -1,13 +1,14 @@
-import { Button, Checkbox, CloseButton, createListCollection, Dialog, Field, Flex, Portal, Select } from '@chakra-ui/react';
+import { Button, Checkbox, CloseButton, createListCollection, Dialog, Field, Flex, Portal, RadioGroup, Select } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 
+import { RelationPersonField } from '@/components/relation/RelationPersonField';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { toaster } from '@/components/ui/toaster';
 import { type Person } from '@/schemas/personSchema';
-import { type Relation, relationSchema, RelationType, relationTypeList } from '@/schemas/relationSchema';
+import { HouseholdSide, type Relation, relationSchema, RelationType, relationTypeList } from '@/schemas/relationSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
 
@@ -132,107 +133,23 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
                   {selectedRelationType
                     ? (
                       <>
-                        <Field.Root invalid={Boolean(errors.persons) || Boolean(errors.persons?.personId1)}>
+                        <RelationPersonField
+                          control={control}
+                          errorMessages={[errors.persons?.message, errors.persons?.personId1?.message]}
+                          invalid={Boolean(errors.persons) || Boolean(errors.persons?.personId1)}
+                          label={selectedRelationType.person1Label}
+                          name="persons.personId1"
+                          personCollection={personCollection}
+                        />
 
-                          <Field.Label>{selectedRelationType.person1Label}</Field.Label>
-
-                          <Controller
-                            control={control}
-                            name="persons.personId1"
-                            render={({ field }) => (
-                              <Select.Root
-                                collection={personCollection}
-                                defaultValue={field.value}
-                                name={field.name}
-                                onInteractOutside={field.onBlur}
-                                onValueChange={({ value }) => { field.onChange(value); }}
-                                value={field.value}
-                              >
-                                <Select.HiddenSelect />
-
-                                <Select.Control>
-                                  <Select.Trigger>
-                                    <Select.ValueText placeholder={selectedRelationType.person1Label} />
-                                  </Select.Trigger>
-
-                                  <Select.IndicatorGroup>
-                                    <Select.Indicator />
-                                  </Select.IndicatorGroup>
-                                </Select.Control>
-
-                                <Portal>
-                                  <Select.Positioner>
-                                    <Select.Content zIndex={1500}>
-                                      {personCollection.items.map((person) => (
-                                        <Select.Item
-                                          item={person}
-                                          key={person.value}
-                                        >
-                                          {person.label}
-                                          <Select.ItemIndicator />
-                                        </Select.Item>
-                                      ))}
-                                    </Select.Content>
-                                  </Select.Positioner>
-                                </Portal>
-                              </Select.Root>
-                            )}
-                          />
-
-                          <Field.ErrorText>{errors.persons?.message}</Field.ErrorText>
-                          <Field.ErrorText>{errors.persons?.personId1?.message}</Field.ErrorText>
-                        </Field.Root>
-
-                        <Field.Root invalid={Boolean(errors.persons) || Boolean(errors.persons?.personId2)}>
-
-                          <Field.Label>{selectedRelationType.person2Label}</Field.Label>
-
-                          <Controller
-                            control={control}
-                            name="persons.personId2"
-                            render={({ field }) => (
-                              <Select.Root
-                                collection={personCollection}
-                                defaultValue={field.value}
-                                name={field.name}
-                                onInteractOutside={field.onBlur}
-                                onValueChange={({ value }) => { field.onChange(value); }}
-                                value={field.value}
-                              >
-                                <Select.HiddenSelect />
-
-                                <Select.Control>
-                                  <Select.Trigger>
-                                    <Select.ValueText placeholder={selectedRelationType.person2Label} />
-                                  </Select.Trigger>
-
-                                  <Select.IndicatorGroup>
-                                    <Select.Indicator />
-                                  </Select.IndicatorGroup>
-                                </Select.Control>
-
-                                <Portal>
-                                  <Select.Positioner>
-                                    <Select.Content zIndex={1500}>
-                                      {personCollection.items.map((person) => (
-                                        <Select.Item
-                                          item={person}
-                                          key={person.value}
-                                        >
-                                          {person.label}
-                                          <Select.ItemIndicator />
-                                        </Select.Item>
-                                      ))}
-                                    </Select.Content>
-                                  </Select.Positioner>
-                                </Portal>
-                              </Select.Root>
-                            )}
-                          />
-
-                          <Field.ErrorText>{errors.persons?.message}</Field.ErrorText>
-                          <Field.ErrorText>{errors.persons?.personId2?.message}</Field.ErrorText>
-                        </Field.Root>
+                        <RelationPersonField
+                          control={control}
+                          errorMessages={[errors.persons?.message, errors.persons?.personId2?.message]}
+                          invalid={Boolean(errors.persons) || Boolean(errors.persons?.personId2)}
+                          label={selectedRelationType.person2Label}
+                          name="persons.personId2"
+                          personCollection={personCollection}
+                        />
 
                         {isMarriageRelation
                           ? (
@@ -268,6 +185,61 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
                               />
 
                               <Field.ErrorText>{errors.divorced?.message}</Field.ErrorText>
+                            </Field.Root>
+                          )
+                          : null}
+
+                        {isMarriageRelation
+                          ? (
+                            <Field.Root invalid={Boolean(errors.householdSide)}>
+                              <Field.Label>家系を継ぐ側 (任意)</Field.Label>
+
+                              {/*
+                                * 非婚姻リレーションに切り替えたら値を残さない (superRefine 違反防止)。
+                                * 「指定なし」は空文字で表現し、保存時に undefined へ変換する。
+                                */}
+                              <Controller
+                                control={control}
+                                name="householdSide"
+                                render={({ field }) => (
+                                  <RadioGroup.Root
+                                    name={field.name}
+                                    onValueChange={({ value }): void => {
+                                      field.onChange(value === '' ? undefined : value);
+                                    }}
+                                    value={field.value ?? ''}
+                                  >
+                                    <Flex gap={2}>
+                                      <RadioGroup.Item value="">
+                                        <RadioGroup.ItemHiddenInput onBlur={field.onBlur} />
+                                        <RadioGroup.ItemIndicator />
+                                        <RadioGroup.ItemText>指定なし</RadioGroup.ItemText>
+                                      </RadioGroup.Item>
+
+                                      <RadioGroup.Item value={HouseholdSide.PERSON1}>
+                                        <RadioGroup.ItemHiddenInput onBlur={field.onBlur} />
+                                        <RadioGroup.ItemIndicator />
+
+                                        <RadioGroup.ItemText>
+                                          {`${selectedRelationType.person1Label}側`}
+                                        </RadioGroup.ItemText>
+                                      </RadioGroup.Item>
+
+                                      <RadioGroup.Item value={HouseholdSide.PERSON2}>
+                                        <RadioGroup.ItemHiddenInput onBlur={field.onBlur} />
+                                        <RadioGroup.ItemIndicator />
+
+                                        <RadioGroup.ItemText>
+                                          {`${selectedRelationType.person2Label}側`}
+                                        </RadioGroup.ItemText>
+                                      </RadioGroup.Item>
+                                    </Flex>
+                                  </RadioGroup.Root>
+                                )}
+                                shouldUnregister
+                              />
+
+                              <Field.ErrorText>{errors.householdSide?.message}</Field.ErrorText>
                             </Field.Root>
                           )
                           : null}
