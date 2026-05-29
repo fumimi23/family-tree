@@ -191,6 +191,60 @@ describe('layoutFamilyTree', () => {
     expect(result.marriageEdges[0].divorced).toBe(false);
   });
 
+  it('いとこ婚: couple unit から双方の親ユニットに線が引かれる', () => {
+    const GP1 = 'eeeeeeee-0000-4000-8000-000000000001';
+    const GP2 = 'eeeeeeee-0000-4000-8000-000000000002';
+    const GP3 = 'eeeeeeee-0000-4000-8000-000000000003';
+    const GP4 = 'eeeeeeee-0000-4000-8000-000000000004';
+    const PARENT_A1 = 'ffffffff-0000-4000-8000-000000000001';
+    const PARENT_A2 = 'ffffffff-0000-4000-8000-000000000002';
+    const PARENT_B1 = 'ffffffff-0000-4000-8000-000000000003';
+    const PARENT_B2 = 'ffffffff-0000-4000-8000-000000000004';
+    const COUSIN_A = 'aaaaaaaa-1111-4000-8000-000000000001';
+    const COUSIN_B = 'aaaaaaaa-1111-4000-8000-000000000002';
+    const people = [
+      person(GP1, '1920-01-01'),
+      person(GP2, '1922-01-01'),
+      person(GP3, '1925-01-01'),
+      person(GP4, '1927-01-01'),
+      person(PARENT_A1, '1950-01-01'),
+      person(PARENT_A2, '1952-01-01'),
+      person(PARENT_B1, '1955-01-01'),
+      person(PARENT_B2, '1957-01-01'),
+      person(COUSIN_A, '1980-01-01'),
+      person(COUSIN_B, '1982-01-01'),
+    ];
+    const relations = [
+      // 祖父母 1 (GP1-GP2) の子: PARENT_A1
+      marriedRel('marrA-gp', GP1, GP2),
+      parentRel('par-gp1-a1', GP1, PARENT_A1),
+      parentRel('par-gp2-a1', GP2, PARENT_A1),
+      // 祖父母 2 (GP3-GP4) の子: PARENT_B1
+      marriedRel('marrB-gp', GP3, GP4),
+      parentRel('par-gp3-b1', GP3, PARENT_B1),
+      parentRel('par-gp4-b1', GP4, PARENT_B1),
+      // PARENT_A1 と PARENT_A2 の夫婦, 子: COUSIN_A
+      marriedRel('marrA', PARENT_A1, PARENT_A2),
+      parentRel('par-a1-ca', PARENT_A1, COUSIN_A),
+      parentRel('par-a2-ca', PARENT_A2, COUSIN_A),
+      // PARENT_B1 と PARENT_B2 の夫婦, 子: COUSIN_B
+      marriedRel('marrB', PARENT_B1, PARENT_B2),
+      parentRel('par-b1-cb', PARENT_B1, COUSIN_B),
+      parentRel('par-b2-cb', PARENT_B2, COUSIN_B),
+      // COUSIN_A と COUSIN_B のいとこ婚 (子なし)
+      marriedRel('marr-cousins', COUSIN_A, COUSIN_B),
+    ];
+    const result = layoutFamilyTree(people, relations);
+
+    /*
+     * いとこ婚 (COUSIN_A+B couple unit) は片方の親ユニット (PARENT_A) を primary owner として
+     * 紐付くため、もう片方の親ユニット (PARENT_B) へは secondaryParentEdge が引かれる。
+     * parentGroups: GP1-GP2 → PARENT_A1 / GP3-GP4 → PARENT_B1 / PARENT_A couple → COUSIN couple の 3 件
+     */
+    expect(result.parentGroups).toHaveLength(3);
+    expect(result.secondaryParentEdges).toHaveLength(1);
+  });
+
   it('同一人物の 3 回目以降の婚姻は段差で busY が深くなる', () => {
     const SPOUSE2 = 'cccccccc-0000-4000-8000-000000000101';
     const SPOUSE3 = 'cccccccc-0000-4000-8000-000000000102';
