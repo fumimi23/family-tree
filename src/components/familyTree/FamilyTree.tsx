@@ -4,7 +4,7 @@ import React from 'react';
 import { applyFilter, type FilterCriteria } from '@/components/familyTree/applyFilter';
 import { FamilyTreeFilter } from '@/components/familyTree/FamilyTreeFilter';
 import { FamilyTreeToolbar } from '@/components/familyTree/FamilyTreeToolbar';
-import { LABELS_WIDTH } from '@/components/familyTree/layout/internalTypes';
+import { GenerationLabels } from '@/components/familyTree/GenerationLabels';
 import { layoutFamilyTree } from '@/components/familyTree/layoutFamilyTree';
 import { MarriageEdge } from '@/components/familyTree/MarriageEdge';
 import { Minimap } from '@/components/familyTree/Minimap';
@@ -83,6 +83,13 @@ export function FamilyTree(): React.ReactNode {
     if (!e.open) {
       setEditingPersonId(null);
     }
+  }, []);
+  const handleFilterFocus = React.useCallback((personId: string): void => {
+    setFilterCriteria({
+      focusPersonId: personId,
+      scope: 'both',
+    });
+    setEditingPersonId(null);
   }, []);
   const { svgRef, handleExportSvg, handleExportPng } = useFamilyTreeExport(
     result.ok
@@ -176,36 +183,11 @@ export function FamilyTree(): React.ReactNode {
             ref={containerRef}
           >
             <Flex>
-              <Box
-                bg="bg"
-                flexShrink={0}
-                height={`${(result.layout.height * zoom).toString()}px`}
-                left={0}
-                position="sticky"
-                width={`${LABELS_WIDTH.toString()}px`}
-                zIndex={1}
-              >
-                {result.layout.generationRows.map((row) => (
-                  <Box
-                    alignItems="center"
-                    display="flex"
-                    height={`${(row.height * zoom).toString()}px`}
-                    justifyContent="center"
-                    key={row.y}
-                    left={0}
-                    position="absolute"
-                    top={`${(row.y * zoom).toString()}px`}
-                    width="100%"
-                  >
-                    <Text
-                      color="fg.muted"
-                      fontSize="xs"
-                    >
-                      {`第${(row.generation + 1).toString()}世代`}
-                    </Text>
-                  </Box>
-                ))}
-              </Box>
+              <GenerationLabels
+                rows={result.layout.generationRows}
+                totalHeight={result.layout.height}
+                zoom={zoom}
+              />
 
               <Box flexShrink={0}>
                 <svg
@@ -286,6 +268,7 @@ export function FamilyTree(): React.ReactNode {
           <PersonDialog
             isOpen
             key={editingPerson.id}
+            onFilterFocus={handleFilterFocus}
             onOpenChange={handleDialogOpenChange}
             person={editingPerson}
           />
