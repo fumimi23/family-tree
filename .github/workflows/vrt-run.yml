@@ -22,6 +22,8 @@ jobs:
     # @playwright/test と一致していることを起動前に保証する。
     container:
       image: mcr.microsoft.com/playwright:v1.60.0-noble
+      # フォント追加 (apt-get) に root が要るため、イメージの既定ユーザーに依存せず明示する
+      options: --user root
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
