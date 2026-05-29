@@ -12,6 +12,12 @@ async function importSampleAndWait(page: Page): Promise<void> {
   await page.locator('input[type="file"]').setInputFiles(SAMPLE_PATH);
   // 家系図ノードが描画されるまで待つ
   await expect(page.getByRole('button', { name: '山田 太郎' })).toBeVisible();
+
+  /*
+   * インポート成功トーストは数秒で消える時間依存要素なので、消えてから撮る
+   * (写り込むと VRT が flaky になる)。
+   */
+  await expect(page.getByText('インポートに成功しました。')).toBeHidden({ timeout: 15_000 });
   // フォント読み込み完了を待つ (未完了で撮ると text のメトリクスが変わり差分が出る)
   await page.evaluate(async() => {
     await document.fonts.ready;
