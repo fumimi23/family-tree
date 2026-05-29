@@ -67,6 +67,8 @@ jobs:
           name: vrt-report
           path: playwright-report/
           retention-days: 7
+          # 依存インストール失敗等で report 未生成のとき、二次的な path not found を避ける
+          if-no-files-found: ignore
 
       - name: Upload baselines
         if: ${{ inputs.update-snapshots }}
@@ -75,3 +77,5 @@ jobs:
           name: vrt-baselines
           path: e2e/__screenshots__/
           retention-days: 7
+          # 生成途中で失敗し screenshots 未作成のとき、二次的な path not found を避ける
+          if-no-files-found: ignore

@@ -35,12 +35,12 @@ export default defineConfig({
   projects: [
     {
       name: 'e2e',
-      testIgnore: /visual\.spec\.ts/u,
+      testIgnore: /visual\.spec\.ts$/u,
       use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'vrt',
-      testMatch: /visual\.spec\.ts/u,
+      testMatch: /visual\.spec\.ts$/u,
       use: { ...devices['Desktop Chrome'] },
     },
   ],
