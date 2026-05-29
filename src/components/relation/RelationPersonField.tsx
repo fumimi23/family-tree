@@ -1,4 +1,4 @@
-import { Field, type ListCollection, Portal, Select } from '@chakra-ui/react';
+import { Field, type ListCollection, Select } from '@chakra-ui/react';
 import React from 'react';
 import { type Control, Controller } from 'react-hook-form';
 
@@ -56,21 +56,24 @@ export function RelationPersonField({
               </Select.IndicatorGroup>
             </Select.Control>
 
-            <Portal>
-              <Select.Positioner>
-                <Select.Content zIndex={1500}>
-                  {personCollection.items.map((person) => (
-                    <Select.Item
-                      item={person}
-                      key={person.value}
-                    >
-                      {person.label}
-                      <Select.ItemIndicator />
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Positioner>
-            </Portal>
+            {/*
+              * Dialog 内では Portal で body 直下に出すと dialog の focus-trap に
+              * aria-hidden 化され、listbox が SR/E2E から不可視になる (#167)。
+              * Portal せず dialog 内にレンダリングする。
+              */}
+            <Select.Positioner>
+              <Select.Content zIndex={1500}>
+                {personCollection.items.map((person) => (
+                  <Select.Item
+                    item={person}
+                    key={person.value}
+                  >
+                    {person.label}
+                    <Select.ItemIndicator />
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select.Positioner>
           </Select.Root>
         )}
       />

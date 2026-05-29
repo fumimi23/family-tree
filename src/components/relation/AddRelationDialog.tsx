@@ -108,21 +108,19 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
                             </Select.IndicatorGroup>
                           </Select.Control>
 
-                          <Portal>
-                            <Select.Positioner>
-                              <Select.Content zIndex={1500}>
-                                {relationTypeCollection.items.map((relationType) => (
-                                  <Select.Item
-                                    item={relationType}
-                                    key={relationType.value}
-                                  >
-                                    {relationType.label}
-                                    <Select.ItemIndicator />
-                                  </Select.Item>
-                                ))}
-                              </Select.Content>
-                            </Select.Positioner>
-                          </Portal>
+                          <Select.Positioner>
+                            <Select.Content zIndex={1500}>
+                              {relationTypeCollection.items.map((relationType) => (
+                                <Select.Item
+                                  item={relationType}
+                                  key={relationType.value}
+                                >
+                                  {relationType.label}
+                                  <Select.ItemIndicator />
+                                </Select.Item>
+                              ))}
+                            </Select.Content>
+                          </Select.Positioner>
                         </Select.Root>
                       )}
                     />
