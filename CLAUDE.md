@@ -71,6 +71,11 @@
 - `@typescript-eslint/no-unnecessary-condition`: 型上 undefined にならないチェックは無効。`noUncheckedIndexedAccess` が off なので `arr[0]` は `T` 型 → 配列の length チェックで防御する
 - `max-lines-per-function: 50` は `.ts` のみ (`.tsx` とテストファイル `.test.ts` は対象外)。長い関数は小さなヘルパに分割
 
+### テスト
+- ユニット/コンポーネントテストは Vitest (`yarn test`、jsdom)、ページ全体の E2E は Playwright (`yarn e2e`)。Vitest の `include` は `src/**/*.test.{ts,tsx}` に絞ってあり、`e2e/*.spec.ts` は拾わない (両者の `test`/`expect` import 元が違うので混ざると壊れる)
+- Playwright のブラウザは `enableScripts: false` のため `yarn install` で自動取得されない。`yarn playwright install chromium` を手動実行する。CI は `--with-deps` でシステムライブラリも入れる
+- e2e は `tsconfig.app.json` の対象外。型解決のため `tsconfig.e2e.json` を用意し eslint の `parserOptions.project` にも追加してある
+
 ### CSS / レイアウト
 - `<input type="file">` の change イベントは同じファイルを再選択しても発火しない。click 前に `inputRef.current.value = ''` でリセットする
 - CSS Grid `1fr` はコンテンツ幅に拡張される。内側で `overflowX:auto` したい時は `templateColumns="repeat(N, minmax(0, 1fr))"` にする

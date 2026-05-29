@@ -34,6 +34,18 @@ yarn dev
 > [!NOTE]
 > 仕組みは `git config core.hooksPath .githooks` (リポジトリローカル)。**この設定が有効な間は `.git/hooks/*` に置いた既存フックは実行されない**ので、すでに別のフックを使っている場合は注意。元に戻すには `git config --unset core.hooksPath` を実行する。
 
+### E2E テスト (Playwright)
+
+ページ全体の E2E テストは Playwright で実行する (`yarn e2e`)。
+
+```bash
+yarn playwright install chromium   # 初回のみ。ブラウザを取得
+yarn e2e
+```
+
+> [!NOTE]
+> `.yarnrc.yml` の `enableScripts: false` によりブラウザは `yarn install` 時に自動取得されないため、上記の `yarn playwright install` を手動で実行する。Linux でブラウザ起動に必要なシステムライブラリが足りない場合は `yarn playwright install --with-deps chromium` (要 sudo) を使う。
+
 ## ドキュメント
 
 - [docs/family-tree.md](docs/family-tree.md) — 家系図の表記ルール
