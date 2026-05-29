@@ -14,7 +14,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # baseline との比較 (リグレッション検知の本体)
   compare:
     uses: ./.github/workflows/vrt-run.yml
     with:
       update-snapshots: false
+
+  # PR レビュー用に「現在のブランチの見た目」を artifact 化する。
+  # compare の pass/fail に依存せず撮るので、新規画面や差分なしでもスクショを確認できる。
+  # main への push では不要 (レビュー対象でない) ので PR のときだけ走らせる。
+  preview:
+    if: ${{ github.event_name == 'pull_request' }}
+    uses: ./.github/workflows/vrt-run.yml
+    with:
+      update-snapshots: true
+      snapshot-artifact-name: vrt-current

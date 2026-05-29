@@ -77,6 +77,7 @@
 - e2e は `tsconfig.app.json` の対象外。型解決のため `tsconfig.e2e.json` を用意し eslint の `parserOptions.project` にも追加してある
 - Playwright の project で機能 E2E (`yarn e2e` = `--project=e2e`) と VRT (`yarn vrt` = `--project=vrt`) を分離。`visual.spec.ts` のみ vrt project。新規の機能 E2E は `e2e` project が自動で拾う (visual.spec.ts 以外)
 - VRT の baseline はフォント差で誤検知しないよう**必ず公式 Docker イメージ `mcr.microsoft.com/playwright:v<version>-noble` + `fonts-noto-cjk`** で生成・比較する。ローカルの素の chromium で生成すると日本語が豆腐になり CI と一致しない。更新は `VRT Update Baselines` ワークフロー (手動) → artifact を展開し、最終的に `e2e/__screenshots__/visual.spec.ts/*.png` の配置になるよう commit (二重階層 `e2e/__screenshots__/e2e/...` にしないこと)
+- VRT ジョブは比較とは別に「現在の見た目」を `vrt-current` artifact として毎 PR 出力する。`gh run download <run-id> -n vrt-current` で取得して見た目レビューに使う (リグレッション差分の有無に依存せず取れる)。baseline 更新の `vrt-baselines` とは artifact 名で区別 (`vrt-run.yml` の `snapshot-artifact-name` input)
 
 ### CSS / レイアウト
 - `<input type="file">` の change イベントは同じファイルを再選択しても発火しない。click 前に `inputRef.current.value = ''` でリセットする
