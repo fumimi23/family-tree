@@ -1,0 +1,47 @@
+name: VRT
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vrt-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  vrt:
+    runs-on: ubuntu-latest
+    # baseline 生成 (vrt-update) と同一イメージで実行し、フォント差で誤検知しないようにする。
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-noble
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # 日本語が豆腐にならないよう CJK フォントを入れる (baseline 生成側と必ず揃える)。
+      - name: Install CJK fonts
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends fonts-noto-cjk
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Run VRT
+        run: yarn vrt
+
+      - name: Upload VRT report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: vrt-report
+          path: playwright-report/
+          retention-days: 7

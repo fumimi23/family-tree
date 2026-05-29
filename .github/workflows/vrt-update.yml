@@ -1,0 +1,40 @@
+name: VRT Update Baselines
+
+# 手動実行専用。baseline スクリーンショットを生成し artifact としてアップロードする。
+# ダウンロードして e2e/__screenshots__/ に展開・commit する運用。
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    # vrt.yml の比較ジョブと完全に同一イメージ・同一フォントで生成する。
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-noble
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install CJK fonts
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends fonts-noto-cjk
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Generate baselines
+        run: yarn vrt --update-snapshots
+
+      - name: Upload baselines
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: vrt-baselines
+          path: e2e/__screenshots__/
+          retention-days: 7
