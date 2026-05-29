@@ -150,6 +150,44 @@ describe('buildSecondaryParentEdges', () => {
     expect(edges[0].adopted).toBe(true);
   });
 
+  it('couple 親で継ぐ側 (person2) が左スロットでもアンカーは婚姻線中央になる (#164)', () => {
+    // personIds=[HUSBAND, WIFE] だが WIFE を左 (x=0)、HUSBAND を右に配置したケース
+    const couple = coupleUnit('u-couple', ID.HUSBAND, ID.WIFE);
+    const child = singleUnit('u-child', ID.CHILD);
+    const childToParents = new Map<string, ParentLink[]>([
+      [
+        ID.CHILD, [
+          { parentId: ID.WIFE,
+            adopted: false },
+        ],
+      ],
+    ]);
+    const personPositions = new Map<string, PersonPosition>([
+      [
+        ID.WIFE, { x: 0,
+          y: 0 },
+      ],
+      [
+        ID.HUSBAND, { x: PERSON_WIDTH + COUPLE_GAP,
+          y: 0 },
+      ],
+      [
+        ID.CHILD, { x: 150,
+          y: 200 },
+      ],
+    ]);
+    const ctx = buildCtx(
+      [couple, child],
+      new Map([[child.id, [couple.id]]]),
+      childToParents,
+      personPositions,
+    );
+    const edges = buildSecondaryParentEdges(ctx);
+    expect(edges).toHaveLength(1);
+    // 左端 (min x = 0) 起点の婚姻線中央。personIds[0]=HUSBAND の右スロット x ではない。
+    expect(edges[0].parentAnchorX).toBe(PERSON_WIDTH + (COUPLE_GAP / 2));
+  });
+
   it('座標が未確定の場合は edge をスキップする', () => {
     const outsider = singleUnit('u-outsider', ID.OUTSIDER);
     const child = singleUnit('u-child', ID.CHILD);
