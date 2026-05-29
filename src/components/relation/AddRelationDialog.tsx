@@ -102,7 +102,15 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
                           <Select.HiddenSelect />
 
                           <Select.Control>
-                            <Select.Trigger>
+                            {/*
+                              * 未選択時も入力可能と分かるよう、枠線を明示しつつ
+                              * 背景を透明にして入力欄 (白背景) と見た目を揃える (#172)。
+                              */}
+                            <Select.Trigger
+                              bg="transparent"
+                              borderColor="border.emphasized"
+                              borderWidth="1px"
+                            >
                               <Select.ValueText placeholder="関係" />
                             </Select.Trigger>
 
