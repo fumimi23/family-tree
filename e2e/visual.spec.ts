@@ -12,6 +12,10 @@ async function importSampleAndWait(page: Page): Promise<void> {
   await page.locator('input[type="file"]').setInputFiles(SAMPLE_PATH);
   // 家系図ノードが描画されるまで待つ
   await expect(page.getByRole('button', { name: '山田 太郎' })).toBeVisible();
+  // フォント読み込み完了を待つ (未完了で撮ると text のメトリクスが変わり差分が出る)
+  await page.evaluate(async() => {
+    await document.fonts.ready;
+  });
 }
 
 test('家系図 (ライトモード) の見た目', async({ page }) => {
