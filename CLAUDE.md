@@ -78,6 +78,7 @@
 - Playwright の project で機能 E2E (`yarn e2e` = `--project=e2e`) と VRT (`yarn vrt` = `--project=vrt`) を分離。`visual.spec.ts` のみ vrt project。新規の機能 E2E は `e2e` project が自動で拾う (visual.spec.ts 以外)
 - VRT の baseline はフォント差で誤検知しないよう**必ず公式 Docker イメージ `mcr.microsoft.com/playwright:v<version>-noble` + `fonts-noto-cjk`** で生成・比較する。ローカルの素の chromium で生成すると日本語が豆腐になり CI と一致しない。更新は `VRT Update Baselines` ワークフロー (手動) → artifact を展開し、最終的に `e2e/__screenshots__/visual.spec.ts/*.png` の配置になるよう commit (二重階層 `e2e/__screenshots__/e2e/...` にしないこと)
 - VRT ジョブは比較とは別に「現在の見た目」を `vrt-current` artifact として毎 PR 出力する。`gh run download <run-id> -n vrt-current` で取得して見た目レビューに使う (リグレッション差分の有無に依存せず取れる)。baseline 更新の `vrt-baselines` とは artifact 名で区別 (`vrt-run.yml` の `snapshot-artifact-name` input)
+- **Chakra v3 の `Select` (特に Dialog 内・ポータルの listbox) は headless Playwright で安定して駆動できない**。listbox が開き option も a11y ツリーに出るが、click/force click/keyboard/native `<select>` の selectOption いずれも不安定 (描画自体は正しく、実ブラウザでは動く)。`reducedMotion: 'reduce'` でも改善せず (アニメーションが原因ではない。Dialog の focus-trap と body 直下ポータルの相互作用が疑わしい)。E2E では Select の選択を伴うフローは避け、ロジックは単体テスト + 必要なら Docker スクショの目視で担保する。`Input` / `RadioGroup` 系 (PersonDialog) は問題なく駆動できる
 
 ### CSS / レイアウト
 - `<input type="file">` の change イベントは同じファイルを再選択しても発火しない。click 前に `inputRef.current.value = ''` でリセットする
