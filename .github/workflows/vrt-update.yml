@@ -1,0 +1,15 @@
+name: VRT Update Baselines
+
+# 手動実行専用。baseline スクリーンショットを生成し artifact としてアップロードする。
+# ダウンロードして e2e/__screenshots__/ に展開・commit する運用。
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    uses: ./.github/workflows/vrt-run.yml
+    with:
+      update-snapshots: true

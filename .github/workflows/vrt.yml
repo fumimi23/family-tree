@@ -1,0 +1,20 @@
+name: VRT
+
+# baseline を別 PR で投入する運用のため、投入が完了するまで push (= main) トリガーは
+# 付けない。baseline 不在のまま main で走ると default ブランチが常に赤になるのを避ける。
+# baseline 投入後に push: branches: [main] を追加する。
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vrt-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compare:
+    uses: ./.github/workflows/vrt-run.yml
+    with:
+      update-snapshots: false

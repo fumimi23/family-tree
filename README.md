@@ -46,6 +46,35 @@ yarn e2e
 > [!NOTE]
 > `.yarnrc.yml` の `enableScripts: false` によりブラウザは `yarn install` 時に自動取得されないため、上記の `yarn playwright install` を手動で実行する。Linux でブラウザ起動に必要なシステムライブラリが足りない場合は `yarn playwright install --with-deps chromium` (要 sudo) を使う。
 
+### VRT (ビジュアルリグレッションテスト)
+
+家系図描画の見た目崩れは Playwright のスクリーンショット比較で検知する (`yarn vrt`)。フォント描画は OS / 環境で差が出るため、**baseline は公式 Playwright Docker イメージで生成・比較する** (CI もこのイメージで実行)。
+
+baseline の更新は GitHub Actions の **VRT Update Baselines** ワークフロー (手動実行) で行う:
+
+1. Actions タブから `VRT Update Baselines` を `workflow_dispatch` で実行
+2. 生成された `vrt-baselines` artifact をダウンロード
+3. 展開し、最終的に `e2e/__screenshots__/visual.spec.ts/*.png` の配置になるようにして commit する
+
+> [!IMPORTANT]
+> artifact の中身は `e2e/__screenshots__/` 配下のファイル群。展開時に階層を間違えると `e2e/__screenshots__/e2e/__screenshots__/...` の二重階層になりやすい。**最終的に `e2e/__screenshots__/visual.spec.ts/family-tree-light.png` (と dark) が存在する**ことを確認してから commit する。
+
+> [!NOTE]
+> 初回 baseline 投入が済むまで `vrt.yml` は `pull_request` トリガーのみ (main への `push` は付けていない)。baseline を commit したら `push: branches: [main]` を追加して main でも回す。
+
+baseline 更新は上記の **VRT Update Baselines** ワークフローを使うのが基本 (ローカルを汚さない)。どうしてもローカルで生成する場合は同じイメージを使う:
+
+```bash
+docker run --rm --user root -v "$(pwd):/work" -w /work mcr.microsoft.com/playwright:v1.60.0-noble \
+  sh -c "apt-get update && apt-get install -y fonts-noto-cjk && corepack enable && yarn install --immutable && yarn vrt --update-snapshots"
+
+# root で実行したので、生成物の所有者をホストユーザーに戻す
+sudo chown -R "$(id -u):$(id -g)" e2e/__screenshots__ node_modules dist
+```
+
+> [!NOTE]
+> 公式イメージには日本語フォントとして IPAGothic しか入っておらず、CI は `fonts-noto-cjk` を追加して Noto で描画する。**ローカル生成時もフォント追加 (`apt-get install fonts-noto-cjk`) は必須** — 省くと IPAGothic で描画され CI の baseline と一致しない。フォント追加 (`apt-get`) に root が要るため `--user root` を明示し、生成物 (`e2e/__screenshots__` のほか `node_modules` / `dist` も root 所有になる) を `chown` で戻すこと。所有権の取り回しが面倒なので、基本は CI ワークフローでの生成を推奨。
+
 ## ドキュメント
 
 - [docs/family-tree.md](docs/family-tree.md) — 家系図の表記ルール
