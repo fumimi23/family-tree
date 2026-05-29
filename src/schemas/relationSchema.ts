@@ -74,8 +74,9 @@ export const relationSchema = z.object({
   /*
    * 家系を継ぐ側 (= レイアウトで自分の親系統を primary にする側)。婚姻関係でのみ指定可。
    * 未指定なら従来どおり personId1 側が primary になる。
+   * 値のタプルを直接渡し、出力型を 'person1' | 'person2' の union に保つ。
    */
-  householdSide: z.enum(Object.values(HouseholdSide) as [string, ...string[]]).optional()
+  householdSide: z.enum([HouseholdSide.PERSON1, HouseholdSide.PERSON2]).optional()
     .describe('家系を継ぐ側'),
 }).superRefine((val, ctx) => {
   const isMarriage = val.relationType.length > 0
