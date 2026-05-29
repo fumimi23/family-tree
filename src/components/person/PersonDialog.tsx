@@ -13,6 +13,7 @@ interface PersonDialogProps {
   isOpen: boolean;
   onOpenChange: (e: { open: boolean }) => void;
   person?: Person;
+  onFilterFocus?: (personId: string) => void;
 }
 
 function buildDefaultValues(person: Person | undefined): Person {
@@ -33,7 +34,7 @@ function buildDefaultValues(person: Person | undefined): Person {
   };
 }
 
-export function PersonDialog({ isOpen, onOpenChange, person }: PersonDialogProps): React.ReactNode {
+export function PersonDialog({ isOpen, onOpenChange, person, onFilterFocus }: PersonDialogProps): React.ReactNode {
   const addPerson = usePeopleStore((state) => state.addPerson);
   const updatePerson = usePeopleStore((state) => state.updatePerson);
   const deletePerson = usePeopleStore((state) => state.deletePerson);
@@ -240,6 +241,18 @@ export function PersonDialog({ isOpen, onOpenChange, person }: PersonDialogProps
                       variant="outline"
                     >
                       削除
+                    </Button>
+                  )
+                  : null}
+
+                {isEdit && onFilterFocus !== undefined
+                  ? (
+                    <Button
+                      onClick={(): void => { onFilterFocus(person.id); }}
+                      type="button"
+                      variant="outline"
+                    >
+                      この人を起点にフィルタ
                     </Button>
                   )
                   : null}
