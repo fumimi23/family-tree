@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { layoutFamilyTree } from '@/components/familyTree/layoutFamilyTree';
 import { type Person, Sex } from '@/schemas/personSchema';
-import { type Relation, RelationType } from '@/schemas/relationSchema';
+import { HouseholdSide, type Relation, RelationType } from '@/schemas/relationSchema';
 
 const ID = {
   HUSBAND: '11111111-1111-4111-8111-111111111111',
@@ -104,6 +104,26 @@ describe('layoutFamilyTree', () => {
       throw new Error('期待した子ノードが見つかりません');
     }
     expect(oldNode.x).toBeGreaterThan(newNode.x);
+  });
+
+  it('婚姻線の左右は継ぐ側に従う: 未指定は person1, person2 指定なら継ぐ側が左 (#164)', () => {
+    const people = [person(ID.HUSBAND, '1970-01-01'), person(ID.WIFE, '1972-01-01')];
+    const xOf = (rel: Relation, id: string): number => {
+      const node = layoutFamilyTree(people, [rel]).nodes.find((n) => n.personId === id);
+      if (node === undefined) {
+        throw new Error('期待したノードが見つかりません');
+      }
+      return node.x;
+    };
+    // 未指定: person1 (HUSBAND) が左
+    const plain = marriedRel(ID.REL_MARRIED, ID.HUSBAND, ID.WIFE);
+    expect(xOf(plain, ID.HUSBAND)).toBeLessThan(xOf(plain, ID.WIFE));
+    // person2 指定: 継ぐ側 (WIFE) が左
+    const headRel: Relation = {
+      ...plain,
+      householdSide: HouseholdSide.PERSON2,
+    };
+    expect(xOf(headRel, ID.WIFE)).toBeLessThan(xOf(headRel, ID.HUSBAND));
   });
 
   it('存在しない人物を参照する relation は無視する', () => {

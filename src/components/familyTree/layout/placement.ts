@@ -9,7 +9,7 @@ import {
   type Unit,
   UNIT_GAP,
 } from '@/components/familyTree/layout/internalTypes';
-import { findAnchorPersonId } from '@/components/familyTree/layout/ownership';
+import { findAnchorPersonId, orderedPersonIds } from '@/components/familyTree/layout/ownership';
 import { unitOwnWidth } from '@/components/familyTree/layout/subtreeWidth';
 import { type ChildLinkLayout } from '@/components/familyTree/types';
 
@@ -20,7 +20,8 @@ function placeUnitPersons(
   ctx: PlacementCtx,
 ): void {
   let px = unitLeftX;
-  for (const pid of unit.personIds) {
+  // 継ぐ側 (household head) を左に配置するため head-first 順で並べる (#164)
+  for (const pid of orderedPersonIds(unit)) {
     ctx.nodes.push({
       personId: pid,
       x: px,
