@@ -49,7 +49,7 @@ export function RelationPersonField({
             <Select.Control>
               {/*
                 * 未選択時も入力可能と分かるよう、枠線を明示しつつ
-                * 背景を透明にして入力欄 (白背景) と見た目を揃える (#172)。
+                * 背景を透明にして他の入力欄と見た目を揃える (#172)。
                 */}
               <Select.Trigger
                 bg="transparent"
