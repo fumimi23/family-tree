@@ -59,8 +59,6 @@ baseline の更新は GitHub Actions の **VRT Update Baselines** ワークフ�
 > [!IMPORTANT]
 > artifact の中身は `e2e/__screenshots__/` 配下のファイル群。展開時に階層を間違えると `e2e/__screenshots__/e2e/__screenshots__/...` の二重階層になりやすい。**最終的に `e2e/__screenshots__/visual.spec.ts/family-tree-light.png` (と dark) が存在する**ことを確認してから commit する。
 
-> [!NOTE]
-> 初回 baseline 投入が済むまで `vrt.yml` は `pull_request` トリガーのみ (main への `push` は付けていない)。baseline を commit したら `push: branches: [main]` を追加して main でも回す。
 
 baseline 更新は上記の **VRT Update Baselines** ワークフローを使うのが基本 (ローカルを汚さない)。どうしてもローカルで生成する場合は同じイメージを使う:
 
