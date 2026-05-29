@@ -175,4 +175,55 @@ describe('applyFilter', () => {
     // people 側にも P_FATHER は居ない
     expect(result.people.some((p) => p.id === ID.P_FATHER)).toBe(false);
   });
+
+  describe('includeSiblings', () => {
+    const SIBLING = 'ffffffff-0000-4000-8000-000000000001';
+    const SIBLING_SPOUSE = 'ffffffff-0000-4000-8000-000000000002';
+    const siblingPeople = [...people, person(SIBLING), person(SIBLING_SPOUSE)];
+    const siblingRelations: Relation[] = [
+      ...relations,
+      // 親 → 兄弟 (ME と同じ親)
+      parentRel('par-pf-sib', ID.P_FATHER, SIBLING),
+      parentRel('par-pm-sib', ID.P_MOTHER, SIBLING),
+      // 兄弟の配偶者
+      marriedRel('m-sib', SIBLING, SIBLING_SPOUSE),
+    ];
+
+    it('includeSiblings 未指定なら兄弟は含まれない', () => {
+      const result = applyFilter(siblingPeople, siblingRelations, {
+        focusPersonId: ID.ME,
+        scope: 'ancestors',
+      });
+      expect(result.people.map((p) => p.id)).not.toContain(SIBLING);
+    });
+
+    it('includeSiblings=true で兄弟とその配偶者が含まれる', () => {
+      const result = applyFilter(siblingPeople, siblingRelations, {
+        focusPersonId: ID.ME,
+        scope: 'ancestors',
+        includeSiblings: true,
+      });
+      const ids = result.people.map((p) => p.id);
+      expect(ids).toContain(SIBLING);
+      expect(ids).toContain(SIBLING_SPOUSE);
+    });
+
+    it('兄弟の子孫までは辿らない', () => {
+      const SIBLING_CHILD = 'ffffffff-0000-4000-8000-000000000003';
+      const peopleWithNephew = [...siblingPeople, person(SIBLING_CHILD)];
+      const relationsWithNephew: Relation[] = [
+        ...siblingRelations,
+        parentRel('par-sib-c', SIBLING, SIBLING_CHILD),
+      ];
+      const result = applyFilter(peopleWithNephew, relationsWithNephew, {
+        focusPersonId: ID.ME,
+        scope: 'ancestors',
+        includeSiblings: true,
+      });
+      const ids = result.people.map((p) => p.id);
+      expect(ids).toContain(SIBLING);
+      // 甥/姪 (兄弟の子) は含めない
+      expect(ids).not.toContain(SIBLING_CHILD);
+    });
+  });
 });

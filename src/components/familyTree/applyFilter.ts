@@ -6,6 +6,8 @@ export type FilterScope = 'ancestors' | 'descendants' | 'both';
 export interface FilterCriteria {
   focusPersonId: string;
   scope: FilterScope;
+  // 起点の兄弟姉妹 (直系親の他の子) も含めるか
+  includeSiblings?: boolean;
 }
 
 interface ParentChildMaps {
@@ -116,6 +118,24 @@ function hasBothEndsIn(rel: Relation, ids: Set<string>): boolean {
   return ids.has(rel.persons.personId1[0]) && ids.has(rel.persons.personId2[0]);
 }
 
+/*
+ * 起点の兄弟姉妹 = 起点の直系親 (childToParents) の他の子。起点自身は除く。
+ * 兄弟の子孫までは辿らず「並べる相手」として 1 段だけ含める。
+ */
+function collectSiblings(personId: string, maps: ParentChildMaps): Set<string> {
+  const siblings = new Set<string>();
+  const parents = maps.childToParents.get(personId) ?? new Set();
+  for (const parent of parents) {
+    const children = maps.parentToChildren.get(parent) ?? new Set();
+    for (const child of children) {
+      if (child !== personId) {
+        siblings.add(child);
+      }
+    }
+  }
+  return siblings;
+}
+
 function collectInScope(
   criteria: FilterCriteria,
   maps: ParentChildMaps,
@@ -128,6 +148,11 @@ function collectInScope(
   }
   if (criteria.scope === 'descendants' || criteria.scope === 'both') {
     for (const id of collectDescendants(criteria.focusPersonId, maps)) {
+      collected.add(id);
+    }
+  }
+  if (criteria.includeSiblings === true) {
+    for (const id of collectSiblings(criteria.focusPersonId, maps)) {
       collected.add(id);
     }
   }
