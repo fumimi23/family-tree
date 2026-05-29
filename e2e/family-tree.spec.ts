@@ -41,3 +41,17 @@ test('インポート後にノードをクリックすると編集ダイアロ�
   await expect(page.getByText('人物編集')).toBeVisible();
   await expect(page.getByPlaceholder('姓', { exact: true })).toHaveValue('山田');
 });
+
+test('関係追加ダイアログの初期状態では「家系を継ぐ側」は出ない', async({ page }) => {
+  await page.getByRole('button', { name: '関係追加' }).click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByText('関係追加')).toBeVisible();
+
+  /*
+   * 婚姻関係を選ぶ前は householdSide / divorced は非表示。
+   * 婚姻選択後の表示は Chakra Select の駆動が headless で不安定なため E2E では検証しない。
+   * 値 → primary 親の反映は ownership / buildUnits の単体テストでカバー。
+   */
+  await expect(dialog.getByText('家系を継ぐ側 (任意)')).toBeHidden();
+  await expect(dialog.getByText('離婚済み')).toBeHidden();
+});
