@@ -78,7 +78,7 @@ export function FamilyTreeFilter({ people, criteria, onChange }: Props): React.R
         <Select.HiddenSelect />
 
         <Select.Control>
-          <Select.Trigger>
+          <Select.Trigger aria-label="フィルタの起点人物">
             <Select.ValueText placeholder="起点人物を選択" />
           </Select.Trigger>
 
@@ -115,7 +115,7 @@ export function FamilyTreeFilter({ people, criteria, onChange }: Props): React.R
         <Select.HiddenSelect />
 
         <Select.Control>
-          <Select.Trigger>
+          <Select.Trigger aria-label="フィルタの範囲">
             <Select.ValueText />
           </Select.Trigger>
 
