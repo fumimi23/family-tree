@@ -8,10 +8,14 @@ export interface OwnershipResult {
 
 /*
  * householdHeadPersonId が指定されていれば、その人物を先頭にした personIds 順を返す。
- * 親ユニット探索はこの順で行われ、先に見つかった親ユニットが primary になるため、
- * 「家系を継ぐ側」の親系統が primary に選ばれる。視覚上の personIds 順は変えない。
+ * この順は 2 箇所で使う:
+ *   1. 親ユニット探索 — 先に見つかった親ユニットが primary になるため、「家系を継ぐ側」の
+ *      親系統が primary に選ばれる。
+ *   2. placement の左右配置 — 継ぐ側を先頭にすることで婚姻線の左に配置され、嫁入り/婿入りを
+ *      ラベル無しで視覚的に表現する (#164)。
+ * householdHeadPersonId 未指定なら従来どおり personId1 が先頭 (= 左)。
  */
-function orderedPersonIds(unit: Unit): string[] {
+export function orderedPersonIds(unit: Unit): string[] {
   const head = unit.householdHeadPersonId;
   if (head === null || !unit.personIds.includes(head)) {
     return unit.personIds;

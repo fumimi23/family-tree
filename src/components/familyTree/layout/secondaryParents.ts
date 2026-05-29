@@ -23,8 +23,14 @@ function getParentUnitOrigin(
   if (positions.length === 0) {
     return null;
   }
+
+  /*
+   * householdSide 指定時は person1 が左スロットとは限らない (#164 で継ぐ側を左に配置)。
+   * computeParentAnchor は unit の左端を起点に婚姻線中央を計算するため、personIds[0] では
+   * なく実際の最小 x を unit 左端として渡す。couple の 2 人は同じ y なので y は先頭でよい。
+   */
   return {
-    leftX: positions[0].x,
+    leftX: Math.min(...positions.map((p) => p.x)),
     y: positions[0].y,
   };
 }
