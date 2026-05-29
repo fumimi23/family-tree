@@ -134,11 +134,19 @@ export function applyFilter(
   }
   addSpouses(collected, maps.spouseMap);
   const filteredPeople = people.filter((p) => collected.has(p.id));
+
+  /*
+   * relation の両端が実在する人物 (filteredPeople) に含まれるものだけ残す。
+   * `collected` は relations から構築した親子グラフ由来なので、削除済み人物の id が
+   * 残るケースがあり、それを基準にすると people / relations が内部的に不整合になる。
+   */
+  const filteredPersonIds = new Set(filteredPeople.map((p) => p.id));
   const filteredRelations = relations.filter((r) => {
     if (r.persons.personId1.length === 0 || r.persons.personId2.length === 0) {
       return false;
     }
-    return collected.has(r.persons.personId1[0]) && collected.has(r.persons.personId2[0]);
+    return filteredPersonIds.has(r.persons.personId1[0])
+      && filteredPersonIds.has(r.persons.personId2[0]);
   });
   return {
     people: filteredPeople,

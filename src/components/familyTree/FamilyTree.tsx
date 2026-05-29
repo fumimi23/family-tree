@@ -43,9 +43,20 @@ export function FamilyTree(): React.ReactNode {
     [people],
   );
   const [filterCriteria, setFilterCriteria] = React.useState<FilterCriteria | null>(null);
+
+  /*
+   * 起点人物が削除された場合は、その criteria を実効的に無視する。
+   * effect で state を書き換えるとカスケード再レンダリングが発生するため、
+   * 派生値として「現在有効な criteria」を計算して以降の処理で使う。
+   */
+  const effectiveCriteria = filterCriteria !== null
+    && personMap.has(filterCriteria.focusPersonId)
+    ? filterCriteria
+    : null;
+
   const filtered = React.useMemo(
-    () => applyFilter(people, relations, filterCriteria),
-    [people, relations, filterCriteria],
+    () => applyFilter(people, relations, effectiveCriteria),
+    [people, relations, effectiveCriteria],
   );
   const result = React.useMemo<LayoutResult>(() => {
     try {
@@ -131,7 +142,7 @@ export function FamilyTree(): React.ReactNode {
       {people.length > 0
         ? (
           <FamilyTreeFilter
-            criteria={filterCriteria}
+            criteria={effectiveCriteria}
             onChange={setFilterCriteria}
             people={people}
           />

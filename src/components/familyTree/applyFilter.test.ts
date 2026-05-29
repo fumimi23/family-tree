@@ -136,4 +136,24 @@ describe('applyFilter', () => {
     const ids = result.relations.map((r) => r.id).sort();
     expect(ids).toEqual(['m-me', 'par-me-c', 'par-s-c'].sort());
   });
+
+  it('relations にだけ残っていて people に無い id は filteredRelations に含めない', () => {
+    /*
+     * 親 (P_FATHER) が削除された状態 (people には居ないが、par-pf-me / par-gpf-pf 等の
+     * relation には残っている) を模擬する。
+     */
+    const peopleWithoutFather = people.filter((p) => p.id !== ID.P_FATHER);
+    const result = applyFilter(peopleWithoutFather, relations, {
+      focusPersonId: ID.ME,
+      scope: 'ancestors',
+    });
+    // P_FATHER が両端のいずれかになる relation は含まれない
+    const referencesFather = result.relations.some((r) => {
+      return r.persons.personId1[0] === ID.P_FATHER
+        || r.persons.personId2[0] === ID.P_FATHER;
+    });
+    expect(referencesFather).toBe(false);
+    // people 側にも P_FATHER は居ない
+    expect(result.people.some((p) => p.id === ID.P_FATHER)).toBe(false);
+  });
 });
