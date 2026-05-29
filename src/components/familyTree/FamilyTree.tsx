@@ -1,7 +1,8 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import React from 'react';
 
-import { exportAsPng, exportAsSvg } from '@/components/familyTree/exportImage';
+import { applyFilter, type FilterCriteria } from '@/components/familyTree/applyFilter';
+import { FamilyTreeFilter } from '@/components/familyTree/FamilyTreeFilter';
 import { FamilyTreeToolbar } from '@/components/familyTree/FamilyTreeToolbar';
 import { LABELS_WIDTH } from '@/components/familyTree/layout/internalTypes';
 import { layoutFamilyTree } from '@/components/familyTree/layoutFamilyTree';
@@ -11,10 +12,10 @@ import { ParentChildEdge } from '@/components/familyTree/ParentChildEdge';
 import { PersonNode } from '@/components/familyTree/PersonNode';
 import { SecondaryMarriageEdge } from '@/components/familyTree/SecondaryMarriageEdge';
 import { SecondaryParentEdge } from '@/components/familyTree/SecondaryParentEdge';
+import { useFamilyTreeExport } from '@/components/familyTree/useFamilyTreeExport';
 import { useWheelZoom } from '@/components/familyTree/useWheelZoom';
 import { PersonDialog } from '@/components/person/PersonDialog';
 import { H2 } from '@/components/ui/H2';
-import { toaster } from '@/components/ui/toaster';
 import { type Person } from '@/schemas/personSchema';
 import { usePeopleStore } from '@/store/personStore';
 import { useRelationStore } from '@/store/relationStore';
@@ -41,11 +42,16 @@ export function FamilyTree(): React.ReactNode {
     () => new Map<string, Person>(people.map((p) => [p.id, p])),
     [people],
   );
+  const [filterCriteria, setFilterCriteria] = React.useState<FilterCriteria | null>(null);
+  const filtered = React.useMemo(
+    () => applyFilter(people, relations, filterCriteria),
+    [people, relations, filterCriteria],
+  );
   const result = React.useMemo<LayoutResult>(() => {
     try {
       return {
         ok: true,
-        layout: layoutFamilyTree(people, relations),
+        layout: layoutFamilyTree(filtered.people, filtered.relations),
       };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -54,7 +60,7 @@ export function FamilyTree(): React.ReactNode {
         error: message,
       };
     }
-  }, [people, relations]);
+  }, [filtered]);
   const [editingPersonId, setEditingPersonId] = React.useState<string | null>(null);
   const editingPerson = editingPersonId === null
     ? undefined
@@ -67,37 +73,12 @@ export function FamilyTree(): React.ReactNode {
       setEditingPersonId(null);
     }
   }, []);
-  const svgRef = React.useRef<SVGSVGElement>(null);
-  const handleExportSvg = React.useCallback((): void => {
-    if (svgRef.current === null || !result.ok) {
-      return;
-    }
-    exportAsSvg(
-      svgRef.current,
-      result.layout.width,
-      result.layout.height,
-      'family-tree.svg',
-    );
-  }, [result]);
-  const handleExportPng = React.useCallback((): void => {
-    if (svgRef.current === null || !result.ok) {
-      return;
-    }
-    void exportAsPng(
-      svgRef.current,
-      result.layout.width,
-      result.layout.height,
-      'family-tree.png',
-      '#ffffff',
-    ).catch((err: unknown) => {
-      const message = err instanceof Error ? err.message : String(err);
-      toaster.create({
-        title: 'PNG エクスポートに失敗しました。',
-        description: message,
-        type: 'error',
-      });
-    });
-  }, [result]);
+  const { svgRef, handleExportSvg, handleExportPng } = useFamilyTreeExport(
+    result.ok
+      ? { width: result.layout.width,
+        height: result.layout.height }
+      : null,
+  );
   const [zoomIndex, setZoomIndex] = React.useState(DEFAULT_ZOOM_INDEX);
   const zoom = ZOOM_LEVELS[zoomIndex];
   const handleZoomIn = React.useCallback((): void => {
@@ -146,6 +127,16 @@ export function FamilyTree(): React.ReactNode {
           )
           : null}
       </Flex>
+
+      {people.length > 0
+        ? (
+          <FamilyTreeFilter
+            criteria={filterCriteria}
+            onChange={setFilterCriteria}
+            people={people}
+          />
+        )
+        : null}
 
       {people.length === 0
         ? (
