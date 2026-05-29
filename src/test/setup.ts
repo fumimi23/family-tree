@@ -48,6 +48,14 @@ Object.defineProperty(window, 'ResizeObserver', {
   value: ResizeObserverStub,
 });
 
+/*
+ * jsdom の Element には scrollTo が無いため、Chakra v3 / @zag-js の Select が
+ * ドロップダウン閉じ際に呼び出して例外になる。no-op で stub しておく。
+ */
+if (typeof Element.prototype.scrollTo !== 'function') {
+  Element.prototype.scrollTo = (): void => { /* no-op */ };
+}
+
 afterEach(() => {
   cleanup();
 });
