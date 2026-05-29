@@ -62,12 +62,18 @@ baseline の更新は GitHub Actions の **VRT Update Baselines** ワークフ�
 > [!NOTE]
 > 初回 baseline 投入が済むまで `vrt.yml` は `pull_request` トリガーのみ (main への `push` は付けていない)。baseline を commit したら `push: branches: [main]` を追加して main でも回す。
 
-ローカルで生成・確認する場合は同じイメージを使う:
+baseline 更新は上記の **VRT Update Baselines** ワークフローを使うのが基本 (ローカルを汚さない)。どうしてもローカルで生成する場合は同じイメージを使う:
 
 ```bash
 docker run --rm -v "$(pwd):/work" -w /work mcr.microsoft.com/playwright:v1.60.0-noble \
   sh -c "apt-get update && apt-get install -y fonts-noto-cjk && corepack enable && yarn install --immutable && yarn vrt --update-snapshots"
+
+# コンテナ内は root 実行なので、生成物の所有者をホストユーザーに戻す
+sudo chown -R "$(id -u):$(id -g)" e2e/__screenshots__ node_modules dist
 ```
+
+> [!NOTE]
+> 公式イメージには日本語フォントとして IPAGothic しか入っておらず、CI は `fonts-noto-cjk` を追加して Noto で描画する。**ローカル生成時もフォント追加 (`apt-get install fonts-noto-cjk`) は必須** — 省くと IPAGothic で描画され CI の baseline と一致しない。フォント追加に root が要るためコンテナは root 実行とし、生成物 (`e2e/__screenshots__` のほか `node_modules` / `dist` も root 所有になる) を `chown` で戻すこと。所有権の取り回しが面倒なので、基本は CI ワークフローでの生成を推奨。
 
 ## ドキュメント
 
