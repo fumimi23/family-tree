@@ -20,9 +20,11 @@ jobs:
     with:
       update-snapshots: false
 
-  # レビュー用に「現在のブランチの見た目」を常に artifact 化する。
+  # PR レビュー用に「現在のブランチの見た目」を artifact 化する。
   # compare の pass/fail に依存せず撮るので、新規画面や差分なしでもスクショを確認できる。
+  # main への push では不要 (レビュー対象でない) ので PR のときだけ走らせる。
   preview:
+    if: ${{ github.event_name == 'pull_request' }}
     uses: ./.github/workflows/vrt-run.yml
     with:
       update-snapshots: true
