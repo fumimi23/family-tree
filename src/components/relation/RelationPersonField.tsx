@@ -39,7 +39,6 @@ export function RelationPersonField({
         render={({ field }) => (
           <Select.Root
             collection={personCollection}
-            defaultValue={field.value}
             name={field.name}
             onInteractOutside={field.onBlur}
             onValueChange={({ value }): void => { field.onChange(value); }}
