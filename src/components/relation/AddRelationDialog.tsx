@@ -79,7 +79,10 @@ export function AddRelationDialog({ isOpen, onOpenChange }: AddRelationDialogPro
               }}
             >
               <Dialog.Body>
-                <Flex direction="column">
+                <Flex
+                  direction="column"
+                  gap={4}
+                >
                   <Field.Root invalid={Boolean(errors.relationType)}>
 
                     <Field.Label>関係</Field.Label>
