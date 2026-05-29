@@ -83,7 +83,7 @@ export function FamilyTreeFilter({ people, criteria, onChange }: Props): React.R
         onValueChange={({ value }): void => { handlePersonChange(value); }}
         size="sm"
         value={selectedPerson}
-        width="180px"
+        width="220px"
       >
         <Select.HiddenSelect />
 
@@ -120,7 +120,7 @@ export function FamilyTreeFilter({ people, criteria, onChange }: Props): React.R
         onValueChange={({ value }): void => { handleScopeChange(value); }}
         size="sm"
         value={selectedScope}
-        width="130px"
+        width="150px"
       >
         <Select.HiddenSelect />
 
