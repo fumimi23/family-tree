@@ -110,7 +110,8 @@ describe('buildSecondaryParentEdges', () => {
     expect(edges[0].id).toBe('u-outsider__u-child');
     expect(edges[0].parentAnchorX).toBe(300 + (PERSON_WIDTH / 2));
     expect(edges[0].parentAnchorY).toBe(PERSON_HEIGHT);
-    expect(edges[0].busY).toBe(PERSON_HEIGHT + (GENERATION_GAP / 2));
+    // primary 親子線と重ならないよう secondary は busY を 12px 下げている。
+    expect(edges[0].busY).toBe(PERSON_HEIGHT + (GENERATION_GAP / 2) + 12);
     expect(edges[0].childX).toBe(150 + (PERSON_WIDTH / 2));
     expect(edges[0].childTopY).toBe(200);
     expect(edges[0].adopted).toBe(false);
