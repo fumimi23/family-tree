@@ -2,8 +2,8 @@ name: VRT Run (reusable)
 
 # VRT の実行手順を集約した再利用ワークフロー。
 # - 比較 (vrt.yml) と baseline 生成 (vrt-update.yml) で同一のイメージ・手順を使う
-# - Playwright のイメージタグは下の jobs.vrt.container.image に 1 箇所だけ書く
-#   (@playwright/test との一致は "Verify Playwright version matches image" で検証)
+# - Playwright のイメージタグは下の inputs.image (default) に 1 箇所だけ書く。
+#   container.image と版検証の両方がこの値を参照するので、ここを変えれば全部追従する。
 on:
   workflow_call:
     inputs:
@@ -11,6 +11,10 @@ on:
         description: baseline を生成する場合 true
         type: boolean
         default: false
+      image:
+        description: Playwright 公式 Docker イメージ (@playwright/test と版を揃える)
+        type: string
+        default: mcr.microsoft.com/playwright:v1.60.0-noble
 
 permissions:
   contents: read
@@ -18,10 +22,8 @@ permissions:
 jobs:
   vrt:
     runs-on: ubuntu-latest
-    # Playwright のイメージタグはこの 1 箇所だけ。下のバージョン検証で
-    # @playwright/test と一致していることを起動前に保証する。
     container:
-      image: mcr.microsoft.com/playwright:v1.60.0-noble
+      image: ${{ inputs.image }}
       # フォント追加 (apt-get) に root が要るため、イメージの既定ユーザーに依存せず明示する
       options: --user root
     steps:
@@ -35,15 +37,17 @@ jobs:
         run: yarn install --immutable
 
       # コンテナ内蔵ブラウザは @playwright/test のバージョンに対応している必要がある。
-      # ずれると「ブラウザが見つからない」系で壊れるため、コンテナ同梱の Playwright (PATH 上の
-      # グローバル) とプロジェクトの版を直接突き合わせて起動前に検証する。
+      # ずれると「ブラウザが見つからない」系で壊れるため、イメージタグ (inputs.image) から
+      # 期待バージョンを取り出し、プロジェクトの @playwright/test と一致するか起動前に検証する。
       - name: Verify Playwright version matches image
+        env:
+          IMAGE: ${{ inputs.image }}
         run: |
-          IMAGE_VERSION="$(playwright --version | awk '{print $2}')"
+          IMAGE_VERSION="$(printf '%s' "$IMAGE" | sed 's/.*:v//; s/-.*//')"
           PROJECT_VERSION="$(yarn playwright --version | awk '{print $2}')"
           echo "image=${IMAGE_VERSION} project=${PROJECT_VERSION}"
           if [ "${IMAGE_VERSION}" != "${PROJECT_VERSION}" ]; then
-            echo "::error::Playwright のバージョン不一致: image=${IMAGE_VERSION} / @playwright/test=${PROJECT_VERSION}。vrt-run.yml の container.image と package.json を揃えてください"
+            echo "::error::Playwright のバージョン不一致: image=${IMAGE_VERSION} / @playwright/test=${PROJECT_VERSION}。vrt-run.yml の inputs.image default と package.json を揃えてください"
             exit 1
           fi
 
