@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "e2e": "playwright test",
+    "e2e": "playwright test --project=e2e",
+    "vrt": "playwright test --project=vrt",
     "hooks:install": "git config core.hooksPath .githooks"
   },
   "dependencies": {
