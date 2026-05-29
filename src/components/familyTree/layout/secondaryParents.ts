@@ -29,6 +29,13 @@ function getParentUnitOrigin(
   };
 }
 
+/*
+ * primary 親子線と同じ busY だと水平セグメントが重なり視認性が落ちる
+ * (特にいとこ婚など、子側の couple unit が両方の親ユニットを持つケース) ため、
+ * secondary 親子線は busY を少し下げる。世代間の余白に収まる小さなオフセットで十分。
+ */
+const SECONDARY_PARENT_BUS_OFFSET = 12;
+
 export function buildSecondaryParentEdges(ctx: PlacementCtx): SecondaryParentEdgeLayout[] {
   const edges: SecondaryParentEdgeLayout[] = [];
   for (const [childUnitId, secondaryParentIds] of ctx.secondaryParentsOfUnit) {
@@ -56,7 +63,7 @@ export function buildSecondaryParentEdges(ctx: PlacementCtx): SecondaryParentEdg
         id: `${parentUnitId}__${childUnitId}`,
         parentAnchorX: anchor.x,
         parentAnchorY: anchor.y,
-        busY: anchor.busY,
+        busY: anchor.busY + SECONDARY_PARENT_BUS_OFFSET,
         childX: childPos.x + (PERSON_WIDTH / 2),
         childTopY: childPos.y,
         adopted,
